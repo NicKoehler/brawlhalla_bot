@@ -1,4 +1,3 @@
-import asyncio
 from math import ceil
 from os import environ
 from plate import Plate
@@ -125,7 +124,7 @@ async def search_player_page(_: Client, callback: CallbackQuery, translate: Plat
 @user_language
 async def search_team_page(_: Client, callback: CallbackQuery, translate: Plate):
     page_limit = 10
-    __, pages = callback.message.text.split("\n")
+    pages = callback.message.text.split("\n")[-1]
     current_page = int(pages.split("/")[0])
     current_page += 1 if callback.matches[0].group(1) == "next" else -1
     brawlhalla_id = int(callback.matches[0].group(2))
@@ -145,14 +144,20 @@ async def search_team_page(_: Client, callback: CallbackQuery, translate: Plate)
     total_pages = ceil(len(player.teams) / page_limit)
 
     await callback.message.edit(
-        translate("teams_results", current=current_page, total=total_pages),
+        translate(
+            "teams_results",
+            id=player.brawlhalla_id,
+            name=player.name,
+            current=current_page,
+            total=total_pages,
+        ),
         reply_markup=Keyboard.search_team(
             player, current_page - 1, total_pages - 1, page_limit, translate
         ),
     )
 
 
-@bot.on_callback_query(filters.regex(f"{View.GENERAL}_(\d+)"))
+@bot.on_callback_query(filters.regex(f"{View.GENERAL}_(\\d+)"))
 @user_language
 async def player_general_callback(_: Client, callback: CallbackQuery, translate: Plate):
     brawlhalla_id = int(callback.matches[0].group(1))
@@ -161,7 +166,7 @@ async def player_general_callback(_: Client, callback: CallbackQuery, translate:
     await handle_general(brawl, brawlhalla_id, player, callback, cache, translate)
 
 
-@bot.on_callback_query(filters.regex(f"{View.RANKED_SOLO}_(\d+)"))
+@bot.on_callback_query(filters.regex(f"{View.RANKED_SOLO}_(\\d+)"))
 @user_language
 async def player_ranked_solo_callback(
     _: Client, callback: CallbackQuery, translate: Plate
@@ -172,7 +177,7 @@ async def player_ranked_solo_callback(
     await handle_ranked_solo(brawl, brawlhalla_id, player, callback, cache, translate)
 
 
-@bot.on_callback_query(filters.regex(f"{View.RANKED_TEAM}_(\d+)"))
+@bot.on_callback_query(filters.regex(f"{View.RANKED_TEAM}_(\\d+)"))
 @user_language
 async def player_ranked_team_callback(
     _: Client, callback: CallbackQuery, translate: Plate
@@ -182,7 +187,7 @@ async def player_ranked_team_callback(
     await handle_ranked_team(brawl, brawlhalla_id, player, callback, cache, translate)
 
 
-@bot.on_callback_query(filters.regex(f"{View.RANKED_TEAM_DETAIL}_(\d+)_(\d+)"))
+@bot.on_callback_query(filters.regex(f"{View.RANKED_TEAM_DETAIL}_(\\d+)_(\\d+)"))
 @user_language
 async def player_ranked_team_detail_callback(
     _: Client, callback: CallbackQuery, translate: Plate

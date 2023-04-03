@@ -136,7 +136,13 @@ async def handle_ranked_team(
     total_pages = ceil(len(player.teams) / page_limit)
 
     await callback.message.edit(
-        translate("teams_results", current=current_page + 1, total=total_pages),
+        translate(
+            "teams_results",
+            id=player.brawlhalla_id,
+            name=player.name,
+            current=current_page + 1,
+            total=total_pages,
+        ),
         reply_markup=Keyboard.search_team(
             player, current_page, total_pages - 1, page_limit, translate
         ),

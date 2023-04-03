@@ -2,7 +2,7 @@
   "search_usage": "Usa il comando <b>/cerca</b> per ricercare un giocatore.\n\nEsempio: <code>/cerca nickoehler</code>",
   "search_results": "Risultati della ricerca:\n<b>{query}</b>\n<b>{current}/{total}</b>",
   "search_results_error": "Nessun giocatore trovato cercando <b>{query}</b>",
-  "teams_results": "Squadre:\n<b>{current}/{total}</b>",
+  "teams_results": "🆔 • ID:<b> {id} </b>\n🙋‍♂️ • Nome: <b>{name}</b>\n\nSquadre:\n<b>{current}/{total}</b>",
   "teams_results_error": "Nessun squadra trovata",
   "no_ranked_data": "Questo giocatore non ha ancora giocato partite classificate",
   "no_team_data": "Questo giocatore non ha ancora giocato partite classificate a squadre",

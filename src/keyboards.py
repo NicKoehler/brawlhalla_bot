@@ -1,6 +1,6 @@
-from brawlhalla_api.types import RankingResult, PlayerRanked
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from enum import Enum
+from brawlhalla_api.types import RankingResult
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 class View(Enum):

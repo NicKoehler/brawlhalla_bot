@@ -2,7 +2,7 @@
   "search_usage": "Use the <b>/search</b> command to search for a player.\n\nExample: <code>/search nickoehler</code>",
   "search_results": "Search results:\n<b>{query}</b>\n<b>{current}/{total}</b>",
   "search_results_error": "No players found searching <b>{query}</b>",
-  "teams_results": "Teams:\n<b>{current}/{total}</b>",
+  "teams_results": "🆔 • ID:<b> {id} </b>\n🙋‍♂️ • Name: <b>{name}</b>\n\nTeams:\n<b>{current}/{total}</b>",
   "teams_results_error": "No teams found",
   "no_ranked_data": "This player has not played any ranked games yet",
   "no_team_data": "This player has not played any ranked team games yet",
