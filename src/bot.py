@@ -6,6 +6,7 @@ from cache import Cache
 from html import escape
 from functools import wraps
 from dotenv import load_dotenv
+from datetime import timedelta
 from keyboards import Keyboard
 from pyrogram import Client, filters
 from brawlhalla_api import Brawlhalla
@@ -35,7 +36,7 @@ def user_language(f):
             case "es":
                 lang = "es_ES"
             case _:
-                lang = "en_EN"
+                lang = "en_US"
         lang = plate.get_translator(lang)
         return await f(bot, update, lang, *args, **kwargs)
 
@@ -136,7 +137,10 @@ async def general_callback(_: Client, callback: CallbackQuery, translate: Plate)
                     most_used_legend=max(
                         player.legends, key=lambda legend: legend.matchtime
                     ).legend_name_key,
-                    total_game_time=sum(legend.matchtime for legend in player.legends),
+                    total_game_time=sum(
+                        (legend.matchtime for legend in player.legends),
+                        timedelta(seconds=0),
+                    ),
                     games=player.games,
                     wins=player.wins,
                     loses=player.games - player.wins,
