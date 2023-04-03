@@ -13,6 +13,7 @@ from pyrogram.types import Message, CallbackQuery
 from pyrogram.methods.utilities.idle import idle
 from callbacks import (
     handle_general,
+    handle_clan,
     handle_ranked_solo,
     handle_ranked_team,
     handle_ranked_team_detail,
@@ -164,8 +165,42 @@ async def search_team_page(_: Client, callback: CallbackQuery, translate: Plate)
             current=current_page,
             total=total_pages,
         ),
-        reply_markup=Keyboard.search_team(
+        reply_markup=Keyboard.teams(
             player, current_page - 1, total_pages - 1, page_limit, translate
+        ),
+    )
+
+
+@bot.on_callback_query(filters.regex(r"clan_(next|prev)_(\d+)"))
+@user_language
+async def search_clan_page(_: Client, callback: CallbackQuery, translate: Plate):
+    page_limit = 10
+    pages = callback.message.text.split("\n")[-1]
+    current_page = int(pages.split("/")[0])
+    current_page += 1 if callback.matches[0].group(1) == "next" else -1
+    clan_id = int(callback.matches[0].group(2))
+
+    clan = cache.get(f"{View.CLAN}_{clan_id}")
+    if clan is None:
+        clan = await brawl.get_clan(clan_id)
+        cache.add(f"{View.CLAN}_{clan.clan_id}", clan)
+
+    len_components = len(clan.components)
+    total_pages = ceil(len_components / page_limit)
+
+    await callback.message.edit(
+        translate(
+            "clan_stats",
+            id=clan.clan_id,
+            name=clan.clan_name,
+            xp=clan.clan_xp,
+            date=clan.clan_create_date,
+            num=len_components,
+            current=current_page,
+            total=total_pages,
+        ),
+        reply_markup=Keyboard.clan_components(
+            clan, current_page - 1, total_pages - 1, page_limit, translate
         ),
     )
 
@@ -200,6 +235,14 @@ async def player_ranked_team_callback(
     brawlhalla_id = int(callback.matches[0].group(1))
     player = cache.get(f"{View.RANKED_SOLO}_{brawlhalla_id}")
     await handle_ranked_team(brawl, brawlhalla_id, player, callback, cache, translate)
+
+
+@bot.on_callback_query(filters.regex(f"{View.CLAN}_(\\d+)"))
+@user_language
+async def player_clan_callback(_: Client, callback: CallbackQuery, translate: Plate):
+    brawlhalla_id = int(callback.matches[0].group(1))
+    player = cache.get(f"{View.GENERAL}_{brawlhalla_id}")
+    await handle_clan(brawl, brawlhalla_id, player, callback, cache, translate)
 
 
 @bot.on_callback_query(filters.regex(f"{View.RANKED_TEAM_DETAIL}_(\\d+)_(\\d+)"))
