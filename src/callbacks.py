@@ -30,7 +30,7 @@ async def handle_general(
             clan=player.clan.clan_name if player.clan else "❌",
             most_used_legend=max(
                 player.legends, key=lambda legend: legend.matchtime
-            ).legend_name_key,
+            ).legend_name_key.capitalize(),
             total_game_time=sum(
                 (legend.matchtime for legend in player.legends),
                 timedelta(seconds=0),
