@@ -1,0 +1,11 @@
+{
+    "search_usage": "Usa il comando <b>/cerca</b> per ricercare un giocatore.\n\nEsempio: <code>/cerca nickoehler</code>",
+    "search_results": "Risultati della ricerca:\n<b>{query}</b>\n<b>{current}/{total}</b>",
+    "search_results_error": "Nessun giocatore trovato cercando <b>{query}</b>",
+    "no_ranked_data": "Questo giocatore non presenta ranked",
+    "button_general": "⚔️ • STATS GENERALI • ⚔️",
+    "button_ranked": "🏆 • CLASSIFICATA 1V1 • 🏆",
+    "button_close": "❌ • CHIUDI • ❌",
+    "general_stats": "• ID:<b> {id} </b>•\n\n🙋‍♂️ • Nome: <b>{name}</b>\n⚔️ • Clan: <b>{clan}</b>\n🎖️ • Lv: <b>{level}</b>\n🔺 • XP: <b>{xp}</b>\n⌚ • Legend più usata: <b>{most_used_legend}</b>\n⌛ • Tempo di gioco:\n        <b>{total_game_time}</b>\n\n⚔ • <b>GENERICHE</b> • ⚔\n\n🎮 • Partite Giocate: <b>{games}</b>\n🥇 • Partite Vinte: <b>{wins}</b>\n🥉 • Partite Perse: <b>{loses}</b>\n⚖️ • Perc. di Vincita: <b>{winperc}</b>%\n👊 • KO totali: <b>{totalko}</b>\n⚰ • Morti totali: <b>{totaldeath}</b>\n💀 • Suicidi totali: <b>{totalsuicide}</b>\n😐 • KO al compagno di squadra: <b>{totalteamko}</b>\n\n💣 <b>BOMBE</b> 💣\n        └ KO effettuati: <b>{kobomb}</b>\n        └ Danni effettuati: <b>{damagebomb}</b>\n💥 <b>MINE</b> 💥\n        └ KO effettuati: <b>{komine}</b>\n        └ Danni effettuati: <b>{damagemine}</b>\n☀️ <b>PALLE CHIODATE</b> ☀️\n        └ KO effettuati: <b>{kospikeball}</b>\n        └ Danni effettuati: <b>{damagespikeball}</b>\n👟 <b>SIDE KICK</b> 👟\n        └ KO effettuati: <b>{kosidekick}</b>\n        └ Danni effettuati: <b>{damagesidekick}</b>\n❄️ <b>PALLE DI NEVE</b> ❄️\n        └ KO effettuati: <b>{kosnowball}</b>\n        └ Colpi effettuati: <b>{hitsnowball}</b>",
+    "ranked_stats": "• ID:<b> {id} </b>•\n\n🙋‍♂️ • Nome: <b>{name}</b>\n\n🏆 • <b>CLASSIFICATA 1v1</b> • 🏆\n\n🔶 • Elo Attuale: <b>{rating}</b>\n🔷 • Elo Massimo: <b>{peak}</b>\n👑 • Tier: <b>{tier}</b>\n🎮 • Partite Giocate: <b>{games}</b>\n🥇 • Partite Vinte: <b>{wins}</b>\n🥉 • Partite Perse: <b>{loses}</b>\n🌎 • Regione: <b>{region}</b>"
+}

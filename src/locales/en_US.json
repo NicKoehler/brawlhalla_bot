@@ -1,0 +1,11 @@
+{
+    "search_usage": "Use the <b>/search</b> command to search for a player.\n\nExample: <code>/search nickoehler</code>",
+    "search_results": "Search results:\n<b>{query}</b>\n<b>{current}/{total}</b>",
+    "search_results_error": "No players found searching <b>{query}</b>",
+    "no_ranked_data": "This player has no ranked data",
+    "button_general": "⚔️ • GENERAL STATS • ⚔️",
+    "button_ranked": "🏆 • RANKED 1V1 • 🏆",
+    "button_close": "❌ • CLOSE • ❌",
+    "general_stats": "• ID:<b> {id} </b>•\n\n🙋‍♂️ • Name: <b>{name}</b>\n⚔️ • Clan: <b>{clan}</b>\n🎖️ • Lv: <b>{level}</b>\n🔺 • XP: <b>{xp}</b>\n⌚️ • Most used legend: <b>{most_used_legend}</b>\n⌛️ • In-game Time:\n        <b>{total_game_time}</b>\n\n⚔️ • <b>GENERAL STATS</b> • ⚔️\n\n🎮 • Games played: <b>{games}</b>\n🥇 • Games won: <b>{wins}</b>\n🥉 • Games lost: <b>{loses}</b>\n⚖️ • Win percentage: <b>{perc}</b>%\n👊 • Total KOs: <b>{totalko}</b>\n⚰️ • Total Deaths: <b>{totaldeath}</b>\n💀 • Total suicides: <b>{totalsuicide}</b>\n    😐 • Teammate KOs: <b>{totalteamko}</b>\n\n    💣 <b>BOMBS</b> 💣\n        └ KOs: <b>{kobomb}</b>\n        └ Damage: <b>{damagebomb}</b>\n    💥 <b>MINES</b> 💥\n        └ KOs: <b>{komine}</b>\n        └ Damage: <b>{damagemine}</b>\n    ☀️ <b>SPIKEBALLS</b> ☀️\n        └ KOs: <b>{kospikeball}</b>\n        └ Damage: <b>{damagespikeball}</b>\n    👟 <b>SIDE KICK</b> 👟\n        └ KOs: <b>{kosidekick}</b>\n        └ Damage: <b>{damagesidekick}</b>    ❄️ <b>SNOWBALLS</b> ❄️\n        └ KOs: <b>{kosnowball}</b>\n        └ Hits: <b>{hitsnowball}</b>",
+    "ranked_stats": "• ID:<b> {id} </b>•\n\n🙋‍♂️ • Name: <b>{name}</b>\n\n🏆 • <b>RANKED 1v1</b> • 🏆\n\n🔶 • Current elo: <b>{rating}</b>\n🔷 • Elo peak: <b>{peak}</b>\n👑 • Tier: <b>{tier}</b>\n🎮 • Games played: <b>{games}</b>\n🥇 • Games won: <b>{wins}</b>\n🥉 • Games lost: <b>{loses}</b>\n🌎 • Region: <b>{region}</b>"
+}
