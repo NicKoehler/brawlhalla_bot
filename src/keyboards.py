@@ -1,5 +1,15 @@
 from brawlhalla_api.types import RankingResult
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from enum import Enum
+
+
+class View(Enum):
+    GENERAL = "general"
+    RANKED_SOLO = "rankedsolo"
+    RANKED_TEAM = "rankedteam"
+
+    def __str__(self):
+        return self.value
 
 
 class Keyboard:
@@ -22,7 +32,7 @@ class Keyboard:
                 [
                     InlineKeyboardButton(
                         f"{player.name} ({player.rating})",
-                        callback_data=f"general_{player.brawlhalla_id}",
+                        callback_data=f"{View.GENERAL}_{player.brawlhalla_id}",
                     )
                 ]
                 for player in players[current * limit : (current + 1) * limit]
@@ -31,21 +41,32 @@ class Keyboard:
             + Keyboard.CLOSE(_)
         )
 
-    def stats(brawlhalla_id: int, current_view: str, _) -> InlineKeyboardMarkup:
+    def stats(brawlhalla_id: int, current_view: View, _) -> InlineKeyboardMarkup:
         buttons = []
-        if current_view != "general":
+        if current_view != View.GENERAL:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        _("button_general"), callback_data=f"general_{brawlhalla_id}"
+                        _("button_general"),
+                        callback_data=f"{View.GENERAL}_{brawlhalla_id}",
                     )
                 ]
             )
-        if current_view != "ranked":
+        if current_view != View.RANKED_SOLO:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        _("button_ranked"), callback_data=f"ranked_{brawlhalla_id}"
+                        _("button_rankedsolo"),
+                        callback_data=f"{View.RANKED_SOLO}_{brawlhalla_id}",
+                    )
+                ]
+            )
+        if current_view != View.RANKED_TEAM:
+            buttons.append(
+                [
+                    InlineKeyboardButton(
+                        _("button_rankedteam"),
+                        callback_data=f"{View.RANKED_TEAM}_{brawlhalla_id}",
                     )
                 ]
             )
