@@ -1,3 +1,4 @@
+from math import ceil
 import utils
 from cache import Cache
 from plate import Plate
@@ -57,7 +58,31 @@ async def handle_general(
     )
 
 
-async def handle_rankedsolo(
+async def ranked_checks(
+    brawl,
+    brawlhalla_id: int,
+    player: PlayerRanked,
+    callback: CallbackQuery,
+    cache: Cache,
+    translate: Plate,
+    teamcheck=False,
+):
+    if player is None:
+        player = await brawl.get_ranked(brawlhalla_id)
+        cache.add(f"{View.RANKED_SOLO}_{brawlhalla_id}", player)
+
+    if player is None:
+        await callback.answer(translate("no_ranked_data"), show_alert=True)
+        return
+
+    if teamcheck and not player.teams:
+        await callback.answer(translate("no_team_data"), show_alert=True)
+        return
+
+    return player
+
+
+async def handle_ranked_solo(
     brawl,
     brawlhalla_id: int,
     player: PlayerRanked,
@@ -65,12 +90,11 @@ async def handle_rankedsolo(
     cache: Cache,
     translate: Plate,
 ):
-    if player is None:
-        player = await brawl.get_ranked(brawlhalla_id)
-        cache.add(callback.data, player)
+    player = await ranked_checks(
+        brawl, brawlhalla_id, player, callback, cache, translate
+    )
 
     if player is None:
-        callback.answer(translate("no_ranked_data"), show_alert=True)
         return
 
     await callback.message.edit(
@@ -90,3 +114,77 @@ async def handle_rankedsolo(
         ),
         reply_markup=Keyboard.stats(player.brawlhalla_id, View.RANKED_SOLO, translate),
     )
+
+
+async def handle_ranked_team(
+    brawl,
+    brawlhalla_id: int,
+    player: PlayerRanked,
+    callback: CallbackQuery,
+    cache: Cache,
+    translate: Plate,
+):
+    player = await ranked_checks(
+        brawl, brawlhalla_id, player, callback, cache, translate, True
+    )
+
+    if player is None:
+        return
+
+    page_limit = 10
+    current_page = 0
+    total_pages = ceil(len(player.teams) / page_limit)
+
+    await callback.message.edit(
+        translate("teams_results", current=current_page + 1, total=total_pages),
+        reply_markup=Keyboard.search_team(
+            player, current_page, total_pages - 1, page_limit, translate
+        ),
+    )
+
+
+async def handle_ranked_team_detail(
+    brawl,
+    brawlhalla_id_one: int,
+    brawlhalla_id_two: int,
+    player: PlayerRanked,
+    callback: CallbackQuery,
+    cache: Cache,
+    translate: Plate,
+):
+    player = await ranked_checks(
+        brawl, brawlhalla_id_one, player, callback, cache, translate, True
+    )
+    if player is None:
+        return
+
+    for team in player.teams:
+        if (
+            team.brawlhalla_id_one == brawlhalla_id_one
+            and team.brawlhalla_id_two == brawlhalla_id_two
+        ) or (
+            team.brawlhalla_id_one == brawlhalla_id_two
+            and team.brawlhalla_id_two == brawlhalla_id_one
+        ):
+            await callback.message.edit(
+                translate(
+                    "ranked_team_stats",
+                    id=player.brawlhalla_id,
+                    name=player.name,
+                    teamname=team.teamname,
+                    rating=team.rating,
+                    peak=team.peak_rating,
+                    tier=team.tier,
+                    games=team.games,
+                    wins=team.wins,
+                    loses=team.games - team.wins,
+                    region=team.region,
+                ),
+                reply_markup=Keyboard.stats(
+                    brawlhalla_id_one,
+                    View.RANKED_TEAM_DETAIL,
+                    translate,
+                    brawlhalla_id_two,
+                ),
+            )
+            break

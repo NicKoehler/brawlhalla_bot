@@ -12,7 +12,12 @@ from pyrogram import Client, filters
 from brawlhalla_api import Brawlhalla
 from pyrogram.types import Message, CallbackQuery
 from pyrogram.methods.utilities.idle import idle
-from callbacks import handle_general, handle_rankedsolo
+from callbacks import (
+    handle_general,
+    handle_ranked_solo,
+    handle_ranked_team,
+    handle_ranked_team_detail,
+)
 
 from scheduler.asyncio import Scheduler
 
@@ -85,15 +90,16 @@ async def search_player(_: Client, message: Message, translate: Plate):
 @user_language
 async def search_player_page(_: Client, callback: CallbackQuery, translate: Plate):
     page_limit = 10
-    n, original_query, pages = callback.message.text.split("\n")
+    _, original_query, pages = callback.message.text.split("\n")
     results = cache.get(original_query)
 
     if results is None:
         results = await brawl.get_rankings(name=original_query)
         if not results:
-            await callback.message.reply(
-                translate("search_results_error", query=original_query)
+            await callback.answer(
+                translate("search_results_error", query=original_query), show_alert=True
             )
+            await callback.message.delete()
             return
         cache.add(original_query, results)
 
@@ -115,26 +121,80 @@ async def search_player_page(_: Client, callback: CallbackQuery, translate: Plat
     )
 
 
-@bot.on_callback_query(
-    filters.regex(f"({View.GENERAL}|{View.RANKED_SOLO}|{View.RANKED_TEAM})_(\d+)")
-)
+@bot.on_callback_query(filters.regex(r"team_(next|prev)_(\d+)"))
 @user_language
-async def player_callback(_: Client, callback: CallbackQuery, translate: Plate):
-    callback.from_user.language_code
-    regex = callback.matches[0]
-    view_mode = View(regex.group(1))
-    brawlhalla_id = regex.group(2)
+async def search_team_page(_: Client, callback: CallbackQuery, translate: Plate):
+    page_limit = 10
+    __, pages = callback.message.text.split("\n")
+    current_page = int(pages.split("/")[0])
+    current_page += 1 if callback.matches[0].group(1) == "next" else -1
+    brawlhalla_id = int(callback.matches[0].group(2))
+
+    player = cache.get(f"{View.RANKED_SOLO}_{brawlhalla_id}")
+    if player is None:
+        player = await brawl.get_ranked(brawlhalla_id)
+        if not player or not player.teams:
+            await callback.answer(
+                translate("teams_results_error", team=brawlhalla_id),
+                show_alert=True,
+            )
+            await callback.message.delete()
+            return
+        cache.add(f"{View.RANKED_SOLO}_{brawlhalla_id}", player)
+
+    total_pages = ceil(len(player.teams) / page_limit)
+
+    await callback.message.edit(
+        translate("teams_results", current=current_page, total=total_pages),
+        reply_markup=Keyboard.search_team(
+            player, current_page - 1, total_pages - 1, page_limit, translate
+        ),
+    )
+
+
+@bot.on_callback_query(filters.regex(f"{View.GENERAL}_(\d+)"))
+@user_language
+async def player_general_callback(_: Client, callback: CallbackQuery, translate: Plate):
+    brawlhalla_id = int(callback.matches[0].group(1))
     player = cache.get(callback.data)
 
-    match view_mode:
-        case View.GENERAL:
-            await handle_general(
-                brawl, brawlhalla_id, player, callback, cache, translate
-            )
-        case View.RANKED_SOLO:
-            await handle_rankedsolo(
-                brawl, brawlhalla_id, player, callback, cache, translate
-            )
+    await handle_general(brawl, brawlhalla_id, player, callback, cache, translate)
+
+
+@bot.on_callback_query(filters.regex(f"{View.RANKED_SOLO}_(\d+)"))
+@user_language
+async def player_ranked_solo_callback(
+    _: Client, callback: CallbackQuery, translate: Plate
+):
+    brawlhalla_id = int(callback.matches[0].group(1))
+    player = cache.get(callback.data)
+
+    await handle_ranked_solo(brawl, brawlhalla_id, player, callback, cache, translate)
+
+
+@bot.on_callback_query(filters.regex(f"{View.RANKED_TEAM}_(\d+)"))
+@user_language
+async def player_ranked_team_callback(
+    _: Client, callback: CallbackQuery, translate: Plate
+):
+    brawlhalla_id = int(callback.matches[0].group(1))
+    player = cache.get(f"{View.RANKED_SOLO}_{brawlhalla_id}")
+    await handle_ranked_team(brawl, brawlhalla_id, player, callback, cache, translate)
+
+
+@bot.on_callback_query(filters.regex(f"{View.RANKED_TEAM_DETAIL}_(\d+)_(\d+)"))
+@user_language
+async def player_ranked_team_detail_callback(
+    _: Client, callback: CallbackQuery, translate: Plate
+):
+    regex = callback.matches[0]
+    brawlhalla_id_one = int(regex.group(1))
+    brawlhalla_id_two = int(regex.group(2))
+    player = cache.get(f"{View.RANKED_SOLO}_{brawlhalla_id_one}")
+
+    await handle_ranked_team_detail(
+        brawl, brawlhalla_id_one, brawlhalla_id_two, player, callback, cache, translate
+    )
 
 
 @bot.on_callback_query(filters.regex("close"))

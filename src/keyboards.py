@@ -1,4 +1,4 @@
-from brawlhalla_api.types import RankingResult
+from brawlhalla_api.types import RankingResult, PlayerRanked
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from enum import Enum
 
@@ -7,6 +7,7 @@ class View(Enum):
     GENERAL = "general"
     RANKED_SOLO = "rankedsolo"
     RANKED_TEAM = "rankedteam"
+    RANKED_TEAM_DETAIL = "rankedteamdetail"
 
     def __str__(self):
         return self.value
@@ -41,14 +42,63 @@ class Keyboard:
             + Keyboard.CLOSE(_)
         )
 
-    def stats(brawlhalla_id: int, current_view: View, _) -> InlineKeyboardMarkup:
+    def search_team(
+        player: RankingResult, current: int, total_pages: int, limit: int, _
+    ) -> InlineKeyboardMarkup:
+        buttons = []
+        if current > 0:
+            buttons.append(
+                InlineKeyboardButton(
+                    "◀️", callback_data=f"team_prev_{player.brawlhalla_id}"
+                )
+            )
+        if current < total_pages:
+            buttons.append(
+                InlineKeyboardButton(
+                    "▶️", callback_data=f"team_next_{player.brawlhalla_id}"
+                )
+            )
+
+        get_real_id = (
+            lambda p_id, team_id_one, team_id_two: (team_id_one, team_id_two)
+            if team_id_one == p_id
+            else (team_id_two, team_id_one)
+        )
+
+        return InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        f"{team.teamname} ({team.rating})",
+                        callback_data="{}_{}_{}".format(
+                            View.RANKED_TEAM_DETAIL,
+                            *get_real_id(
+                                player.brawlhalla_id,
+                                team.brawlhalla_id_one,
+                                team.brawlhalla_id_two,
+                            ),
+                        ),
+                    )
+                ]
+                for team in player.teams[current * limit : (current + 1) * limit]
+            ]
+            + [buttons]
+            + Keyboard.CLOSE(_)
+        )
+
+    def stats(
+        brawlhalla_id_one: int,
+        current_view: View,
+        _,
+        brawlhalla_id_two: int = None,
+    ) -> InlineKeyboardMarkup:
         buttons = []
         if current_view != View.GENERAL:
             buttons.append(
                 [
                     InlineKeyboardButton(
                         _("button_general"),
-                        callback_data=f"{View.GENERAL}_{brawlhalla_id}",
+                        callback_data=f"{View.GENERAL}_{brawlhalla_id_one}",
                     )
                 ]
             )
@@ -57,16 +107,24 @@ class Keyboard:
                 [
                     InlineKeyboardButton(
                         _("button_rankedsolo"),
-                        callback_data=f"{View.RANKED_SOLO}_{brawlhalla_id}",
+                        callback_data=f"{View.RANKED_SOLO}_{brawlhalla_id_one}",
                     )
                 ]
             )
-        if current_view != View.RANKED_TEAM:
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    _("button_rankedteam"),
+                    callback_data=f"{View.RANKED_TEAM}_{brawlhalla_id_one}",
+                )
+            ]
+        )
+        if brawlhalla_id_two is not None:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        _("button_rankedteam"),
-                        callback_data=f"{View.RANKED_TEAM}_{brawlhalla_id}",
+                        _("button_teammate"),
+                        callback_data=f"{View.GENERAL}_{brawlhalla_id_two}",
                     )
                 ]
             )
