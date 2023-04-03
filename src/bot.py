@@ -1,4 +1,4 @@
-import utils
+import asyncio
 from math import ceil
 from os import environ
 from plate import Plate
@@ -6,11 +6,15 @@ from cache import Cache
 from html import escape
 from functools import wraps
 from dotenv import load_dotenv
+from datetime import timedelta
 from keyboards import Keyboard, View
 from pyrogram import Client, filters
 from brawlhalla_api import Brawlhalla
 from pyrogram.types import Message, CallbackQuery
+from pyrogram.methods.utilities.idle import idle
 from callbacks import handle_general, handle_rankedsolo
+
+from scheduler.asyncio import Scheduler
 
 plate = Plate("src/locales")
 
@@ -138,4 +142,12 @@ async def close_callback(_: Client, callback: CallbackQuery):
     await callback.message.delete()
 
 
-bot.run()
+async def main():
+    schedule = Scheduler()
+    schedule.cyclic(timedelta(hours=1), cache.clear)
+    await bot.start()
+    await idle()
+    await bot.stop()
+
+
+bot.run(main())
