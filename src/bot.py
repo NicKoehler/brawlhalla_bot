@@ -68,6 +68,13 @@ async def search_player(_: Client, message: Message, translate: Plate):
             await message.reply(translate("search_results_error", query=query))
             return
         cache.add(query, results)
+        if len(results) == 1:
+            player = results[0]
+
+            await handle_general(
+                brawl, player.brawlhalla_id, None, message, cache, translate, bot
+            )
+            return
 
     current_page = 0
     total_pages = ceil(len(results) / page_limit)
@@ -163,7 +170,9 @@ async def player_general_callback(_: Client, callback: CallbackQuery, translate:
     brawlhalla_id = int(callback.matches[0].group(1))
     player = cache.get(callback.data)
 
-    await handle_general(brawl, brawlhalla_id, player, callback, cache, translate)
+    await handle_general(
+        brawl, brawlhalla_id, player, callback.message, cache, translate
+    )
 
 
 @bot.on_callback_query(filters.regex(f"{View.RANKED_SOLO}_(\\d+)"))

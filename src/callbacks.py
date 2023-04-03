@@ -5,64 +5,69 @@ from plate import Plate
 from datetime import timedelta
 from keyboards import Keyboard, View
 from brawlhalla_api.types import PlayerStats, PlayerRanked
-from pyrogram.types import CallbackQuery
+from pyrogram.types import Message, CallbackQuery
 
 
 async def handle_general(
     brawl,
     brawlhalla_id: int,
     player: PlayerStats,
-    callback: CallbackQuery,
+    message: Message,
     cache: Cache,
     translate: Plate,
+    bot=None,
 ):
     if player is None:
         player = await brawl.get_stats(brawlhalla_id)
-        cache.add(callback.data, player)
+        cache.add(f"{View.GENERAL}_{brawlhalla_id}", player)
 
-    await callback.message.edit(
-        translate(
-            "general_stats",
-            id=player.brawlhalla_id,
-            name=player.name,
-            level=utils.make_progress_bar(player.level, player.xp_percentage),
-            xp=player.xp,
-            clan=player.clan.clan_name if player.clan else "❌",
-            most_used_legend=max(
-                player.legends, key=lambda legend: legend.matchtime
-            ).legend_name_key.capitalize(),
-            total_game_time=sum(
-                (legend.matchtime for legend in player.legends),
-                timedelta(seconds=0),
-            ),
-            games=player.games,
-            wins=player.wins,
-            loses=player.games - player.wins,
-            winperc=round(player.wins / player.games * 100, 2),
-            totalko=sum(legend.kos for legend in player.legends),
-            totaldeath=sum(legend.falls for legend in player.legends),
-            totalsuicide=sum(legend.suicides for legend in player.legends),
-            totalteamko=sum(legend.teamkos for legend in player.legends),
-            kobomb=player.kobomb,
-            damagebomb=player.damagebomb,
-            komine=player.komine,
-            damagemine=player.damagemine,
-            kospikeball=player.kospikeball,
-            damagespikeball=player.damagespikeball,
-            kosidekick=player.kosidekick,
-            damagesidekick=player.damagesidekick,
-            kosnowball=player.kosnowball,
-            hitsnowball=player.hitsnowball,
+    text = translate(
+        "general_stats",
+        id=player.brawlhalla_id,
+        name=player.name,
+        level=utils.make_progress_bar(player.level, player.xp_percentage),
+        xp=player.xp,
+        clan=player.clan.clan_name if player.clan else "❌",
+        most_used_legend=max(
+            player.legends, key=lambda legend: legend.matchtime
+        ).legend_name_key.capitalize(),
+        total_game_time=sum(
+            (legend.matchtime for legend in player.legends),
+            timedelta(seconds=0),
         ),
-        reply_markup=Keyboard.stats(player.brawlhalla_id, View.GENERAL, translate),
+        games=player.games,
+        wins=player.wins,
+        loses=player.games - player.wins,
+        winperc=round(player.wins / player.games * 100, 2),
+        totalko=sum(legend.kos for legend in player.legends),
+        totaldeath=sum(legend.falls for legend in player.legends),
+        totalsuicide=sum(legend.suicides for legend in player.legends),
+        totalteamko=sum(legend.teamkos for legend in player.legends),
+        kobomb=player.kobomb,
+        damagebomb=player.damagebomb,
+        komine=player.komine,
+        damagemine=player.damagemine,
+        kospikeball=player.kospikeball,
+        damagespikeball=player.damagespikeball,
+        kosidekick=player.kosidekick,
+        damagesidekick=player.damagesidekick,
+        kosnowball=player.kosnowball,
+        hitsnowball=player.hitsnowball,
     )
+
+    keyboard = Keyboard.stats(player.brawlhalla_id, View.GENERAL, translate)
+
+    if bot is None:
+        await message.edit(text, reply_markup=keyboard)
+    else:
+        await bot.send_message(message.chat.id, text, reply_markup=keyboard)
 
 
 async def ranked_checks(
     brawl,
     brawlhalla_id: int,
     player: PlayerRanked,
-    callback: CallbackQuery,
+    callback: Message,
     cache: Cache,
     translate: Plate,
     teamcheck=False,
