@@ -183,6 +183,8 @@ async def general_callback(_: Client, callback: CallbackQuery, translate: Plate)
                     wins=player.wins,
                     loses=player.games - player.wins,
                     region=player.region,
+                    glory=player.estimated_glory,
+                    elo_reset=player.estimated_elo_reset,
                 ),
                 reply_markup=Keyboard.stats(player.brawlhalla_id, "ranked", translate),
             )
