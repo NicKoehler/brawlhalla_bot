@@ -67,7 +67,6 @@ async def search_player(_: Client, message: Message, translate: Plate):
         await message.reply(translate("length_error"))
         return
 
-    page_limit = 10
     results = cache.get(query)
     if results is None:
         results = await brawl.get_rankings(name=query)
@@ -75,14 +74,14 @@ async def search_player(_: Client, message: Message, translate: Plate):
             await message.reply(translate("search_results_error", query=query))
             return
         cache.add(query, results)
-        if len(results) == 1:
-            player = results[0]
 
-            await handle_general(
-                brawl, player.brawlhalla_id, None, message, cache, translate, bot
-            )
-            return
+    if len(results) == 1:
+        await handle_general(
+            brawl, results[0].brawlhalla_id, None, message, cache, translate, bot
+        )
+        return
 
+    page_limit = 10
     current_page = 0
     total_pages = ceil(len(results) / page_limit)
 

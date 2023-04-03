@@ -20,14 +20,29 @@ class Keyboard:
             [InlineKeyboardButton(translate("button_close"), callback_data="close")]
         ]
 
+    def navigation_buttons(
+        current: int,
+        total_pages: int,
+        prev_data: str,
+        next_data: str,
+    ) -> list[InlineKeyboardButton]:
+        buttons = []
+        if current > 0:
+            buttons.append(InlineKeyboardButton("◀️", callback_data=prev_data))
+        if current < total_pages:
+            buttons.append(InlineKeyboardButton("▶️", callback_data=next_data))
+
+        return buttons
+
     def search_player(
         players: list[RankingResult], current: int, total_pages: int, limit: int, _
     ) -> InlineKeyboardMarkup:
-        buttons = []
-        if current > 0:
-            buttons.append(InlineKeyboardButton("◀️", callback_data="button_prev"))
-        if current < total_pages:
-            buttons.append(InlineKeyboardButton("▶️", callback_data="button_next"))
+        buttons = Keyboard.navigation_buttons(
+            current,
+            total_pages,
+            "button_prev",
+            "button_next",
+        )
 
         return InlineKeyboardMarkup(
             [
@@ -46,19 +61,12 @@ class Keyboard:
     def teams(
         player: RankingResult, current: int, total_pages: int, limit: int, _
     ) -> InlineKeyboardMarkup:
-        buttons = []
-        if current > 0:
-            buttons.append(
-                InlineKeyboardButton(
-                    "◀️", callback_data=f"team_prev_{player.brawlhalla_id}"
-                )
-            )
-        if current < total_pages:
-            buttons.append(
-                InlineKeyboardButton(
-                    "▶️", callback_data=f"team_next_{player.brawlhalla_id}"
-                )
-            )
+        buttons = Keyboard.navigation_buttons(
+            current,
+            total_pages,
+            f"team_prev_{player.brawlhalla_id}",
+            f"team_next_{player.brawlhalla_id}",
+        )
 
         get_real_id = (
             lambda p_id, team_id_one, team_id_two: (team_id_one, team_id_two)
@@ -90,15 +98,12 @@ class Keyboard:
     def clan_components(
         clan: Clan, current: int, total_pages: int, limit: int, _
     ) -> InlineKeyboardMarkup:
-        buttons = []
-        if current > 0:
-            buttons.append(
-                InlineKeyboardButton("◀️", callback_data=f"clan_prev_{clan.clan_id}")
-            )
-        if current < total_pages:
-            buttons.append(
-                InlineKeyboardButton("▶️", callback_data=f"clan_next_{clan.clan_id}")
-            )
+        buttons = Keyboard.navigation_buttons(
+            current,
+            total_pages,
+            f"clan_prev_{clan.clan_id}",
+            f"clan_next_{clan.clan_id}",
+        )
 
         return InlineKeyboardMarkup(
             [
