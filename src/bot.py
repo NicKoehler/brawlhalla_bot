@@ -60,6 +60,12 @@ async def search_player(_: Client, message: Message, translate: Plate):
         await message.reply(translate("search_usage"))
         return
 
+    len_query = len(query)
+
+    if len_query < 2 or len_query > 32:
+        await message.reply(translate("length_error"))
+        return
+
     page_limit = 10
     results = cache.get(query)
     if results is None:

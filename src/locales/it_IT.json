@@ -1,5 +1,6 @@
 {
   "search_usage": "Usa il comando <b>/cerca</b> per ricercare un giocatore.\n\nEsempio: <code>/cerca nickoehler</code>",
+  "length_error": "La lunghezza della ricerca deve essere tra 2 e 32 caratteri",
   "search_results": "Risultati della ricerca:\n<b>{query}</b>\n<b>{current}/{total}</b>",
   "search_results_error": "Nessun giocatore trovato cercando <b>{query}</b>",
   "teams_results": "🆔 • ID:<b> {id} </b>\n🙋‍♂️ • Nome: <b>{name}</b>\n\nSquadre:\n<b>{current}/{total}</b>",
