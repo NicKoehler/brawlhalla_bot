@@ -5,8 +5,9 @@ from plate import Plate
 from datetime import timedelta
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
-from brawlhalla_api.types import PlayerStats, PlayerRanked
+from babel.dates import format_datetime
 from pyrogram.types import Message, CallbackQuery
+from brawlhalla_api.types import PlayerStats, PlayerRanked
 
 
 async def general_checks(
@@ -57,6 +58,38 @@ async def handle_general(
 ):
     player = await general_checks(brawl, brawlhalla_id, player, cache)
 
+    total_game_time = sum(
+        (legend.matchtime for legend in player.legends),
+        timedelta(seconds=0),
+    ).total_seconds()
+
+    days = int(total_game_time // 86400)
+    hours = int((total_game_time % 86400) // 3600)
+    minutes = int((total_game_time % 3600) // 60)
+    seconds = int(total_game_time % 60)
+
+    translated_game_times = []
+
+    for s, v in (
+        ("days", days),
+        ("hours", hours),
+        ("minutes", minutes),
+        ("seconds", seconds),
+    ):
+        if v == 0:
+            continue
+
+        translated_game_times.append(translate(s, t=v))
+
+    total_game_time_list = []
+
+    for n, time in enumerate(translated_game_times):
+        (
+            total_game_time_list.append(
+                ("╰─► " if n == len(translated_game_times) - 1 else "├─► ") + time
+            )
+        )
+
     text = translate(
         "base_stats",
         id=player.brawlhalla_id,
@@ -69,10 +102,7 @@ async def handle_general(
         most_used_legend=max(
             player.legends, key=lambda legend: legend.matchtime
         ).legend_name_key.capitalize(),
-        total_game_time=sum(
-            (legend.matchtime for legend in player.legends),
-            timedelta(seconds=0),
-        ),
+        total_game_time="\n".join(total_game_time_list),
         games=player.games,
         wins=player.wins,
         loses=player.games - player.wins,
@@ -136,7 +166,9 @@ async def handle_clan(
             id=clan.clan_id,
             name=clan.clan_name,
             xp=clan.clan_xp,
-            date=clan.clan_create_date,
+            date=format_datetime(
+                clan.clan_create_date, locale=translate.keywords.get("locale")
+            ),
             num=len_components,
             current=current + 1,
             total=total,

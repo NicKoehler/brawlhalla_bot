@@ -46,8 +46,16 @@ def user_language(f):
             SUPPORTED_LANGUAGES.get(update.from_user.language_code, "en_US")
         )
         try:
-            return await f(bot, update, translate, *args, **kwargs)
+            return await f(
+                bot,
+                update,
+                translate,
+                *args,
+                **kwargs,
+            )
         except Exception as e:
+            if isinstance(update, CallbackQuery):
+                update = update.message
             return await bot.send_message(
                 update.chat.id,
                 translate("generic_error", error=e),
