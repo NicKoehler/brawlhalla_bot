@@ -47,7 +47,14 @@ def user_language(f):
             case _:
                 lang = "en_US"
         lang = plate.get_translator(lang)
-        return await f(bot, update, lang, *args, **kwargs)
+        try:
+            return await f(bot, update, lang, *args, **kwargs)
+        except Exception as e:
+            return await bot.send_message(
+                update.chat.id,
+                lang("generic_error", error=e),
+                reply_markup=Keyboard.developer(lang("button_issue")),
+            )
 
     return wrapped
 

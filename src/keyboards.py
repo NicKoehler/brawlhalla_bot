@@ -15,7 +15,7 @@ class View(Enum):
 
 
 class Keyboard:
-    def CLOSE(translate):
+    def close_buttons(translate) -> list[list[InlineKeyboardButton]]:
         return [
             [InlineKeyboardButton(translate("button_close"), callback_data="close")]
         ]
@@ -55,7 +55,7 @@ class Keyboard:
                 for player in players[current * limit : (current + 1) * limit]
             ]
             + [buttons]
-            + Keyboard.CLOSE(_)
+            + Keyboard.close_buttons(_)
         )
 
     def teams(
@@ -92,7 +92,7 @@ class Keyboard:
                 for team in player.teams[current * limit : (current + 1) * limit]
             ]
             + [buttons]
-            + Keyboard.CLOSE(_)
+            + Keyboard.close_buttons(_)
         )
 
     def clan_components(
@@ -116,7 +116,7 @@ class Keyboard:
                 for comp in clan.components[current * limit : (current + 1) * limit]
             ]
             + [buttons]
-            + Keyboard.CLOSE(_)
+            + Keyboard.close_buttons(_)
         )
 
     def stats(
@@ -172,3 +172,15 @@ class Keyboard:
                 ]
             )
         return InlineKeyboardMarkup(buttons)
+
+    def developer(text: str) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        text,
+                        url="https://github.com/NicKoehler/brawlhalla_bot/issues",
+                    )
+                ]
+            ]
+        )
