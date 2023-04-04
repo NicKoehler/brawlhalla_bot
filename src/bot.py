@@ -9,8 +9,8 @@ from datetime import timedelta
 from pyrogram import Client, filters
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
-from pyrogram.types import Message, CallbackQuery
 from pyrogram.methods.utilities.idle import idle
+from pyrogram.types import Message, CallbackQuery, BotCommand
 from callbacks import (
     handle_clan,
     handle_general,
@@ -20,6 +20,9 @@ from callbacks import (
 )
 
 from scheduler.asyncio import Scheduler
+
+SUPPORTED_LANGUAGES = {"it": "it_IT", "en": "en_US"}
+
 
 plate = Plate("src/locales")
 
@@ -39,22 +42,30 @@ cache = Cache(180)
 def user_language(f):
     @wraps(f)
     async def wrapped(bot: Client, update, *args, **kwargs):
-        match update.from_user.language_code:
-            case "it":
-                lang = "it_IT"
-            case _:
-                lang = "en_US"
-        lang = plate.get_translator(lang)
+        translate = plate.get_translator(
+            SUPPORTED_LANGUAGES.get(update.from_user.language_code, "en_US")
+        )
         try:
-            return await f(bot, update, lang, *args, **kwargs)
+            return await f(bot, update, translate, *args, **kwargs)
         except Exception as e:
             return await bot.send_message(
                 update.chat.id,
-                lang("generic_error", error=e),
-                reply_markup=Keyboard.developer(lang("button_issue")),
+                translate("generic_error", error=e),
+                reply_markup=Keyboard.developer(translate("button_issue")),
             )
 
     return wrapped
+
+
+@bot.on_message(filters.command("start"))
+@user_language
+async def start(_: Client, message: Message, translate: Plate):
+    await message.reply(
+        translate(
+            "welcome",
+            name=escape(message.from_user.first_name),
+        ),
+    )
 
 
 @bot.on_message(filters.command(["search", "cerca"]))
@@ -269,10 +280,24 @@ async def close_callback(_: Client, callback: CallbackQuery):
     await callback.message.delete()
 
 
+async def set_commands(bot: Client):
+    for lang_code, lang_locale in SUPPORTED_LANGUAGES.items():
+        translate = plate.get_translator(lang_locale)
+        await bot.set_bot_commands(
+            [
+                BotCommand("start", translate("start_description")),
+                BotCommand(translate("search"), translate("search_description")),
+            ],
+            language_code=lang_code,
+        )
+
+
 async def main():
     schedule = Scheduler()
     schedule.cyclic(timedelta(hours=1), cache.clear)
+
     await bot.start()
+    await set_commands(bot)
     await idle()
     await bot.stop()
 
