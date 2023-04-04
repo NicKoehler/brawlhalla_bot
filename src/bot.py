@@ -6,14 +6,14 @@ from html import escape
 from functools import wraps
 from dotenv import load_dotenv
 from datetime import timedelta
-from keyboards import Keyboard, View
 from pyrogram import Client, filters
+from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
 from pyrogram.types import Message, CallbackQuery
 from pyrogram.methods.utilities.idle import idle
 from callbacks import (
-    handle_general,
     handle_clan,
+    handle_general,
     handle_ranked_solo,
     handle_ranked_team,
     handle_ranked_team_detail,
@@ -42,8 +42,6 @@ def user_language(f):
         match update.from_user.language_code:
             case "it":
                 lang = "it_IT"
-            case "es":
-                lang = "es_ES"
             case _:
                 lang = "en_US"
         lang = plate.get_translator(lang)
