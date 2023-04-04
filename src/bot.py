@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 from math import ceil
 from os import environ
 from plate import Plate
@@ -60,12 +61,12 @@ def user_language(f):
                 *args,
                 **kwargs,
             )
-        except Exception as e:
+        except Exception:
             if isinstance(update, CallbackQuery):
                 update = update.message
             return await bot.send_message(
                 update.chat.id,
-                translate("generic_error", error=e),
+                translate("generic_error", error=traceback.format_exc()),
                 reply_markup=Keyboard.issues(translate("button_issue")),
             )
 
@@ -107,8 +108,9 @@ async def search_player(_: Client, message: Message, translate: Plate):
         cache.add(query, results)
 
     if len(results) == 1:
+        player = cache.get(f"{View.GENERAL}_{results[0].brawlhalla_id}")
         await handle_general(
-            brawl, results[0].brawlhalla_id, None, message, cache, translate, bot
+            brawl, results[0].brawlhalla_id, player, message, cache, translate, bot
         )
         return
 
@@ -127,6 +129,17 @@ async def search_player(_: Client, message: Message, translate: Plate):
             results, current_page, total_pages - 1, page_limit, translate
         ),
     )
+
+
+@bot.on_message(filters.command("me"))
+@user_language
+async def player_me(_: Client, message: Message, translate: Plate):
+    brawlhalla_id = users_settings.get_user(message.from_user.id, "me", None)
+    if brawlhalla_id is None:
+        await message.reply(translate("player_me_error"))
+        return
+    player = cache.get(f"{View.GENERAL}_{brawlhalla_id}")
+    await handle_general(brawl, brawlhalla_id, player, message, cache, translate, bot)
 
 
 @bot.on_callback_query(filters.regex(r"button_(next|prev)"))
@@ -290,6 +303,14 @@ async def player_ranked_team_detail_callback(
     )
 
 
+@bot.on_callback_query(filters.regex(r"set_(\d+)"))
+@user_language
+async def set_default_callback(_: Client, callback: CallbackQuery, translate: Plate):
+    brawlhalla_id = int(callback.matches[0].group(1))
+    users_settings.set_user(callback.from_user.id, "me", brawlhalla_id)
+    await callback.answer(translate("player_me"), show_alert=True)
+
+
 @bot.on_message(filters.command(["lingua", "language"]))
 @user_language
 async def language_command(_: Client, message: Message, translate: Plate):
@@ -328,6 +349,7 @@ async def set_commands(bot: Client):
             [
                 BotCommand("start", translate("start_description")),
                 BotCommand(translate("search"), translate("search_description")),
+                BotCommand("me", translate("me_description")),
                 BotCommand(translate("language"), translate("language_description")),
             ],
             language_code=lang_code,

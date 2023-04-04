@@ -126,7 +126,14 @@ class Keyboard:
         brawlhalla_id_two: int = None,
         has_clan: bool = False,
     ) -> InlineKeyboardMarkup:
-        buttons = []
+        buttons = [
+            [
+                InlineKeyboardButton(
+                    _("button_set_player"),
+                    callback_data=f"set_{brawlhalla_id_one}",
+                )
+            ]
+        ]
         if current_view != View.GENERAL:
             buttons.append(
                 [
