@@ -1,3 +1,4 @@
+import asyncio
 from math import ceil
 from os import environ
 from plate import Plate
@@ -9,6 +10,7 @@ from datetime import timedelta
 from pyrogram import Client, filters
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
+from user_settings import UserSettings
 from pyrogram.methods.utilities.idle import idle
 from pyrogram.types import Message, CallbackQuery, BotCommand
 from callbacks import (
@@ -38,13 +40,18 @@ bot = Client("Brawltool", API_ID, API_HASH, bot_token=BOT_TOKEN)
 
 cache = Cache(180)
 
+users_settings = UserSettings()
+
 
 def user_language(f):
     @wraps(f)
     async def wrapped(bot: Client, update, *args, **kwargs):
-        translate = plate.get_translator(
-            SUPPORTED_LANGUAGES.get(update.from_user.language_code, "en_US")
+        user_id = update.from_user.id
+        lang = users_settings.get_user(
+            user_id, "language", update.from_user.language_code
         )
+
+        translate = plate.get_translator(SUPPORTED_LANGUAGES.get(lang, "en_US"))
         try:
             return await f(
                 bot,
@@ -59,7 +66,7 @@ def user_language(f):
             return await bot.send_message(
                 update.chat.id,
                 translate("generic_error", error=e),
-                reply_markup=Keyboard.developer(translate("button_issue")),
+                reply_markup=Keyboard.issues(translate("button_issue")),
             )
 
     return wrapped
@@ -283,6 +290,32 @@ async def player_ranked_team_detail_callback(
     )
 
 
+@bot.on_message(filters.command(["lingua", "language"]))
+@user_language
+async def language_command(_: Client, message: Message, translate: Plate):
+    await message.reply_text(
+        translate("language_description"), reply_markup=Keyboard.languages()
+    )
+
+
+@bot.on_callback_query(filters.regex("en|it"))
+@user_language
+async def language_callback(_: Client, callback: CallbackQuery, translate: Plate):
+    lang = callback.data
+
+    if lang == users_settings.get_user(callback.from_user.id, "language"):
+        await callback.message.edit(translate("language_unchanged"))
+    else:
+        users_settings.set_user(callback.from_user.id, "language", lang)
+        translate = plate.get_translator(
+            SUPPORTED_LANGUAGES.get(lang, "en_US"),
+        )
+        await callback.message.edit(translate("language_changed"))
+
+    await asyncio.sleep(3)
+    await callback.message.delete()
+
+
 @bot.on_callback_query(filters.regex("close"))
 async def close_callback(_: Client, callback: CallbackQuery):
     await callback.message.delete()
@@ -295,6 +328,7 @@ async def set_commands(bot: Client):
             [
                 BotCommand("start", translate("start_description")),
                 BotCommand(translate("search"), translate("search_description")),
+                BotCommand(translate("language"), translate("language_description")),
             ],
             language_code=lang_code,
         )

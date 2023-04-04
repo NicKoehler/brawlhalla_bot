@@ -1,6 +1,8 @@
 {
-  "welcome": "Welcome <b>{name}</b>.\n\nHere are the commands currently available:\n\n🔍 • /search - Search for a player.",
+  "welcome": "Welcome <b>{name}</b>.\n\nHere are the commands currently available:\n\n🔍 • /search - Search for a player.\n🌐 • /language - Change the language of the bot.",
   "search": "search",
+  "language": "language",
+  "language_description": "Change the language of the bot",
   "search_description": "Search for a player",
   "start_description": "Shows the first start message",
   "search_usage": "Use the <b>/search</b> command to search for a player.\n\nExample: <code>/search nickoehler</code>",
@@ -13,6 +15,8 @@
   "no_ranked_data": "This player has not played any ranked games yet",
   "no_team_data": "This player has not played any ranked team games yet",
   "no_clan_data": "This player is not in a clan anymore",
+  "language_changed": "Language changed successfully",
+  "language_unchanged": "Language unchanged",
   "button_general": "⚔️ • GENERAL STATS • ⚔️",
   "button_rankedsolo": "🏆 • RANKED 1V1 • 🏆",
   "button_rankedteam": "🏆 • RANKED 2V2 • 🏆",

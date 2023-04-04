@@ -173,7 +173,25 @@ class Keyboard:
             )
         return InlineKeyboardMarkup(buttons)
 
-    def developer(text: str) -> InlineKeyboardMarkup:
+    def languages() -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "🇺🇸 • ENGLISH • 🇺🇸",
+                        callback_data="en",
+                    ),
+                ],
+                [
+                    InlineKeyboardButton(
+                        "🇮🇹 • ITALIANO • 🇮🇹",
+                        callback_data="it",
+                    ),
+                ],
+            ]
+        )
+
+    def issues(text: str) -> InlineKeyboardMarkup:
         return InlineKeyboardMarkup(
             [
                 [

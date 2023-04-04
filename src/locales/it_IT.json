@@ -1,6 +1,8 @@
 {
-  "welcome": "Benvenuto <b>{name}</b>.\n\nEcco i comandi disponibili attualmente:\n\n🔍 • /cerca - Cerca un giocatore",
+  "welcome": "Benvenuto <b>{name}</b>.\n\nEcco i comandi disponibili attualmente:\n\n🔍 • /cerca - Cerca un giocatore\n🌐 • /lingua - Cambia la lingua del bot",
   "search": "cerca",
+  "language": "lingua",
+  "language_description": "Cambia la lingua del bot",
   "search_description": "Cerca un giocatore",
   "start_description": "Mostra il messaggio di primo avvio",
   "search_usage": "Usa il comando <b>/cerca</b> per ricercare un giocatore.\n\nEsempio: <code>/cerca nickoehler</code>",
@@ -13,6 +15,8 @@
   "no_ranked_data": "Questo giocatore non ha ancora giocato partite classificate",
   "no_team_data": "Questo giocatore non ha ancora giocato partite classificate a squadre",
   "no_clan_data": "Questo giocatore non è più in un clan",
+  "language_changed": "La lingua è stata cambiata correttamente",
+  "language_unchanged": "La lingua non è stata cambiata",
   "button_general": "⚔️ • STATS GENERALI • ⚔️",
   "button_rankedsolo": "🏆 • CLASSIFICATA 1V1 • 🏆",
   "button_rankedteam": "🏆 • CLASSIFICATA 2V2 • 🏆",
