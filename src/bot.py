@@ -6,12 +6,12 @@ from cache import Cache
 from html import escape
 from functools import wraps
 from dotenv import load_dotenv
+from datetime import timedelta
 from utils import get_current_page
 from pyrogram import Client, filters
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
 from user_settings import UserSettings
-from datetime import datetime, timedelta
 from pyrogram.methods.utilities.idle import idle
 from pyrogram.types import Message, CallbackQuery, BotCommand
 from callbacks import (
