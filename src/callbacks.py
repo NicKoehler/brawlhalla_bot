@@ -19,6 +19,7 @@ async def general_checks(
 
     if player is None:
         player = await brawl.get_stats(brawlhalla_id)
+        player.legends.sort(key=lambda x: x.matchtime, reverse=True)
         cache.add(f"{View.GENERAL}_{brawlhalla_id}", player)
 
     return player
@@ -35,6 +36,7 @@ async def ranked_checks(
 
     if player is None:
         player = await brawl.get_ranked(brawlhalla_id)
+        player.teams.sort(key=lambda x: x.rating, reverse=True)
         cache.add(f"{View.RANKED_SOLO}_{brawlhalla_id}", player)
 
     if player is None or player.games == 0:
