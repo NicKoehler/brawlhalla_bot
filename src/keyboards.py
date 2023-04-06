@@ -1,4 +1,5 @@
 from enum import Enum
+from plate import Plate
 from brawlhalla_api.types import RankingResult, Clan, PlayerStats
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -146,50 +147,54 @@ class Keyboard:
     def stats(
         brawlhalla_id_one: int,
         current_view: View,
-        _,
+        translate: Plate,
         brawlhalla_id_two: int = None,
-        has_clan: bool = False,
+        show_clan: bool = False,
+        show_legends: bool = False,
     ) -> InlineKeyboardMarkup:
         buttons = [
             [
                 InlineKeyboardButton(
-                    _("button_set_player"),
+                    translate("button_set_player"),
                     callback_data=f"set_{brawlhalla_id_one}",
                 )
-            ]
+            ],
         ]
-        if current_view != View.GENERAL:
+
+        if show_legends:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        _("button_general"),
-                        callback_data=f"{View.GENERAL}_{brawlhalla_id_one}",
-                    )
-                ]
-            )
-        if has_clan:
-            buttons.append(
-                [
-                    InlineKeyboardButton(
-                        _("button_clan"),
-                        callback_data=f"{View.CLAN}_{brawlhalla_id_one}",
-                    )
-                ]
-            )
-        if current_view != View.LEGEND:
-            buttons.append(
-                [
-                    InlineKeyboardButton(
-                        _("button_legend"),
+                        translate("button_legend"),
                         callback_data=f"{View.LEGEND}_{brawlhalla_id_one}",
                     )
                 ]
             )
+
+        if current_view != View.GENERAL:
+            buttons.append(
+                [
+                    InlineKeyboardButton(
+                        translate("button_general"),
+                        callback_data=f"{View.GENERAL}_{brawlhalla_id_one}",
+                    )
+                ]
+            )
+        if show_clan:
+            buttons.append(
+                [
+                    InlineKeyboardButton(
+                        translate("button_clan"),
+                        callback_data=f"{View.CLAN}_{brawlhalla_id_one}",
+                    )
+                ]
+            )
+
         if current_view != View.RANKED_SOLO:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        _("button_rankedsolo"),
+                        translate("button_rankedsolo"),
                         callback_data=f"{View.RANKED_SOLO}_{brawlhalla_id_one}",
                     )
                 ]
@@ -197,7 +202,7 @@ class Keyboard:
         buttons.append(
             [
                 InlineKeyboardButton(
-                    _("button_rankedteam"),
+                    translate("button_rankedteam"),
                     callback_data=f"{View.RANKED_TEAM}_{brawlhalla_id_one}",
                 )
             ]
@@ -206,7 +211,7 @@ class Keyboard:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        _("button_teammate"),
+                        translate("button_teammate"),
                         callback_data=f"{View.GENERAL}_{brawlhalla_id_two}",
                     )
                 ]

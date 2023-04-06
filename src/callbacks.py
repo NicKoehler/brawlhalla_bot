@@ -1,5 +1,5 @@
-from math import ceil
 import utils
+from math import ceil
 from html import escape
 from cache import Cache
 from plate import Plate
@@ -151,8 +151,17 @@ async def handle_general(
     translate: Plate,
     message: Message = None,
     callback: CallbackQuery = None,
-):
+) -> None:
     player = await general_checks(brawl, brawlhalla_id, cache)
+
+    if not player:
+        if message:
+            await message.reply(translate("player_not_found", id=brawlhalla_id))
+        elif callback:
+            await callback.answer(
+                translate("player_not_found", id=brawlhalla_id), show_alert=True
+            )
+        return
 
     total_game_time = sum(
         (legend.matchtime for legend in player.legends),
@@ -199,12 +208,14 @@ async def handle_general(
             clan=player.clan.clan_name if player.clan else "❌",
             most_used_legend=max(
                 player.legends, key=lambda legend: legend.matchtime
-            ).legend_name_key.capitalize(),
-            total_game_time="\n".join(total_game_time_list),
+            ).legend_name_key.capitalize()
+            if player.legends
+            else "❌",
+            total_game_time="\n".join(total_game_time_list) or "❌",
             games=player.games,
             wins=player.wins,
             loses=player.games - player.wins,
-            winperc=round(player.wins / player.games * 100, 2),
+            winperc=round(player.wins / player.games * 100, 2) if player.games else 0,
             totalko=sum(legend.kos for legend in player.legends),
             totaldeath=sum(legend.falls for legend in player.legends),
             totalsuicide=sum(legend.suicides for legend in player.legends),
@@ -222,9 +233,10 @@ async def handle_general(
         ),
         "reply_markup": Keyboard.stats(
             player.brawlhalla_id,
-            View.GENERAL,
-            translate,
-            has_clan=player.clan is not None,
+            current_view=View.GENERAL,
+            translate=translate,
+            show_clan=player.clan is not None,
+            show_legends=len(player.legends) > 0,
         ),
     }
 
@@ -232,6 +244,8 @@ async def handle_general(
         await message.reply(**to_send)
     elif callback:
         await callback.message.edit(**to_send)
+
+    return True
 
 
 async def handle_clan(
@@ -309,7 +323,11 @@ async def handle_ranked_solo(
             glory=player.estimated_glory,
             elo_reset=player.estimated_elo_reset,
         ),
-        reply_markup=Keyboard.stats(player.brawlhalla_id, View.RANKED_SOLO, translate),
+        reply_markup=Keyboard.stats(
+            player.brawlhalla_id,
+            current_view=View.RANKED_SOLO,
+            translate=translate,
+        ),
     )
 
 
@@ -410,10 +428,10 @@ async def handle_ranked_team_detail(
                     region=team.region,
                 ),
                 reply_markup=Keyboard.stats(
-                    brawlhalla_id_one,
-                    View.RANKED_TEAM_DETAIL,
-                    translate,
-                    brawlhalla_id_two,
+                    brawlhalla_id_one=player.brawlhalla_id,
+                    brawlhalla_id_two=brawlhalla_id_two,
+                    current_view=View.RANKED_SOLO,
+                    translate=translate,
                 ),
             )
             break
@@ -430,12 +448,11 @@ async def handle_legend(
 ):
     player = await general_checks(brawl, brawlhalla_id, cache)
 
-    if player.legends is None:
+    if not player.legends:
         await callback.answer(
             translate("legend_results_error", team=brawlhalla_id),
             show_alert=True,
         )
-        await callback.message.delete()
         return
 
     len_legends = len(player.legends)
@@ -491,6 +508,12 @@ async def handle_legend_detail(
                     id=legend.legend_id,
                     name=legend.legend_name_key.capitalize(),
                 ),
-                reply_markup=Keyboard.stats(brawlhalla_id, View.LEGEND, translate),
+                reply_markup=Keyboard.stats(
+                    brawlhalla_id,
+                    current_view=View.LEGEND,
+                    translate=translate,
+                    show_clan=player.clan is not None,
+                    show_legends=len(player.legends) > 0,
+                ),
             )
             break

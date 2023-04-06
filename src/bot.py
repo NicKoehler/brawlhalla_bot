@@ -93,6 +93,18 @@ async def search_player(_: Client, message: Message, translate: Plate):
     await handle_search(brawl, cache, translate, message=message)
 
 
+@bot.on_message(filters.command("id"))
+@user_language
+async def player_id(_: Client, message: Message, translate: Plate):
+    if len(message.command) < 2 or not message.command[1].isnumeric():
+        await message.reply(translate("player_id_usage"))
+        return
+
+    brawlhalla_id = int(message.command[1])
+
+    await handle_general(brawl, brawlhalla_id, cache, translate, message=message)
+
+
 @bot.on_message(filters.command("me"))
 @user_language
 async def player_me(_: Client, message: Message, translate: Plate):
@@ -277,6 +289,7 @@ async def set_commands(bot: Client):
             [
                 BotCommand("start", translate("start_description")),
                 BotCommand(translate("search"), translate("search_description")),
+                BotCommand("id", translate("id_description")),
                 BotCommand("me", translate("me_description")),
                 BotCommand(translate("language"), translate("language_description")),
             ],
