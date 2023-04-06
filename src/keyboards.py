@@ -112,7 +112,7 @@ class Keyboard:
             [
                 [
                     InlineKeyboardButton(
-                        f"{comp.name} - {comp.rank}",
+                        f"{comp.name} ({comp.rank})",
                         callback_data=f"{View.GENERAL}_{comp.brawlhalla_id}",
                     )
                 ]
@@ -135,7 +135,7 @@ class Keyboard:
             [
                 [
                     InlineKeyboardButton(
-                        "{} - {}".format(
+                        "{} ({})".format(
                             legend.legend_name_key.capitalize(),
                             format_timedelta(
                                 legend.matchtime,
