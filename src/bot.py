@@ -1,7 +1,6 @@
 import asyncio
 import traceback
 from os import environ
-from plate import Plate
 from cache import Cache
 from html import escape
 from functools import wraps
@@ -14,6 +13,7 @@ from brawlhalla_api import Brawlhalla
 from user_settings import UserSettings
 from pyrogram.methods.utilities.idle import idle
 from pyrogram.types import Message, CallbackQuery, BotCommand
+from localization import Localization, Translator, SUPPORTED_LANGUAGES
 from callbacks import (
     handle_clan,
     handle_search,
@@ -34,9 +34,8 @@ API_KEY = environ.get("API_KEY")
 API_HASH = environ.get("API_HASH")
 BOT_TOKEN = environ.get("BOT_TOKEN")
 
-SUPPORTED_LANGUAGES = {"it": "it_IT", "en": "en_US"}
 
-plate = Plate("src/locales")
+localization = Localization()
 brawl = Brawlhalla(API_KEY)
 bot = Client("Brawltool", API_ID, API_HASH, bot_token=BOT_TOKEN)
 cache = Cache(180)
@@ -51,8 +50,7 @@ def user_language(f):
         lang = users_settings.get_user(
             user_id, "language", update.from_user.language_code
         )
-
-        translate = plate.get_translator(SUPPORTED_LANGUAGES.get(lang, "en_US"))
+        translate = localization.get_translator(lang)
         try:
             return await f(
                 bot,
@@ -66,7 +64,7 @@ def user_language(f):
                 update = update.message
             return await bot.send_message(
                 update.chat.id,
-                translate("generic_error", error=traceback.format_exc()),
+                translate.error_generic(error=traceback.format_exc()),
                 reply_markup=Keyboard.issues(translate),
             )
 
@@ -75,26 +73,25 @@ def user_language(f):
 
 @bot.on_message(filters.command("start"))
 @user_language
-async def start(_: Client, message: Message, translate: Plate):
+async def start(_: Client, message: Message, translate: Translator):
     await message.reply(
-        translate(
-            "welcome",
+        translate.welcome(
             name=escape(message.from_user.first_name),
-        ),
+        )
     )
 
 
 @bot.on_message(filters.command(["search", "cerca"]))
 @user_language
-async def search_player(_: Client, message: Message, translate: Plate):
+async def search_player(_: Client, message: Message, translate: Translator):
     await handle_search(brawl, cache, translate, message=message)
 
 
 @bot.on_message(filters.command("id"))
 @user_language
-async def player_id(_: Client, message: Message, translate: Plate):
+async def player_id(_: Client, message: Message, translate: Translator):
     if len(message.command) < 2 or not message.command[1].isnumeric():
-        await message.reply(translate("player_id_usage"))
+        await message.reply(translate.usage_id())
         return
 
     brawlhalla_id = int(message.command[1])
@@ -104,23 +101,23 @@ async def player_id(_: Client, message: Message, translate: Plate):
 
 @bot.on_message(filters.command("me"))
 @user_language
-async def player_me(_: Client, message: Message, translate: Plate):
+async def player_me(_: Client, message: Message, translate: Translator):
     brawlhalla_id = users_settings.get_user(message.from_user.id, "me", None)
     if brawlhalla_id is None:
-        await message.reply(translate("player_me_error"))
+        await message.reply(translate.error_missing_default_player())
         return
     await handle_general(brawl, brawlhalla_id, cache, translate, message=message)
 
 
 @bot.on_callback_query(filters.regex(r"^button_(next|prev)$"))
 @user_language
-async def search_player_page(_: Client, callback: CallbackQuery, translate: Plate):
+async def search_player_page(_: Client, callback: CallbackQuery, translate: Translator):
     await handle_search(brawl, cache, translate, callback=callback)
 
 
 @bot.on_callback_query(filters.regex(r"^legend_(next|prev)_(\d+)$"))
 @user_language
-async def search_legend_page(_: Client, callback: CallbackQuery, translate: Plate):
+async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
     current_page, brawlhalla_id = get_current_page(callback, brawlhalla_id=True)
 
     await handle_legend(
@@ -135,7 +132,7 @@ async def search_legend_page(_: Client, callback: CallbackQuery, translate: Plat
 
 @bot.on_callback_query(filters.regex(r"^team_(next|prev)_(\d+)$"))
 @user_language
-async def search_team_page(_: Client, callback: CallbackQuery, translate: Plate):
+async def search_team_page(_: Client, callback: CallbackQuery, translate: Translator):
     current_page, brawlhalla_id = get_current_page(callback, brawlhalla_id=True)
 
     await handle_ranked_team(
@@ -151,7 +148,7 @@ async def search_team_page(_: Client, callback: CallbackQuery, translate: Plate)
 
 @bot.on_callback_query(filters.regex(r"^clan_(next|prev)_(\d+)$"))
 @user_language
-async def search_clan_page(_: Client, callback: CallbackQuery, translate: Plate):
+async def search_clan_page(_: Client, callback: CallbackQuery, translate: Translator):
     current_page, clan_id = get_current_page(callback, clan_id=True)
 
     await handle_clan(
@@ -166,7 +163,9 @@ async def search_clan_page(_: Client, callback: CallbackQuery, translate: Plate)
 
 @bot.on_callback_query(filters.regex(f"^{View.GENERAL}_(\\d+)$"))
 @user_language
-async def player_general_callback(_: Client, callback: CallbackQuery, translate: Plate):
+async def player_general_callback(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
     brawlhalla_id = int(callback.matches[0].group(1))
     await handle_general(brawl, brawlhalla_id, cache, translate, callback=callback)
 
@@ -174,7 +173,7 @@ async def player_general_callback(_: Client, callback: CallbackQuery, translate:
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_SOLO}_(\\d+)$"))
 @user_language
 async def player_ranked_solo_callback(
-    _: Client, callback: CallbackQuery, translate: Plate
+    _: Client, callback: CallbackQuery, translate: Translator
 ):
     brawlhalla_id = int(callback.matches[0].group(1))
     await handle_ranked_solo(brawl, brawlhalla_id, callback, cache, translate)
@@ -183,7 +182,7 @@ async def player_ranked_solo_callback(
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_TEAM}_(\\d+)$"))
 @user_language
 async def player_ranked_team_callback(
-    _: Client, callback: CallbackQuery, translate: Plate
+    _: Client, callback: CallbackQuery, translate: Translator
 ):
     brawlhalla_id = int(callback.matches[0].group(1))
     await handle_ranked_team(brawl, brawlhalla_id, callback, cache, translate)
@@ -191,7 +190,9 @@ async def player_ranked_team_callback(
 
 @bot.on_callback_query(filters.regex(f"^{View.CLAN}_(\\d+)$"))
 @user_language
-async def player_clan_callback(_: Client, callback: CallbackQuery, translate: Plate):
+async def player_clan_callback(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
     brawlhalla_id = int(callback.matches[0].group(1))
     player = cache.get(f"{View.GENERAL}_{brawlhalla_id}")
 
@@ -199,7 +200,7 @@ async def player_clan_callback(_: Client, callback: CallbackQuery, translate: Pl
         player = await brawl.get_stats(brawlhalla_id)
 
     if player.clan is None:
-        await callback.answer(translate("no_clan_data"), show_alert=True)
+        await callback.answer(translate.error_no_clan_data(), show_alert=True)
         return
 
     await handle_clan(brawl, player.clan.clan_id, callback, cache, translate)
@@ -207,7 +208,9 @@ async def player_clan_callback(_: Client, callback: CallbackQuery, translate: Pl
 
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(\\d+)$"))
 @user_language
-async def player_legend_callback(_: Client, callback: CallbackQuery, translate: Plate):
+async def player_legend_callback(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
     brawlhalla_id = int(callback.matches[0].group(1))
     await handle_legend(brawl, brawlhalla_id, callback, cache, translate)
 
@@ -215,7 +218,7 @@ async def player_legend_callback(_: Client, callback: CallbackQuery, translate: 
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(\\d+)_(\\d+)$"))
 @user_language
 async def player_legend_detail_callback(
-    _: Client, callback: CallbackQuery, translate: Plate
+    _: Client, callback: CallbackQuery, translate: Translator
 ):
     regex = callback.matches[0]
     brawlhalla_id = int(regex.group(1))
@@ -232,7 +235,7 @@ async def player_legend_detail_callback(
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_TEAM_DETAIL}_(\\d+)_(\\d+)$"))
 @user_language
 async def player_ranked_team_detail_callback(
-    _: Client, callback: CallbackQuery, translate: Plate
+    _: Client, callback: CallbackQuery, translate: Translator
 ):
     regex = callback.matches[0]
     brawlhalla_id_one = int(regex.group(1))
@@ -245,33 +248,33 @@ async def player_ranked_team_detail_callback(
 
 @bot.on_callback_query(filters.regex(r"^set_(\d+)$"))
 @user_language
-async def set_default_callback(_: Client, callback: CallbackQuery, translate: Plate):
+async def set_default_callback(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
     brawlhalla_id = int(callback.matches[0].group(1))
     users_settings.set_user(callback.from_user.id, "me", brawlhalla_id)
-    await callback.answer(translate("player_me"), show_alert=True)
+    await callback.answer(translate.status_default_player_set(), show_alert=True)
 
 
 @bot.on_message(filters.command(["lingua", "language"]))
 @user_language
-async def language_command(_: Client, message: Message, translate: Plate):
+async def language_command(_: Client, message: Message, translate: Translator):
     await message.reply_text(
-        translate("language_description"), reply_markup=Keyboard.languages()
+        translate.description_language(), reply_markup=Keyboard.languages()
     )
 
 
 @bot.on_callback_query(filters.regex("en|it"))
 @user_language
-async def language_callback(_: Client, callback: CallbackQuery, translate: Plate):
+async def language_callback(_: Client, callback: CallbackQuery, translate: Translator):
     lang = callback.data
 
     if lang == users_settings.get_user(callback.from_user.id, "language"):
-        await callback.message.edit(translate("language_unchanged"))
+        await callback.message.edit(translate.status_language_unchanged())
     else:
         users_settings.set_user(callback.from_user.id, "language", lang)
-        translate = plate.get_translator(
-            SUPPORTED_LANGUAGES.get(lang, "en_US"),
-        )
-        await callback.message.edit(translate("language_changed"))
+        translate = localization.get_translator(lang)
+        await callback.message.edit(translate.status_language_changed())
 
     await asyncio.sleep(3)
     await callback.message.delete()
@@ -291,15 +294,15 @@ async def refresh_legends():
 
 
 async def set_commands(bot: Client):
-    for lang_code, lang_locale in SUPPORTED_LANGUAGES.items():
-        translate = plate.get_translator(lang_locale)
+    for lang_code in SUPPORTED_LANGUAGES:
+        translate = localization.get_translator(lang_code)
         await bot.set_bot_commands(
             [
-                BotCommand("start", translate("start_description")),
-                BotCommand(translate("search"), translate("search_description")),
-                BotCommand("id", translate("id_description")),
-                BotCommand("me", translate("me_description")),
-                BotCommand(translate("language"), translate("language_description")),
+                BotCommand("start", translate.description_start()),
+                BotCommand(translate.search(), translate.description_search()),
+                BotCommand("id", translate.description_id()),
+                BotCommand("me", translate.description_me()),
+                BotCommand(translate.language(), translate.description_language()),
             ],
             language_code=lang_code,
         )

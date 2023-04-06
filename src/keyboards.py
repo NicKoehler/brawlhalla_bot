@@ -1,5 +1,5 @@
 from enum import Enum
-from plate import Plate
+from localization import Translator
 from babel.dates import format_timedelta
 from brawlhalla_api.types import RankingResult, Clan, PlayerStats
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -18,10 +18,8 @@ class View(Enum):
 
 
 class Keyboard:
-    def close_buttons(translate) -> list[list[InlineKeyboardButton]]:
-        return [
-            [InlineKeyboardButton(translate("button_close"), callback_data="close")]
-        ]
+    def close_buttons(translate: Translator) -> list[list[InlineKeyboardButton]]:
+        return [[InlineKeyboardButton(translate.button_close(), callback_data="close")]]
 
     def navigation_buttons(
         current: int,
@@ -38,7 +36,11 @@ class Keyboard:
         return buttons
 
     def search_player(
-        players: list[RankingResult], current: int, total_pages: int, limit: int, _
+        players: list[RankingResult],
+        current: int,
+        total_pages: int,
+        limit: int,
+        translate: Translator,
     ) -> InlineKeyboardMarkup:
         buttons = Keyboard.navigation_buttons(
             current,
@@ -58,7 +60,7 @@ class Keyboard:
                 for player in players[current * limit : (current + 1) * limit]
             ]
             + [buttons]
-            + Keyboard.close_buttons(_)
+            + Keyboard.close_buttons(translate)
         )
 
     def teams(
@@ -123,7 +125,11 @@ class Keyboard:
         )
 
     def legends(
-        player: PlayerStats, current: int, total_pages: int, limit: int, _
+        player: PlayerStats,
+        current: int,
+        total_pages: int,
+        limit: int,
+        translator: Translator,
     ) -> InlineKeyboardMarkup:
         buttons = Keyboard.navigation_buttons(
             current,
@@ -139,7 +145,7 @@ class Keyboard:
                             legend.legend_name_key.capitalize(),
                             format_timedelta(
                                 legend.matchtime,
-                                locale=_.keywords.get("locale"),
+                                locale=translator.locale_str,
                             ),
                         ),
                         callback_data=f"{View.LEGEND}_{player.brawlhalla_id}_{legend.legend_id}",
@@ -148,13 +154,13 @@ class Keyboard:
                 for legend in player.legends[current * limit : (current + 1) * limit]
             ]
             + [buttons]
-            + Keyboard.close_buttons(_)
+            + Keyboard.close_buttons(translator)
         )
 
     def stats(
         brawlhalla_id_one: int,
         current_view: View,
-        translate: Plate,
+        translate: Translator,
         brawlhalla_id_two: int = None,
         show_clan: bool = False,
         show_legends: bool = False,
@@ -162,7 +168,7 @@ class Keyboard:
         buttons = [
             [
                 InlineKeyboardButton(
-                    translate("button_set_player"),
+                    translate.button_default_player(),
                     callback_data=f"set_{brawlhalla_id_one}",
                 )
             ],
@@ -172,7 +178,7 @@ class Keyboard:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        translate("button_legend"),
+                        translate.button_legend(),
                         callback_data=f"{View.LEGEND}_{brawlhalla_id_one}",
                     )
                 ]
@@ -182,7 +188,7 @@ class Keyboard:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        translate("button_general"),
+                        translate.button_general(),
                         callback_data=f"{View.GENERAL}_{brawlhalla_id_one}",
                     )
                 ]
@@ -191,7 +197,7 @@ class Keyboard:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        translate("button_clan"),
+                        translate.button_clan(),
                         callback_data=f"{View.CLAN}_{brawlhalla_id_one}",
                     )
                 ]
@@ -201,7 +207,7 @@ class Keyboard:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        translate("button_rankedsolo"),
+                        translate.button_ranked_solo(),
                         callback_data=f"{View.RANKED_SOLO}_{brawlhalla_id_one}",
                     )
                 ]
@@ -209,7 +215,7 @@ class Keyboard:
         buttons.append(
             [
                 InlineKeyboardButton(
-                    translate("button_rankedteam"),
+                    translate.button_ranked_team(),
                     callback_data=f"{View.RANKED_TEAM}_{brawlhalla_id_one}",
                 )
             ]
@@ -218,7 +224,7 @@ class Keyboard:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        translate("button_teammate"),
+                        translate.button_teammate(),
                         callback_data=f"{View.GENERAL}_{brawlhalla_id_two}",
                     )
                 ]
@@ -243,15 +249,15 @@ class Keyboard:
             ]
         )
 
-    def issues(_) -> InlineKeyboardMarkup:
+    def issues(translate: Translator) -> InlineKeyboardMarkup:
         return InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        _("button_issue"),
+                        translate.button_issue(),
                         url="https://github.com/NicKoehler/brawlhalla_bot/issues",
                     )
                 ]
             ]
-            + Keyboard.close_buttons(_)
+            + Keyboard.close_buttons(translate)
         )

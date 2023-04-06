@@ -2,8 +2,8 @@ import utils
 from math import ceil
 from html import escape
 from cache import Cache
-from plate import Plate
 from datetime import timedelta
+from localization import Translator
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
 from brawlhalla_api.types import Legend
@@ -31,7 +31,7 @@ async def ranked_checks(
     brawlhalla_id: int,
     callback: Message,
     cache: Cache,
-    translate: Plate,
+    translate: Translator,
 ):
     player = cache.get(f"{View.RANKED_SOLO}_{brawlhalla_id}")
 
@@ -41,7 +41,7 @@ async def ranked_checks(
         cache.add(f"{View.RANKED_SOLO}_{brawlhalla_id}", player)
 
     if player is None or player.games == 0:
-        await callback.answer(translate("no_ranked_data"), show_alert=True)
+        await callback.answer(translate.error_no_ranked_data(), show_alert=True)
         return
 
     return player
@@ -50,7 +50,7 @@ async def ranked_checks(
 async def handle_search(
     brawl: Brawlhalla,
     cache: Cache,
-    translate: Plate,
+    translate: Translator,
     message: Message = None,
     callback: CallbackQuery = None,
     page_limit=10,
@@ -60,13 +60,13 @@ async def handle_search(
         query = escape(" ".join(message.command[1:]))
 
         if not query:
-            await message.reply(translate("search_usage"))
+            await message.reply(translate.usage_search())
             return
 
         len_query = len(query)
 
         if len_query < 2 or len_query > 32:
-            await message.reply(translate("length_error"))
+            await message.reply(translate.error_length())
             return
 
     elif callback:
@@ -82,13 +82,15 @@ async def handle_search(
         if not results:
             if callback:
                 await callback.answer(
-                    translate("search_results_error", query=query),
+                    translate.error_search_result(query),
                     show_alert=True,
                 )
                 await callback.message.delete()
                 return
             elif message:
-                await message.reply(translate("search_results_error", query=query))
+                await message.reply(
+                    translate.error_search_result(query),
+                )
                 return
 
         cache.add(query, results)
@@ -117,7 +119,7 @@ async def handle_search(
 
 async def send_results(
     results,
-    translate,
+    translate: Translator,
     query,
     message: Message = None,
     callback: CallbackQuery = None,
@@ -130,8 +132,7 @@ async def send_results(
         current_page = total_pages
 
     to_send = {
-        "text": translate(
-            "search_results",
+        "text": translate.results_search(
             query=query,
             current=current_page + 1,
             total=total_pages + 1,
@@ -151,7 +152,7 @@ async def handle_general(
     brawl: Brawlhalla,
     brawlhalla_id: int,
     cache: Cache,
-    translate: Plate,
+    translate: Translator,
     message: Message = None,
     callback: CallbackQuery = None,
 ) -> None:
@@ -159,10 +160,10 @@ async def handle_general(
 
     if not player:
         if message:
-            await message.reply(translate("player_not_found", id=brawlhalla_id))
+            await message.reply(translate.error_player_not_found(id=brawlhalla_id))
         elif callback:
             await callback.answer(
-                translate("player_not_found", id=brawlhalla_id), show_alert=True
+                translate.error_player_not_found(id=brawlhalla_id), show_alert=True
             )
         return
 
@@ -174,13 +175,11 @@ async def handle_general(
     total_game_time_list = make_played_time(translate, total_game_time)
 
     to_send = {
-        "text": translate(
-            "base_stats",
+        "text": translate.stats_base(
             id=player.brawlhalla_id,
             name=player.name,
         )
-        + translate(
-            "general_stats",
+        + translate.stats_general(
             level=utils.make_progress_bar(player.level, player.xp_percentage),
             xp=player.xp,
             clan=player.clan.clan_name if player.clan else "❌",
@@ -235,15 +234,15 @@ def make_played_time(translate, total_game_time):
     translated_game_times = []
 
     for s, v in (
-        ("days", days),
-        ("hours", hours),
-        ("minutes", minutes),
-        ("seconds", seconds),
+        (translate.time_days(days), days),
+        (translate.time_hours(hours), hours),
+        (translate.time_minutes(minutes), minutes),
+        (translate.time_seconds(seconds), seconds),
     ):
         if v == 0:
             continue
 
-        translated_game_times.append(translate(s, t=v))
+        translated_game_times.append(s)
 
     total_game_time_list = []
 
@@ -262,7 +261,7 @@ async def handle_clan(
     clan_id: int,
     callback: CallbackQuery,
     cache: Cache,
-    translate: Plate,
+    translate: Translator,
     page_limit=10,
     current_page=0,
 ):
@@ -278,14 +277,11 @@ async def handle_clan(
         current_page = total_pages
 
     await callback.message.edit(
-        translate(
-            "clan_stats",
+        translate.stats_clan(
             id=clan.clan_id,
             name=clan.clan_name,
             xp=clan.clan_xp,
-            date=format_datetime(
-                clan.clan_create_date, locale=translate.keywords.get("locale")
-            ),
+            date=format_datetime(clan.clan_create_date, locale=translate.locale_str),
             num=len_components,
             current=current_page + 1,
             total=total_pages + 1,
@@ -301,7 +297,7 @@ async def handle_ranked_solo(
     brawlhalla_id: int,
     callback: CallbackQuery,
     cache: Cache,
-    translate: Plate,
+    translate: Translator,
 ):
     player = await ranked_checks(
         brawl,
@@ -315,13 +311,11 @@ async def handle_ranked_solo(
         return
 
     await callback.message.edit(
-        translate(
-            "base_stats",
+        translate.stats_base(
             id=player.brawlhalla_id,
             name=player.name,
         )
-        + translate(
-            "ranked_stats",
+        + translate.stats_ranked(
             rating=player.rating,
             peak=player.peak_rating,
             tier=player.tier,
@@ -345,7 +339,7 @@ async def handle_ranked_team(
     brawlhalla_id: int,
     callback: CallbackQuery,
     cache: Cache,
-    translate: Plate,
+    translate: Translator,
     page_limit: int = 10,
     current_page: int = 0,
     is_page_view: bool = False,
@@ -360,7 +354,7 @@ async def handle_ranked_team(
 
     if player is None or not player.teams:
         await callback.answer(
-            translate("no_team_data"),
+            translate.error_no_team_data(),
             show_alert=True,
         )
         if is_page_view:
@@ -373,13 +367,11 @@ async def handle_ranked_team(
         current_page = total_pages
 
     await callback.message.edit(
-        translate(
-            "base_stats",
+        translate.stats_base(
             id=player.brawlhalla_id,
             name=player.name,
         )
-        + translate(
-            "teams_results",
+        + translate.results_teams(
             current=current_page + 1,
             total=total_pages + 1,
         ),
@@ -395,7 +387,7 @@ async def handle_ranked_team_detail(
     brawlhalla_id_two: int,
     callback: CallbackQuery,
     cache: Cache,
-    translate: Plate,
+    translate: Translator,
 ):
     player = await ranked_checks(
         brawl,
@@ -406,7 +398,7 @@ async def handle_ranked_team_detail(
     )
     if player is None or not player.teams:
         await callback.answer(
-            translate("teams_results_error"),
+            translate.error_team_result(),
         )
         await callback.message.delete()
         return
@@ -420,13 +412,11 @@ async def handle_ranked_team_detail(
             and team.brawlhalla_id_two == brawlhalla_id_one
         ):
             await callback.message.edit(
-                translate(
-                    "base_stats",
+                translate.stats_base(
                     id=player.brawlhalla_id,
                     name=player.name,
                 )
-                + translate(
-                    "ranked_team_stats",
+                + translate.stats_ranked_team(
                     teamname=team.teamname,
                     rating=team.rating,
                     peak=team.peak_rating,
@@ -451,7 +441,7 @@ async def handle_legend(
     brawlhalla_id: int,
     callback: CallbackQuery,
     cache: Cache,
-    translate: Plate,
+    translate: Translator,
     page_limit: int = 10,
     current_page: int = 0,
 ):
@@ -459,7 +449,7 @@ async def handle_legend(
 
     if not player.legends:
         await callback.answer(
-            translate("legend_results_error", team=brawlhalla_id),
+            translate.error_legend_result(team=brawlhalla_id),
             show_alert=True,
         )
         return
@@ -471,13 +461,11 @@ async def handle_legend(
         current_page = total_pages
 
     await callback.message.edit(
-        translate(
-            "base_stats",
+        translate.stats_base(
             id=player.brawlhalla_id,
             name=player.name,
         )
-        + translate(
-            "legend_results",
+        + translate.results_legends(
             current=current_page + 1,
             total=total_pages + 1,
         ),
@@ -493,13 +481,13 @@ async def handle_legend_detail(
     legend_obj: Legend,
     callback: CallbackQuery,
     cache: Cache,
-    translate: Plate,
+    translate: Translator,
 ):
     player = await general_checks(brawl, brawlhalla_id, cache)
 
     if player.legends is None:
         await callback.answer(
-            translate("legend_results_error"),
+            translate.error_legend_result(),
             show_alert=True,
         )
         return
@@ -511,13 +499,11 @@ async def handle_legend_detail(
             )
 
             await callback.message.edit(
-                translate(
-                    "base_stats",
+                translate.stats_base(
                     id=player.brawlhalla_id,
                     name=player.name,
                 )
-                + translate(
-                    "legend_stats",
+                + translate.stats_legend(
                     id=legend.legend_id,
                     name=legend.legend_name_key.capitalize(),
                     level=utils.make_progress_bar(legend.level, legend.xp_percentage),
@@ -526,11 +512,11 @@ async def handle_legend_detail(
                     weapontwo=legend_obj.weapon_two,
                     timeheldweaponone=format_timedelta(
                         legend.timeheldweaponone,
-                        locale=translate.keywords.get("locale"),
+                        locale=translate.locale_str,
                     ),
                     timeheldweapontwo=format_timedelta(
                         legend.timeheldweapontwo,
-                        locale=translate.keywords.get("locale"),
+                        locale=translate.locale_str,
                     ),
                     matchtime="\n".join(game_time_list) or "❌",
                     games=legend.games,
