@@ -6,12 +6,12 @@ from cache import Cache
 from html import escape
 from functools import wraps
 from dotenv import load_dotenv
-from datetime import timedelta
 from utils import get_current_page
 from pyrogram import Client, filters
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
 from user_settings import UserSettings
+from datetime import datetime, timedelta
 from pyrogram.methods.utilities.idle import idle
 from pyrogram.types import Message, CallbackQuery, BotCommand
 from callbacks import (
@@ -27,11 +27,6 @@ from callbacks import (
 
 from scheduler.asyncio import Scheduler
 
-SUPPORTED_LANGUAGES = {"it": "it_IT", "en": "en_US"}
-
-
-plate = Plate("src/locales")
-
 load_dotenv()
 
 API_ID = environ.get("API_ID")
@@ -39,11 +34,13 @@ API_KEY = environ.get("API_KEY")
 API_HASH = environ.get("API_HASH")
 BOT_TOKEN = environ.get("BOT_TOKEN")
 
+SUPPORTED_LANGUAGES = {"it": "it_IT", "en": "en_US"}
+
+plate = Plate("src/locales")
 brawl = Brawlhalla(API_KEY)
 bot = Client("Brawltool", API_ID, API_HASH, bot_token=BOT_TOKEN)
-
 cache = Cache(180)
-
+legends_cache = {}
 users_settings = UserSettings()
 
 
@@ -224,8 +221,11 @@ async def player_legend_detail_callback(
     brawlhalla_id = int(regex.group(1))
     legend_id = int(regex.group(2))
 
+    if legend_id not in legends_cache:
+        await refresh_legends()
+
     await handle_legend_detail(
-        brawl, brawlhalla_id, legend_id, callback, cache, translate
+        brawl, brawlhalla_id, legends_cache[legend_id], callback, cache, translate
     )
 
 
@@ -282,6 +282,14 @@ async def close_callback(_: Client, callback: CallbackQuery):
     await callback.message.delete()
 
 
+async def refresh_legends():
+    legends = await brawl.get_legends()
+
+    legends_cache.clear()
+    for legend in legends:
+        legends_cache[legend.legend_id] = legend
+
+
 async def set_commands(bot: Client):
     for lang_code, lang_locale in SUPPORTED_LANGUAGES.items():
         translate = plate.get_translator(lang_locale)
@@ -301,6 +309,7 @@ async def main():
     schedule = Scheduler()
     schedule.cyclic(timedelta(hours=1), cache.clear)
 
+    await refresh_legends()
     await bot.start()
     await set_commands(bot)
     await idle()

@@ -6,6 +6,7 @@ from plate import Plate
 from datetime import timedelta
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
+from brawlhalla_api.types import Legend
 from babel.dates import format_datetime
 from pyrogram.types import Message, CallbackQuery
 
@@ -489,7 +490,7 @@ async def handle_legend(
 async def handle_legend_detail(
     brawl: Brawlhalla,
     brawlhalla_id: int,
-    legend_id: int,
+    legend_obj: Legend,
     callback: CallbackQuery,
     cache: Cache,
     translate: Plate,
@@ -504,7 +505,7 @@ async def handle_legend_detail(
         return
 
     for legend in player.legends:
-        if legend.legend_id == legend_id:
+        if legend.legend_id == legend_obj.legend_id:
             game_time_list = make_played_time(
                 translate, legend.matchtime.total_seconds()
             )
@@ -521,6 +522,8 @@ async def handle_legend_detail(
                     name=legend.legend_name_key.capitalize(),
                     level=utils.make_progress_bar(legend.level, legend.xp_percentage),
                     xp=legend.xp,
+                    weaponone=legend_obj.weapon_one,
+                    weapontwo=legend_obj.weapon_two,
                     timeheldweaponone=legend.timeheldweaponone,
                     timeheldweapontwo=legend.timeheldweapontwo,
                     matchtime="\n".join(game_time_list) or "❌",
