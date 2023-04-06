@@ -170,32 +170,7 @@ async def handle_general(
         timedelta(seconds=0),
     ).total_seconds()
 
-    days = int(total_game_time // 86400)
-    hours = int((total_game_time % 86400) // 3600)
-    minutes = int((total_game_time % 3600) // 60)
-    seconds = int(total_game_time % 60)
-
-    translated_game_times = []
-
-    for s, v in (
-        ("days", days),
-        ("hours", hours),
-        ("minutes", minutes),
-        ("seconds", seconds),
-    ):
-        if v == 0:
-            continue
-
-        translated_game_times.append(translate(s, t=v))
-
-    total_game_time_list = []
-
-    for n, time in enumerate(translated_game_times):
-        (
-            total_game_time_list.append(
-                ("╰─► " if n == len(translated_game_times) - 1 else "├─► ") + time
-            )
-        )
+    total_game_time_list = make_played_time(translate, total_game_time)
 
     to_send = {
         "text": translate(
@@ -248,6 +223,37 @@ async def handle_general(
         await callback.message.edit(**to_send)
 
     return True
+
+
+def make_played_time(translate, total_game_time):
+    days = int(total_game_time // 86400)
+    hours = int((total_game_time % 86400) // 3600)
+    minutes = int((total_game_time % 3600) // 60)
+    seconds = int(total_game_time % 60)
+
+    translated_game_times = []
+
+    for s, v in (
+        ("days", days),
+        ("hours", hours),
+        ("minutes", minutes),
+        ("seconds", seconds),
+    ):
+        if v == 0:
+            continue
+
+        translated_game_times.append(translate(s, t=v))
+
+    total_game_time_list = []
+
+    for n, time in enumerate(translated_game_times):
+        (
+            total_game_time_list.append(
+                ("╰─► " if n == len(translated_game_times) - 1 else "├─► ") + time
+            )
+        )
+
+    return total_game_time_list
 
 
 async def handle_clan(
@@ -499,6 +505,10 @@ async def handle_legend_detail(
 
     for legend in player.legends:
         if legend.legend_id == legend_id:
+            game_time_list = make_played_time(
+                translate, legend.matchtime.total_seconds()
+            )
+
             await callback.message.edit(
                 translate(
                     "base_stats",
@@ -513,7 +523,7 @@ async def handle_legend_detail(
                     xp=legend.xp,
                     timeheldweaponone=legend.timeheldweaponone,
                     timeheldweapontwo=legend.timeheldweapontwo,
-                    matchtime=legend.matchtime,
+                    matchtime="\n".join(game_time_list) or "❌",
                     games=legend.games,
                     wins=legend.wins,
                     loses=legend.games - legend.wins,

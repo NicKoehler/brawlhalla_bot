@@ -1,5 +1,6 @@
 from enum import Enum
 from plate import Plate
+from babel.dates import format_timedelta
 from brawlhalla_api.types import RankingResult, Clan, PlayerStats
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -134,7 +135,13 @@ class Keyboard:
             [
                 [
                     InlineKeyboardButton(
-                        legend.legend_name_key.capitalize(),
+                        "{} - {}".format(
+                            legend.legend_name_key.capitalize(),
+                            format_timedelta(
+                                legend.matchtime,
+                                locale=_.keywords.get("locale"),
+                            ),
+                        ),
                         callback_data=f"{View.LEGEND}_{player.brawlhalla_id}_{legend.legend_id}",
                     )
                 ]
