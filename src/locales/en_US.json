@@ -11,6 +11,8 @@
   "search_results": "Search results:\n<b>{query}</b>\n<b>{current}/{total}</b>",
   "search_results_error": "No players found searching <b>{query}</b>",
   "teams_results": "Teams:\n<b>{current}/{total}</b>",
+  "legend_results": "Legends:\n<b>{current}/{total}</b>",
+  "legend_results_error": "No legend found",
   "teams_results_error": "No teams found",
   "generic_error": "An error occurred:\n\n<code>{error}</code>\n\nIf you want to help development, open a detailed issue on how to reproduce the error you encountered. Before opening a new issue, check that it has not already been reported.",
   "no_ranked_data": "This player has not played any ranked games yet",
@@ -21,6 +23,7 @@
   "player_me": "Player set as default",
   "player_me_error": "You need to set a player as default to use this command",
   "button_general": "⚔️ • GENERAL STATS • ⚔️",
+  "button_legend": "🥷 • LEGENDS • 🥷",
   "button_set_player": "👤 • SET DEFAULT • 👤",
   "button_rankedsolo": "🏆 • RANKED 1V1 • 🏆",
   "button_rankedteam": "🏆 • RANKED 2V2 • 🏆",
@@ -36,5 +39,6 @@
   "general_stats": "⚔️ • <b>GENERAL STATS</b> • ⚔️\n\n🎖 • Clan: <b>{clan}</b>\n🆙 • Lv: <b>{level}</b>\n🔺 • XP: <b>{xp}</b>\n⌚️ • Most used legend: <b>{most_used_legend}</b>\n⌛️ • In-game Time:\n<b>{total_game_time}</b>\n\n🎮 • Games played: <b>{games}</b>\n🥇 • Games won: <b>{wins}</b>\n🥉 • Games lost: <b>{loses}</b>\n⚖️ • Win percentage: <b>{winperc}%</b>\n👊 • Total KOs: <b>{totalko}</b>\n⚰️ • Total Deaths: <b>{totaldeath}</b>\n💀 • Total suicides: <b>{totalsuicide}</b>\n😐 • Teammate KOs: <b>{totalteamko}</b>\n\n💣 <b>BOMBS</b> 💣\n├─► KOs: <b>{kobomb}</b>\n╰─► Damage: <b>{damagebomb}</b>\n\n💥 <b>MINES</b> 💥\n├─► KOs: <b>{komine}</b>\n╰─► Damage: <b>{damagemine}</b>\n\n☀️ <b>SPIKEBALLS</b> ☀️\n├─► KOs: <b>{kospikeball}</b>\n╰─► Damage: <b>{damagespikeball}</b>\n\n👟 <b>SIDE KICK</b> 👟\n├─► KOs: <b>{kosidekick}</b>\n╰─► Damage: <b>{damagesidekick}</b>\n\n❄️ <b>SNOWBALLS</b> ❄️\n├─► KOs: <b>{kosnowball}</b>\n╰─► Hits: <b>{hitsnowball}</b>",
   "ranked_stats": "🏆 • <b>RANKED 1v1</b> • 🏆\n\n🔶 • Current elo: <b>{rating}</b>\n🔷 • Elo peak: <b>{peak}</b>\n👑 • Tier: <b>{tier}</b>\n\n🎮 • Games played: <b>{games}</b>\n🥇 • Games won: <b>{wins}</b>\n🥉 • Games lost: <b>{loses}</b>\n🌎 • Region: <b>{region}</b>\n\n💎 • Estimated glory: <b>{glory}</b>\n👑 • Estimated elo reset: <b>{elo_reset}</b>",
   "ranked_team_stats": "🏆 • <b>RANKED 2v2</b> • 🏆\n\n👥 • Team: <b>{teamname}</b>\n\n🔶 • Current elo: <b>{rating}</b>\n🔷 • Elo peak: <b>{peak}</b>\n👑 • Tier: <b>{tier}</b>\n\n🎮 • Games played: <b>{games}</b>\n🥇 • Games won: <b>{wins}</b>\n🥉 • Games lost: <b>{loses}</b>\n🌎 • Region: <b>{region}</b>",
-  "clan_stats": "🆔 • Clan ID:<b> {id} </b>\n👑 • Clan name: <b>{name}</b>\n\n🔺 • XP: <b>{xp}</b>\n👥 • Members: <b>{num}</b>\n📅 • Creation date: <b>{date}</b>\n\n<b>{current}/{total}</b>"
+  "clan_stats": "🆔 • Clan ID:<b> {id} </b>\n👑 • Clan name: <b>{name}</b>\n\n🔺 • XP: <b>{xp}</b>\n👥 • Members: <b>{num}</b>\n📅 • Creation date: <b>{date}</b>\n\n<b>{current}/{total}</b>",
+  "legend_stats": "🥷 • LEGEND • 🥷\n\n🆔 • Legend ID: <b>{id}</b>\n🥷 • Legend name: <b>{name}</b>"
 }

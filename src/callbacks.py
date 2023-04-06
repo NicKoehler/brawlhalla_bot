@@ -1,5 +1,6 @@
 from math import ceil
 import utils
+from html import escape
 from cache import Cache
 from plate import Plate
 from datetime import timedelta
@@ -7,15 +8,15 @@ from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
 from babel.dates import format_datetime
 from pyrogram.types import Message, CallbackQuery
-from brawlhalla_api.types import PlayerStats, PlayerRanked
 
 
 async def general_checks(
     brawl: Brawlhalla,
     brawlhalla_id: int,
-    player: PlayerStats,
     cache: Cache,
 ):
+    player = cache.get(f"{View.GENERAL}_{brawlhalla_id}")
+
     if player is None:
         player = await brawl.get_stats(brawlhalla_id)
         cache.add(f"{View.GENERAL}_{brawlhalla_id}", player)
@@ -26,12 +27,12 @@ async def general_checks(
 async def ranked_checks(
     brawl: Brawlhalla,
     brawlhalla_id: int,
-    player: PlayerRanked,
     callback: Message,
     cache: Cache,
     translate: Plate,
-    teamcheck=False,
 ):
+    player = cache.get(f"{View.RANKED_SOLO}_{brawlhalla_id}")
+
     if player is None:
         player = await brawl.get_ranked(brawlhalla_id)
         cache.add(f"{View.RANKED_SOLO}_{brawlhalla_id}", player)
@@ -40,23 +41,118 @@ async def ranked_checks(
         await callback.answer(translate("no_ranked_data"), show_alert=True)
         return
 
-    if teamcheck and not player.teams:
-        await callback.answer(translate("no_team_data"), show_alert=True)
+    return player
+
+
+async def handle_search(
+    brawl: Brawlhalla,
+    cache: Cache,
+    translate: Plate,
+    message: Message = None,
+    callback: CallbackQuery = None,
+    page_limit=10,
+    current_page=0,
+):
+    if message:
+        query = escape(" ".join(message.command[1:]))
+
+        if not query:
+            await message.reply(translate("search_usage"))
+            return
+
+        len_query = len(query)
+
+        if len_query < 2 or len_query > 32:
+            await message.reply(translate("length_error"))
+            return
+
+    elif callback:
+        current_page = utils.get_current_page(callback)
+
+    else:
         return
 
-    return player
+    results = cache.get(query)
+
+    if results is None:
+        results = await brawl.get_rankings(name=query)
+        if not results:
+            if callback:
+                await callback.answer(
+                    translate("search_results_error", query=query),
+                    show_alert=True,
+                )
+                await callback.message.delete()
+                return
+            elif message:
+                await message.reply(translate("search_results_error", query=query))
+                return
+
+        cache.add(query, results)
+
+    if len(results) == 1:
+        await handle_general(
+            brawl,
+            results[0].brawlhalla_id,
+            cache,
+            translate,
+            message=message,
+            callback=callback,
+        )
+        return
+
+    await send_results(
+        results,
+        translate,
+        query,
+        message,
+        callback,
+        page_limit=page_limit,
+        current_page=current_page,
+    )
+
+
+async def send_results(
+    results,
+    translate,
+    query,
+    message: Message = None,
+    callback: CallbackQuery = None,
+    page_limit=10,
+    current_page=0,
+):
+    total_pages = ceil(len(results) / page_limit) - 1
+
+    if current_page > total_pages:
+        current_page = total_pages
+
+    to_send = {
+        "text": translate(
+            "search_results",
+            query=query,
+            current=current_page + 1,
+            total=total_pages + 1,
+        ),
+        "reply_markup": Keyboard.search_player(
+            results, current_page, total_pages, page_limit, translate
+        ),
+    }
+
+    if message:
+        await message.reply(**to_send)
+    elif callback:
+        await callback.message.edit(**to_send)
 
 
 async def handle_general(
     brawl: Brawlhalla,
     brawlhalla_id: int,
-    player: PlayerStats,
-    message: Message,
     cache: Cache,
     translate: Plate,
-    bot=None,
+    message: Message = None,
+    callback: CallbackQuery = None,
 ):
-    player = await general_checks(brawl, brawlhalla_id, player, cache)
+    player = await general_checks(brawl, brawlhalla_id, cache)
 
     total_game_time = sum(
         (legend.matchtime for legend in player.legends),
@@ -90,75 +186,73 @@ async def handle_general(
             )
         )
 
-    text = translate(
-        "base_stats",
-        id=player.brawlhalla_id,
-        name=player.name,
-    ) + translate(
-        "general_stats",
-        level=utils.make_progress_bar(player.level, player.xp_percentage),
-        xp=player.xp,
-        clan=player.clan.clan_name if player.clan else "❌",
-        most_used_legend=max(
-            player.legends, key=lambda legend: legend.matchtime
-        ).legend_name_key.capitalize(),
-        total_game_time="\n".join(total_game_time_list),
-        games=player.games,
-        wins=player.wins,
-        loses=player.games - player.wins,
-        winperc=round(player.wins / player.games * 100, 2),
-        totalko=sum(legend.kos for legend in player.legends),
-        totaldeath=sum(legend.falls for legend in player.legends),
-        totalsuicide=sum(legend.suicides for legend in player.legends),
-        totalteamko=sum(legend.teamkos for legend in player.legends),
-        kobomb=player.kobomb,
-        damagebomb=player.damagebomb,
-        komine=player.komine,
-        damagemine=player.damagemine,
-        kospikeball=player.kospikeball,
-        damagespikeball=player.damagespikeball,
-        kosidekick=player.kosidekick,
-        damagesidekick=player.damagesidekick,
-        kosnowball=player.kosnowball,
-        hitsnowball=player.hitsnowball,
-    )
+    to_send = {
+        "text": translate(
+            "base_stats",
+            id=player.brawlhalla_id,
+            name=player.name,
+        )
+        + translate(
+            "general_stats",
+            level=utils.make_progress_bar(player.level, player.xp_percentage),
+            xp=player.xp,
+            clan=player.clan.clan_name if player.clan else "❌",
+            most_used_legend=max(
+                player.legends, key=lambda legend: legend.matchtime
+            ).legend_name_key.capitalize(),
+            total_game_time="\n".join(total_game_time_list),
+            games=player.games,
+            wins=player.wins,
+            loses=player.games - player.wins,
+            winperc=round(player.wins / player.games * 100, 2),
+            totalko=sum(legend.kos for legend in player.legends),
+            totaldeath=sum(legend.falls for legend in player.legends),
+            totalsuicide=sum(legend.suicides for legend in player.legends),
+            totalteamko=sum(legend.teamkos for legend in player.legends),
+            kobomb=player.kobomb,
+            damagebomb=player.damagebomb,
+            komine=player.komine,
+            damagemine=player.damagemine,
+            kospikeball=player.kospikeball,
+            damagespikeball=player.damagespikeball,
+            kosidekick=player.kosidekick,
+            damagesidekick=player.damagesidekick,
+            kosnowball=player.kosnowball,
+            hitsnowball=player.hitsnowball,
+        ),
+        "reply_markup": Keyboard.stats(
+            player.brawlhalla_id,
+            View.GENERAL,
+            translate,
+            has_clan=player.clan is not None,
+        ),
+    }
 
-    keyboard = Keyboard.stats(
-        player.brawlhalla_id,
-        View.GENERAL,
-        translate,
-        has_clan=player.clan is not None,
-    )
-
-    if bot is None:
-        await message.edit(text, reply_markup=keyboard)
-    else:
-        await bot.send_message(message.chat.id, text, reply_markup=keyboard)
+    if message:
+        await message.reply(**to_send)
+    elif callback:
+        await callback.message.edit(**to_send)
 
 
 async def handle_clan(
     brawl: Brawlhalla,
-    brawlhalla_id: int,
-    player: PlayerStats,
+    clan_id: int,
     callback: CallbackQuery,
     cache: Cache,
     translate: Plate,
+    page_limit=10,
+    current_page=0,
 ):
-    player = await general_checks(brawl, brawlhalla_id, player, cache)
-
-    if player.clan is None:
-        await callback.answer(translate("no_clan_data"), show_alert=True)
-        return
-
-    clan = cache.get(f"{View.CLAN}_{player.clan.clan_id}")
+    clan = cache.get(f"{View.CLAN}_{clan_id}")
     if clan is None:
-        clan = await brawl.get_clan(player.clan.clan_id)
-        cache.add(f"{View.CLAN}_{player.clan.clan_id}", clan)
+        clan = await brawl.get_clan(clan_id)
+        cache.add(f"{View.CLAN}_{clan_id}", clan)
 
-    page_limit = 10
-    current = 0
     len_components = len(clan.components)
-    total = ceil(len_components / page_limit)
+    total_pages = ceil(len_components / page_limit) - 1
+
+    if current_page > total_pages:
+        current_page = total_pages
 
     await callback.message.edit(
         translate(
@@ -170,11 +264,11 @@ async def handle_clan(
                 clan.clan_create_date, locale=translate.keywords.get("locale")
             ),
             num=len_components,
-            current=current + 1,
-            total=total,
+            current=current_page + 1,
+            total=total_pages + 1,
         ),
         reply_markup=Keyboard.clan_components(
-            clan, current, total - 1, page_limit, translate
+            clan, current_page, total_pages, page_limit, translate
         ),
     )
 
@@ -182,13 +276,16 @@ async def handle_clan(
 async def handle_ranked_solo(
     brawl: Brawlhalla,
     brawlhalla_id: int,
-    player: PlayerRanked,
     callback: CallbackQuery,
     cache: Cache,
     translate: Plate,
 ):
     player = await ranked_checks(
-        brawl, brawlhalla_id, player, callback, cache, translate
+        brawl,
+        brawlhalla_id,
+        callback,
+        cache,
+        translate,
     )
 
     if player is None:
@@ -219,21 +316,34 @@ async def handle_ranked_solo(
 async def handle_ranked_team(
     brawl: Brawlhalla,
     brawlhalla_id: int,
-    player: PlayerRanked,
     callback: CallbackQuery,
     cache: Cache,
     translate: Plate,
+    page_limit: int = 10,
+    current_page: int = 0,
+    is_page_view: bool = False,
 ):
     player = await ranked_checks(
-        brawl, brawlhalla_id, player, callback, cache, translate, True
+        brawl,
+        brawlhalla_id,
+        callback,
+        cache,
+        translate,
     )
 
-    if player is None:
+    if player is None or not player.teams:
+        await callback.answer(
+            translate("no_team_data"),
+            show_alert=True,
+        )
+        if is_page_view:
+            await callback.message.delete()
         return
 
-    page_limit = 10
-    current_page = 0
-    total_pages = ceil(len(player.teams) / page_limit)
+    total_pages = ceil(len(player.teams) / page_limit) - 1
+
+    if current_page > total_pages:
+        current_page = total_pages
 
     await callback.message.edit(
         translate(
@@ -244,10 +354,10 @@ async def handle_ranked_team(
         + translate(
             "teams_results",
             current=current_page + 1,
-            total=total_pages,
+            total=total_pages + 1,
         ),
         reply_markup=Keyboard.teams(
-            player, current_page, total_pages - 1, page_limit, translate
+            player, current_page, total_pages, page_limit, translate
         ),
     )
 
@@ -256,15 +366,22 @@ async def handle_ranked_team_detail(
     brawl: Brawlhalla,
     brawlhalla_id_one: int,
     brawlhalla_id_two: int,
-    player: PlayerRanked,
     callback: CallbackQuery,
     cache: Cache,
     translate: Plate,
 ):
     player = await ranked_checks(
-        brawl, brawlhalla_id_one, player, callback, cache, translate, True
+        brawl,
+        brawlhalla_id_one,
+        callback,
+        cache,
+        translate,
     )
-    if player is None:
+    if player is None or not player.teams:
+        await callback.answer(
+            translate("teams_results_error"),
+        )
+        await callback.message.delete()
         return
 
     for team in player.teams:
@@ -298,5 +415,82 @@ async def handle_ranked_team_detail(
                     translate,
                     brawlhalla_id_two,
                 ),
+            )
+            break
+
+
+async def handle_legend(
+    brawl: Brawlhalla,
+    brawlhalla_id: int,
+    callback: CallbackQuery,
+    cache: Cache,
+    translate: Plate,
+    page_limit: int = 10,
+    current_page: int = 0,
+):
+    player = await general_checks(brawl, brawlhalla_id, cache)
+
+    if player.legends is None:
+        await callback.answer(
+            translate("legend_results_error", team=brawlhalla_id),
+            show_alert=True,
+        )
+        await callback.message.delete()
+        return
+
+    len_legends = len(player.legends)
+    total_pages = ceil(len_legends / page_limit) - 1
+
+    if current_page > total_pages:
+        current_page = total_pages
+
+    await callback.message.edit(
+        translate(
+            "base_stats",
+            id=player.brawlhalla_id,
+            name=player.name,
+        )
+        + translate(
+            "legend_results",
+            current=current_page + 1,
+            total=total_pages + 1,
+        ),
+        reply_markup=Keyboard.legends(
+            player, current_page, total_pages, page_limit, translate
+        ),
+    )
+
+
+async def handle_legend_detail(
+    brawl: Brawlhalla,
+    brawlhalla_id: int,
+    legend_id: int,
+    callback: CallbackQuery,
+    cache: Cache,
+    translate: Plate,
+):
+    player = await general_checks(brawl, brawlhalla_id, cache)
+
+    if player.legends is None:
+        await callback.answer(
+            translate("legend_results_error"),
+            show_alert=True,
+        )
+        return
+
+    for legend in player.legends:
+        if legend.legend_id == legend_id:
+            await callback.message.edit(
+                translate(
+                    "base_stats",
+                    id=player.brawlhalla_id,
+                    name=player.name,
+                )
+                + translate(
+                    "legend_stats",
+                    id=legend.legend_id,
+                    name=legend.legend_name_key.capitalize(),
+                ),
+                reply_markup=Keyboard.stats(brawlhalla_id, View.LEGEND, translate),
             )
             break

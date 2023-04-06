@@ -1,11 +1,12 @@
 from enum import Enum
-from brawlhalla_api.types import RankingResult, Clan
+from brawlhalla_api.types import RankingResult, Clan, PlayerStats
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 class View(Enum):
-    GENERAL = "general"
     CLAN = "clan"
+    LEGEND = "legend"
+    GENERAL = "general"
     RANKED_SOLO = "rankedsolo"
     RANKED_TEAM = "rankedteam"
     RANKED_TEAM_DETAIL = "rankedteamdetail"
@@ -119,6 +120,29 @@ class Keyboard:
             + Keyboard.close_buttons(_)
         )
 
+    def legends(
+        player: PlayerStats, current: int, total_pages: int, limit: int, _
+    ) -> InlineKeyboardMarkup:
+        buttons = Keyboard.navigation_buttons(
+            current,
+            total_pages,
+            f"legend_prev_{player.brawlhalla_id}",
+            f"legend_next_{player.brawlhalla_id}",
+        )
+        return InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        legend.legend_name_key.capitalize(),
+                        callback_data=f"{View.LEGEND}_{player.brawlhalla_id}_{legend.legend_id}",
+                    )
+                ]
+                for legend in player.legends[current * limit : (current + 1) * limit]
+            ]
+            + [buttons]
+            + Keyboard.close_buttons(_)
+        )
+
     def stats(
         brawlhalla_id_one: int,
         current_view: View,
@@ -149,6 +173,15 @@ class Keyboard:
                     InlineKeyboardButton(
                         _("button_clan"),
                         callback_data=f"{View.CLAN}_{brawlhalla_id_one}",
+                    )
+                ]
+            )
+        if current_view != View.LEGEND:
+            buttons.append(
+                [
+                    InlineKeyboardButton(
+                        _("button_legend"),
+                        callback_data=f"{View.LEGEND}_{brawlhalla_id_one}",
                     )
                 ]
             )
@@ -198,14 +231,15 @@ class Keyboard:
             ]
         )
 
-    def issues(text: str) -> InlineKeyboardMarkup:
+    def issues(_) -> InlineKeyboardMarkup:
         return InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        text,
+                        _("button_issue"),
                         url="https://github.com/NicKoehler/brawlhalla_bot/issues",
                     )
                 ]
             ]
+            + Keyboard.close_buttons(_)
         )
