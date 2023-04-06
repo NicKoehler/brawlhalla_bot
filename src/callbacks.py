@@ -7,8 +7,8 @@ from datetime import timedelta
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
 from brawlhalla_api.types import Legend
-from babel.dates import format_datetime
 from pyrogram.types import Message, CallbackQuery
+from babel.dates import format_datetime, format_timedelta
 
 
 async def general_checks(
@@ -524,8 +524,14 @@ async def handle_legend_detail(
                     xp=legend.xp,
                     weaponone=legend_obj.weapon_one,
                     weapontwo=legend_obj.weapon_two,
-                    timeheldweaponone=legend.timeheldweaponone,
-                    timeheldweapontwo=legend.timeheldweapontwo,
+                    timeheldweaponone=format_timedelta(
+                        legend.timeheldweaponone,
+                        locale=translate.keywords.get("locale"),
+                    ),
+                    timeheldweapontwo=format_timedelta(
+                        legend.timeheldweapontwo,
+                        locale=translate.keywords.get("locale"),
+                    ),
                     matchtime="\n".join(game_time_list) or "❌",
                     games=legend.games,
                     wins=legend.wins,
