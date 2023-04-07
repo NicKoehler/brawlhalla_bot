@@ -3,6 +3,7 @@ import traceback
 from os import environ
 from cache import Cache
 from html import escape
+from legends import Legends
 from functools import wraps
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -41,7 +42,7 @@ localization = Localization()
 brawl = Brawlhalla(API_KEY)
 bot = Client("Brawltool", API_ID, API_HASH, bot_token=BOT_TOKEN)
 cache = Cache(180)
-legends_cache = {}
+legends = Legends(brawl)
 users_settings = UserSettings()
 
 
@@ -86,7 +87,7 @@ async def start(_: Client, message: Message, translate: Translator):
 @bot.on_message(filters.command(["search", "cerca"]))
 @user_language
 async def search_player(_: Client, message: Message, translate: Translator):
-    await handle_search(brawl, cache, translate, message=message)
+    await handle_search(brawl, cache, legends, translate, message=message)
 
 
 @bot.on_message(filters.command("id"))
@@ -98,7 +99,14 @@ async def player_id(_: Client, message: Message, translate: Translator):
 
     brawlhalla_id = int(message.command[1])
 
-    await handle_general(brawl, brawlhalla_id, cache, translate, message=message)
+    await handle_general(
+        brawl,
+        brawlhalla_id,
+        cache,
+        legends,
+        translate,
+        message=message,
+    )
 
 
 @bot.on_message(filters.command("me"))
@@ -108,20 +116,27 @@ async def player_me(_: Client, message: Message, translate: Translator):
     if brawlhalla_id is None:
         await message.reply(translate.error_missing_default_player())
         return
-    await handle_general(brawl, brawlhalla_id, cache, translate, message=message)
+    await handle_general(
+        brawl,
+        brawlhalla_id,
+        cache,
+        legends,
+        translate,
+        message=message,
+    )
 
 
 @bot.on_message(filters.command("legend"))
 @user_language
 async def player_legend(_: Client, message: Message, translate: Translator):
     if len(message.command) < 2:
-        await handle_legend_stats(legends_cache, translate, message=message)
+        await handle_legend_stats(legends, translate, message=message)
 
 
 @bot.on_callback_query(filters.regex(r"^button_(next|prev)$"))
 @user_language
 async def search_player_page(_: Client, callback: CallbackQuery, translate: Translator):
-    await handle_search(brawl, cache, translate, callback=callback)
+    await handle_search(brawl, cache, legends, translate, callback=callback)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(next|prev)_(\\d+)$"))
@@ -136,7 +151,7 @@ async def search_legend_personal_page(
         brawlhalla_id,
         callback,
         cache,
-        legends_cache,
+        legends,
         translate,
         current_page=current_page,
     )
@@ -147,7 +162,7 @@ async def search_legend_personal_page(
 async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
     current_page = get_current_page(callback)
     await handle_legend_stats(
-        legends_cache, translate, callback=callback, current_page=current_page
+        legends, translate, callback=callback, current_page=current_page
     )
 
 
@@ -188,7 +203,14 @@ async def player_general_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
     brawlhalla_id = int(callback.matches[0].group(1))
-    await handle_general(brawl, brawlhalla_id, cache, translate, callback=callback)
+    await handle_general(
+        brawl,
+        brawlhalla_id,
+        cache,
+        legends,
+        translate,
+        callback=callback,
+    )
 
 
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_SOLO}_(\\d+)$"))
@@ -234,7 +256,7 @@ async def player_legend_callback(
 ):
     brawlhalla_id = int(callback.matches[0].group(1))
     await handle_legend_personal_stats(
-        brawl, brawlhalla_id, callback, cache, legends_cache, translate
+        brawl, brawlhalla_id, callback, cache, legends, translate
     )
 
 
@@ -246,12 +268,8 @@ async def player_legend_detail_callback(
     regex = callback.matches[0]
     brawlhalla_id = int(regex.group(1))
     legend_id = int(regex.group(2))
-
-    if legend_id not in legends_cache:
-        await refresh_legends()
-
     await handle_legend_personal_details(
-        brawl, brawlhalla_id, legends_cache[legend_id], callback, cache, translate
+        brawl, brawlhalla_id, await legends.get(legend_id), callback, cache, translate
     )
 
 
@@ -262,7 +280,7 @@ async def player_legend_details_callback(
 ):
     regex = callback.matches[0]
     legend_id = int(regex.group(1))
-    await handle_legend_details(legends_cache[legend_id], callback, translate)
+    await handle_legend_details(await legends.get(legend_id), callback, translate)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_TEAM_DETAIL}_(\\d+)_(\\d+)$"))
@@ -318,14 +336,6 @@ async def close_callback(_: Client, callback: CallbackQuery):
     await callback.message.delete()
 
 
-async def refresh_legends():
-    legends = await brawl.get_legends()
-
-    legends_cache.clear()
-    for legend in legends:
-        legends_cache[legend.legend_id] = legend
-
-
 async def set_commands(bot: Client):
     for lang_code in SUPPORTED_LANGUAGES:
         translate = localization.get_translator(lang_code)
@@ -346,7 +356,7 @@ async def main():
     schedule = Scheduler()
     schedule.cyclic(timedelta(hours=1), cache.clear)
 
-    await refresh_legends()
+    await legends.refresh_legends()
     await bot.start()
     await set_commands(bot)
     await idle()

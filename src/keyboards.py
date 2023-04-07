@@ -1,8 +1,15 @@
 from enum import Enum
+from legends import Legends
 from localization import Translator
 from babel.dates import format_timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from brawlhalla_api.types import RankingResult, Clan, PlayerStats, Legend
+from brawlhalla_api.types import (
+    RankingResult,
+    PlayerStats,
+    PlayerStatsLegend,
+    Legend,
+    Clan,
+)
 
 
 class View(Enum):
@@ -124,12 +131,12 @@ class Keyboard:
             + Keyboard.close_buttons(_)
         )
 
-    def legends(
+    async def legends(
         current: int,
         total_pages: int,
         limit: int,
         translator: Translator,
-        legends: list[Legend] | dict[int, Legend],
+        legends: list[PlayerStatsLegend] | Legends,
         player: PlayerStats = None,
         rows: int = 2,
     ) -> InlineKeyboardMarkup:
@@ -153,9 +160,7 @@ class Keyboard:
             keys = [
                 InlineKeyboardButton(
                     "{} ({})".format(
-                        legends[legend.legend_id].bio_name
-                        if legend.legend_id in legends
-                        else legend.legend_name_key.capitalize(),
+                        (await legends.get(legend.legend_id)).bio_name,
                         format_timedelta(
                             legend.matchtime,
                             locale=translator.locale_str,
@@ -167,7 +172,7 @@ class Keyboard:
             ]
 
         else:
-            iterator = legends[current * limit : (current + 1) * limit]
+            iterator = legends.all()[current * limit : (current + 1) * limit]
             keys = [
                 InlineKeyboardButton(
                     legend.bio_name,

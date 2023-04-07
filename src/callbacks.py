@@ -2,6 +2,7 @@ import utils
 from math import ceil
 from html import escape
 from cache import Cache
+from legends import Legends
 from datetime import timedelta
 from localization import Translator
 from keyboards import Keyboard, View
@@ -50,6 +51,7 @@ async def ranked_checks(
 async def handle_search(
     brawl: Brawlhalla,
     cache: Cache,
+    legends: Legends,
     translate: Translator,
     message: Message = None,
     callback: CallbackQuery = None,
@@ -100,6 +102,7 @@ async def handle_search(
             brawl,
             results[0].brawlhalla_id,
             cache,
+            legends,
             translate,
             message=message,
             callback=callback,
@@ -152,6 +155,7 @@ async def handle_general(
     brawl: Brawlhalla,
     brawlhalla_id: int,
     cache: Cache,
+    legends: Legends,
     translate: Translator,
     message: Message = None,
     callback: CallbackQuery = None,
@@ -173,6 +177,11 @@ async def handle_general(
     ).total_seconds()
 
     total_game_time_list = make_played_time(translate, total_game_time)
+    most_used_legend_name = "❌"
+
+    if player.legends:
+        most_used_id = player.legends[0].legend_id
+        most_used_legend_name = (await legends.get(most_used_id)).bio_name
 
     to_send = {
         "text": translate.stats_base(
@@ -183,11 +192,7 @@ async def handle_general(
             level=utils.make_progress_bar(player.level, player.xp_percentage),
             xp=player.xp,
             clan=player.clan.clan_name if player.clan else "❌",
-            most_used_legend=max(
-                player.legends, key=lambda legend: legend.matchtime
-            ).legend_name_key.capitalize()
-            if player.legends
-            else "❌",
+            most_used_legend=most_used_legend_name,
             total_game_time="\n".join(total_game_time_list) or "❌",
             games=player.games,
             wins=player.wins,
@@ -221,7 +226,6 @@ async def handle_general(
         await message.reply(**to_send)
     elif callback:
         await callback.message.edit(**to_send)
-
     return True
 
 
@@ -441,7 +445,7 @@ async def handle_legend_personal_stats(
     brawlhalla_id: int,
     callback: CallbackQuery,
     cache: Cache,
-    legends_cache: dict[int, Legend],
+    legends: Legends,
     translate: Translator,
     page_limit: int = 10,
     current_page: int = 0,
@@ -470,12 +474,12 @@ async def handle_legend_personal_stats(
             current=current_page + 1,
             total=total_pages + 1,
         ),
-        reply_markup=Keyboard.legends(
+        reply_markup=await Keyboard.legends(
             current_page,
             total_pages,
             page_limit,
             translate,
-            legends_cache,
+            legends,
             player,
         ),
     )
@@ -560,26 +564,26 @@ async def handle_legend_personal_details(
 
 
 async def handle_legend_stats(
-    legend_cache,
+    legends: Legends,
     translator: Translator,
     message=None,
     callback=None,
     current_page=0,
     limit=20,
 ):
-    total_pages = ceil(len(legend_cache) / limit) - 1
+    total_pages = ceil(len(legends) / limit) - 1
 
     if current_page > total_pages:
         current_page = total_pages
 
     text = translator.results_legends(current=current_page + 1, total=total_pages + 1)
 
-    keyboard = Keyboard.legends(
+    keyboard = await Keyboard.legends(
         current_page,
         total_pages,
         limit,
         translator,
-        legends=list(legend_cache.values()),
+        legends=legends,
         rows=3,
     )
 

@@ -5,7 +5,10 @@ logger = logging.getLogger("Cache")
 
 
 class Cache:
-    def __init__(self, validation_seconds: int) -> None:
+    def __init__(
+        self,
+        validation_seconds: int = None,
+    ) -> None:
         self._validation_seconds = validation_seconds
         self._cache = {}
 
@@ -18,7 +21,16 @@ class Cache:
         """
 
         logger.debug("Adding cache for key '%s'", key)
-        self._cache[key] = (time(), data)
+        if self._validation_seconds is not None:
+            self._cache[key] = (time(), data)
+        else:
+            self._cache[key] = data
+
+    def values(self) -> list:
+        """
+        :return: The values of the cache
+        """
+        return list(self._cache.values())
 
     def get(self, key):
         """
@@ -26,13 +38,21 @@ class Cache:
         :return: The data of the entry
         """
         result = self._cache.get(key)
+
         if result is None:
             logger.debug("Nothing in cache for key '%s'", key)
             return
-        if time() - result[0] < self._validation_seconds:
+
+        if self._validation_seconds is None:
             logger.debug("Found valid cache for key '%s'", key)
-            return result[1]
-        logger.debug("Ivalid cache for key '%s'", key)
+            return result
+
+        if time() - result[0] > self._validation_seconds:
+            logger.debug("Ivalid cache for key '%s'", key)
+            return
+
+        logger.debug("Found valid cache for key '%s'", key)
+        return result[1]
 
     def remove(self, key) -> None:
         """
@@ -51,3 +71,6 @@ class Cache:
         """
         logger.debug("Clearing cache")
         self._cache.clear()
+
+    def __len__(self) -> int:
+        return len(self._cache)
