@@ -4,10 +4,9 @@ from localization import Translator
 from babel.dates import format_timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from brawlhalla_api.types import (
+    PlayerStatsLegend,
     RankingResult,
     PlayerStats,
-    PlayerStatsLegend,
-    Legend,
     Clan,
 )
 
@@ -151,8 +150,8 @@ class Keyboard:
             buttons = Keyboard.navigation_buttons(
                 current,
                 total_pages,
-                f"legend_prev",
-                f"legend_next",
+                "legend_prev",
+                "legend_next",
             )
         if player:
             iterator = player.legends[current * limit : (current + 1) * limit]
