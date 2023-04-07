@@ -69,7 +69,7 @@ async def handle_search(
             return
 
     elif callback:
-        current_page = utils.get_current_page(callback)
+        current_page, query = utils.get_current_page(callback, query=True)
 
     else:
         return
