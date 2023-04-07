@@ -57,9 +57,6 @@ class Translator:
     def description_start(self):
         return self.locale.DESCRIPTION_START
 
-    def eerror_length(self):
-        return self.locale.EERROR_LENGTH
-
     def error_generic(
         self,
         error
@@ -70,6 +67,9 @@ class Translator:
 
     def error_legend_result(self):
         return self.locale.ERROR_LEGEND_RESULT
+
+    def error_length(self):
+        return self.locale.ERROR_LENGTH
 
     def error_missing_default_player(self):
         return self.locale.ERROR_MISSING_DEFAULT_PLAYER
@@ -107,34 +107,34 @@ class Translator:
 
     def results_legends(
         self,
-        total,
-        current
+        current,
+        total
     ):
         return self.locale.RESULTS_LEGENDS.format(
-            total=total,
-            current=current
+            current=current,
+            total=total
         )
 
     def results_search(
         self,
-        total,
+        query,
         current,
-        query
+        total
     ):
         return self.locale.RESULTS_SEARCH.format(
-            total=total,
+            query=query,
             current=current,
-            query=query
+            total=total
         )
 
     def results_teams(
         self,
-        total,
-        current
+        current,
+        total
     ):
         return self.locale.RESULTS_TEAMS.format(
-            total=total,
-            current=current
+            current=current,
+            total=total
         )
 
     def search(self):
@@ -152,184 +152,184 @@ class Translator:
 
     def stats_clan(
         self,
+        num,
         name,
+        total,
+        xp,
         current,
         id,
-        num,
-        total,
-        date,
-        xp
+        date
     ):
         return self.locale.STATS_CLAN.format(
+            num=num,
             name=name,
+            total=total,
+            xp=xp,
             current=current,
             id=id,
-            num=num,
-            total=total,
-            date=date,
-            xp=xp
+            date=date
         )
 
     def stats_general(
         self,
-        komine,
-        kobomb,
-        loses,
-        kospikeball,
-        damagespikeball,
         games,
-        damagebomb,
-        totalsuicide,
-        totalko,
-        xp,
         hitsnowball,
         winperc,
-        most_used_legend,
-        kosidekick,
-        total_game_time,
-        clan,
         damagesidekick,
-        totalteamko,
-        damagemine,
-        totaldeath,
-        level,
+        xp,
+        total_game_time,
+        totalko,
+        kosnowball,
         wins,
-        kosnowball
+        loses,
+        level,
+        damagemine,
+        kospikeball,
+        totalsuicide,
+        most_used_legend,
+        damagebomb,
+        damagespikeball,
+        kosidekick,
+        totaldeath,
+        komine,
+        kobomb,
+        totalteamko,
+        clan
     ):
         return self.locale.STATS_GENERAL.format(
-            komine=komine,
-            kobomb=kobomb,
-            loses=loses,
-            kospikeball=kospikeball,
-            damagespikeball=damagespikeball,
             games=games,
-            damagebomb=damagebomb,
-            totalsuicide=totalsuicide,
-            totalko=totalko,
-            xp=xp,
             hitsnowball=hitsnowball,
             winperc=winperc,
-            most_used_legend=most_used_legend,
-            kosidekick=kosidekick,
-            total_game_time=total_game_time,
-            clan=clan,
             damagesidekick=damagesidekick,
-            totalteamko=totalteamko,
-            damagemine=damagemine,
-            totaldeath=totaldeath,
-            level=level,
+            xp=xp,
+            total_game_time=total_game_time,
+            totalko=totalko,
+            kosnowball=kosnowball,
             wins=wins,
-            kosnowball=kosnowball
+            loses=loses,
+            level=level,
+            damagemine=damagemine,
+            kospikeball=kospikeball,
+            totalsuicide=totalsuicide,
+            most_used_legend=most_used_legend,
+            damagebomb=damagebomb,
+            damagespikeball=damagespikeball,
+            kosidekick=kosidekick,
+            totaldeath=totaldeath,
+            komine=komine,
+            kobomb=kobomb,
+            totalteamko=totalteamko,
+            clan=clan
         )
 
     def stats_legend(
         self,
-        suicide,
-        loses,
-        koweaponone,
-        damageweaponone,
-        teamko,
-        name,
-        ko,
-        kothrownitem,
-        damagethrownitem,
-        timeheldweapontwo,
-        kounarmed,
         games,
-        weapontwo,
-        xp,
-        winperc,
-        id,
-        damageunarmed,
-        damagedealt,
-        matchtime,
-        weaponone,
+        koweaponone,
         koweapontwo,
-        damageweapontwo,
         kogadgets,
-        level,
-        wins,
-        timeheldweaponone,
-        death,
+        winperc,
+        damageweaponone,
+        xp,
+        damageunarmed,
+        name,
+        damagegadgets,
         damagetaken,
-        damagegadgets
+        wins,
+        loses,
+        level,
+        weaponone,
+        teamko,
+        suicide,
+        id,
+        weapontwo,
+        damagethrownitem,
+        kounarmed,
+        kothrownitem,
+        timeheldweaponone,
+        timeheldweapontwo,
+        damagedealt,
+        damageweapontwo,
+        matchtime,
+        ko,
+        death
     ):
         return self.locale.STATS_LEGEND.format(
-            suicide=suicide,
-            loses=loses,
-            koweaponone=koweaponone,
-            damageweaponone=damageweaponone,
-            teamko=teamko,
-            name=name,
-            ko=ko,
-            kothrownitem=kothrownitem,
-            damagethrownitem=damagethrownitem,
-            timeheldweapontwo=timeheldweapontwo,
-            kounarmed=kounarmed,
             games=games,
-            weapontwo=weapontwo,
-            xp=xp,
-            winperc=winperc,
-            id=id,
-            damageunarmed=damageunarmed,
-            damagedealt=damagedealt,
-            matchtime=matchtime,
-            weaponone=weaponone,
+            koweaponone=koweaponone,
             koweapontwo=koweapontwo,
-            damageweapontwo=damageweapontwo,
             kogadgets=kogadgets,
-            level=level,
-            wins=wins,
-            timeheldweaponone=timeheldweaponone,
-            death=death,
+            winperc=winperc,
+            damageweaponone=damageweaponone,
+            xp=xp,
+            damageunarmed=damageunarmed,
+            name=name,
+            damagegadgets=damagegadgets,
             damagetaken=damagetaken,
-            damagegadgets=damagegadgets
+            wins=wins,
+            loses=loses,
+            level=level,
+            weaponone=weaponone,
+            teamko=teamko,
+            suicide=suicide,
+            id=id,
+            weapontwo=weapontwo,
+            damagethrownitem=damagethrownitem,
+            kounarmed=kounarmed,
+            kothrownitem=kothrownitem,
+            timeheldweaponone=timeheldweaponone,
+            timeheldweapontwo=timeheldweapontwo,
+            damagedealt=damagedealt,
+            damageweapontwo=damageweapontwo,
+            matchtime=matchtime,
+            ko=ko,
+            death=death
         )
 
     def stats_ranked(
         self,
-        region,
-        rating,
-        glory,
-        loses,
-        elo_reset,
         games,
         peak,
+        tier,
         wins,
-        tier
+        glory,
+        loses,
+        region,
+        elo_reset,
+        rating
     ):
         return self.locale.STATS_RANKED.format(
-            region=region,
-            rating=rating,
-            glory=glory,
-            loses=loses,
-            elo_reset=elo_reset,
             games=games,
             peak=peak,
+            tier=tier,
             wins=wins,
-            tier=tier
+            glory=glory,
+            loses=loses,
+            region=region,
+            elo_reset=elo_reset,
+            rating=rating
         )
 
     def stats_ranked_team(
         self,
-        region,
-        rating,
-        loses,
         games,
-        peak,
-        wins,
         teamname,
-        tier
+        peak,
+        tier,
+        wins,
+        loses,
+        region,
+        rating
     ):
         return self.locale.STATS_RANKED_TEAM.format(
-            region=region,
-            rating=rating,
-            loses=loses,
             games=games,
-            peak=peak,
-            wins=wins,
             teamname=teamname,
-            tier=tier
+            peak=peak,
+            tier=tier,
+            wins=wins,
+            loses=loses,
+            region=region,
+            rating=rating
         )
 
     def status_default_player_set(self):

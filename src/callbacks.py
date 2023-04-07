@@ -65,10 +65,7 @@ async def handle_search(
             await message.reply(translate.usage_search())
             return
 
-        len_query = len(query)
-
-        if len_query < 2 or len_query > 32:
-            await message.reply(translate.error_length())
+        if await utils.is_query_invalid(query, message, translate):
             return
 
     elif callback:

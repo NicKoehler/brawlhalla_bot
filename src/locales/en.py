@@ -31,7 +31,7 @@ USAGE_ID = (
 )
 
 # Errors
-EERROR_LENGTH = "The search query must be between 2 and 32 characters"
+ERROR_LENGTH = "The search query must be between 2 and 32 characters"
 ERROR_SEARCH_RESULT = "No player found searching <b>{query}</b>"
 ERROR_LEGEND_RESULT = "No legend found"
 ERROR_TEAM_RESULT = "No team found"

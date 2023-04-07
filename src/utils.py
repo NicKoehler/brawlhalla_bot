@@ -1,4 +1,5 @@
-from pyrogram.types import CallbackQuery
+from localization import Translator
+from pyrogram.types import CallbackQuery, Message
 
 
 def make_progress_bar(level: int, xp_percentage: float) -> str:
@@ -22,3 +23,12 @@ def get_current_page(
         return current_page, int(callback.matches[0].group(2))
 
     return current_page
+
+
+async def is_query_invalid(query, message: Message, translate: Translator) -> bool:
+    len_query = len(query)
+
+    if len_query < 2 or len_query > 32:
+        await message.reply(translate.error_length())
+        return True
+    return False

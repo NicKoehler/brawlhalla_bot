@@ -7,12 +7,12 @@ from legends import Legends
 from functools import wraps
 from dotenv import load_dotenv
 from datetime import timedelta
-from utils import get_current_page
 from pyrogram import Client, filters
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
 from user_settings import UserSettings
 from pyrogram.methods.utilities.idle import idle
+from utils import get_current_page, is_query_invalid
 from pyrogram.types import Message, CallbackQuery, BotCommand
 from localization import Localization, Translator, SUPPORTED_LANGUAGES
 from callbacks import (
@@ -131,6 +131,14 @@ async def player_me(_: Client, message: Message, translate: Translator):
 async def player_legend(_: Client, message: Message, translate: Translator):
     if len(message.command) < 2:
         await handle_legend_stats(legends, translate, message=message)
+        return
+    query = " ".join(message.command[1:]).lower()
+    if await is_query_invalid(query, message, translate):
+        return
+    for legend in legends.all():
+        if legend.legend_name_key == query:
+            await message.reply(legend)
+            return
 
 
 @bot.on_callback_query(filters.regex(r"^button_(next|prev)$"))
