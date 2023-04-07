@@ -436,11 +436,12 @@ async def handle_ranked_team_detail(
             break
 
 
-async def handle_legend(
+async def handle_legend_personal_stats(
     brawl: Brawlhalla,
     brawlhalla_id: int,
     callback: CallbackQuery,
     cache: Cache,
+    legends_cache: dict[int, Legend],
     translate: Translator,
     page_limit: int = 10,
     current_page: int = 0,
@@ -470,12 +471,17 @@ async def handle_legend(
             total=total_pages + 1,
         ),
         reply_markup=Keyboard.legends(
-            player, current_page, total_pages, page_limit, translate
+            current_page,
+            total_pages,
+            page_limit,
+            translate,
+            legends_cache,
+            player,
         ),
     )
 
 
-async def handle_legend_detail(
+async def handle_legend_personal_details(
     brawl: Brawlhalla,
     brawlhalla_id: int,
     legend_obj: Legend,
@@ -505,7 +511,7 @@ async def handle_legend_detail(
                 )
                 + translate.stats_legend(
                     id=legend.legend_id,
-                    name=legend.legend_name_key.capitalize(),
+                    name=legend_obj.bio_name,
                     level=utils.make_progress_bar(legend.level, legend.xp_percentage),
                     xp=legend.xp,
                     weaponone=legend_obj.weapon_one,
@@ -551,3 +557,47 @@ async def handle_legend_detail(
                 ),
             )
             break
+
+
+async def handle_legend_stats(
+    legend_cache,
+    translator: Translator,
+    message=None,
+    callback=None,
+    current_page=0,
+    limit=20,
+):
+    total_pages = ceil(len(legend_cache) / limit) - 1
+
+    if current_page > total_pages:
+        current_page = total_pages
+
+    text = translator.results_legends(current=current_page + 1, total=total_pages + 1)
+
+    keyboard = Keyboard.legends(
+        current_page,
+        total_pages,
+        limit,
+        translator,
+        legends=list(legend_cache.values()),
+        rows=3,
+    )
+
+    if message:
+        await message.reply(
+            text,
+            reply_markup=keyboard,
+        )
+    elif callback:
+        await callback.message.edit(
+            text,
+            reply_markup=keyboard,
+        )
+
+
+async def handle_legend_details(
+    legend: Legend,
+    callback,
+    translator: Translator,
+):
+    await callback.message.edit(legend)

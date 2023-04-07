@@ -6,6 +6,7 @@ DESCRIPTION_LANGUAGE = "Change the language of the bot"
 DESCRIPTION_SEARCH = "Search for a player"
 DESCRIPTION_START = "Shows the first start message"
 DESCRIPTION_ID = "Shows the statistics of a player with the specified ID"
+DESCRIPTION_LEGEND = "Shows the statistics of a legend"
 DESCRIPTION_ME = "Shows the statistics of the player set as default"
 
 WELCOME = (
@@ -14,6 +15,7 @@ WELCOME = (
     f"🔍 • /{SEARCH} - {DESCRIPTION_SEARCH}\n"
     f"🆔 • /id - {DESCRIPTION_ID}\n"
     f"👤 • /me - {DESCRIPTION_ME}\n"
+    f"🥷 • /legend - {DESCRIPTION_LEGEND}\n"
     f"🌐 • /{LANGUAGE} - {DESCRIPTION_LANGUAGE}"
 )
 

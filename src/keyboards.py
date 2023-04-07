@@ -1,8 +1,8 @@
 from enum import Enum
 from localization import Translator
 from babel.dates import format_timedelta
-from brawlhalla_api.types import RankingResult, Clan, PlayerStats
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from brawlhalla_api.types import RankingResult, Clan, PlayerStats, Legend
 
 
 class View(Enum):
@@ -125,36 +125,61 @@ class Keyboard:
         )
 
     def legends(
-        player: PlayerStats,
         current: int,
         total_pages: int,
         limit: int,
         translator: Translator,
+        legends: list[Legend] | dict[int, Legend],
+        player: PlayerStats = None,
+        rows: int = 2,
     ) -> InlineKeyboardMarkup:
-        buttons = Keyboard.navigation_buttons(
-            current,
-            total_pages,
-            f"legend_prev_{player.brawlhalla_id}",
-            f"legend_next_{player.brawlhalla_id}",
-        )
-        return InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "{} ({})".format(
-                            legend.legend_name_key.capitalize(),
-                            format_timedelta(
-                                legend.matchtime,
-                                locale=translator.locale_str,
-                            ),
+        if player:
+            buttons = Keyboard.navigation_buttons(
+                current,
+                total_pages,
+                f"legend_prev_{player.brawlhalla_id}",
+                f"legend_next_{player.brawlhalla_id}",
+            )
+        elif legends:
+            buttons = Keyboard.navigation_buttons(
+                current,
+                total_pages,
+                f"legend_prev",
+                f"legend_next",
+            )
+        if player:
+            iterator = player.legends[current * limit : (current + 1) * limit]
+
+            keys = [
+                InlineKeyboardButton(
+                    "{} ({})".format(
+                        legends[legend.legend_id].bio_name
+                        if legend.legend_id in legends
+                        else legend.legend_name_key.capitalize(),
+                        format_timedelta(
+                            legend.matchtime,
+                            locale=translator.locale_str,
                         ),
-                        callback_data=f"{View.LEGEND}_{player.brawlhalla_id}_{legend.legend_id}",
-                    )
-                ]
-                for legend in player.legends[current * limit : (current + 1) * limit]
+                    ),
+                    callback_data=f"{View.LEGEND}_{player.brawlhalla_id}_{legend.legend_id}",
+                )
+                for legend in iterator
             ]
-            + [buttons]
-            + Keyboard.close_buttons(translator)
+
+        else:
+            iterator = legends[current * limit : (current + 1) * limit]
+            keys = [
+                InlineKeyboardButton(
+                    legend.bio_name,
+                    callback_data=f"{View.LEGEND}_stats_{legend.legend_id}",
+                )
+                for legend in iterator
+            ]
+
+        keys = [keys[i : i + rows] for i in range(0, len(keys), rows)]
+
+        return InlineKeyboardMarkup(
+            keys + [buttons] + Keyboard.close_buttons(translator)
         )
 
     def stats(

@@ -18,11 +18,13 @@ from callbacks import (
     handle_clan,
     handle_search,
     handle_general,
-    handle_legend,
     handle_ranked_solo,
     handle_ranked_team,
-    handle_legend_detail,
+    handle_legend_stats,
+    handle_legend_details,
     handle_ranked_team_detail,
+    handle_legend_personal_stats,
+    handle_legend_personal_details,
 )
 
 from scheduler.asyncio import Scheduler
@@ -109,24 +111,43 @@ async def player_me(_: Client, message: Message, translate: Translator):
     await handle_general(brawl, brawlhalla_id, cache, translate, message=message)
 
 
+@bot.on_message(filters.command("legend"))
+@user_language
+async def player_legend(_: Client, message: Message, translate: Translator):
+    if len(message.command) < 2:
+        await handle_legend_stats(legends_cache, translate, message=message)
+
+
 @bot.on_callback_query(filters.regex(r"^button_(next|prev)$"))
 @user_language
 async def search_player_page(_: Client, callback: CallbackQuery, translate: Translator):
     await handle_search(brawl, cache, translate, callback=callback)
 
 
-@bot.on_callback_query(filters.regex(r"^legend_(next|prev)_(\d+)$"))
+@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(next|prev)_(\\d+)$"))
 @user_language
-async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
+async def search_legend_personal_page(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
     current_page, brawlhalla_id = get_current_page(callback, brawlhalla_id=True)
 
-    await handle_legend(
+    await handle_legend_personal_stats(
         brawl,
         brawlhalla_id,
         callback,
         cache,
+        legends_cache,
         translate,
         current_page=current_page,
+    )
+
+
+@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(next|prev)$"))
+@user_language
+async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
+    current_page = get_current_page(callback)
+    await handle_legend_stats(
+        legends_cache, translate, callback=callback, current_page=current_page
     )
 
 
@@ -146,7 +167,7 @@ async def search_team_page(_: Client, callback: CallbackQuery, translate: Transl
     )
 
 
-@bot.on_callback_query(filters.regex(r"^clan_(next|prev)_(\d+)$"))
+@bot.on_callback_query(filters.regex(f"^{View.CLAN}_(next|prev)_(\\d+)$"))
 @user_language
 async def search_clan_page(_: Client, callback: CallbackQuery, translate: Translator):
     current_page, clan_id = get_current_page(callback, clan_id=True)
@@ -212,7 +233,9 @@ async def player_legend_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
     brawlhalla_id = int(callback.matches[0].group(1))
-    await handle_legend(brawl, brawlhalla_id, callback, cache, translate)
+    await handle_legend_personal_stats(
+        brawl, brawlhalla_id, callback, cache, legends_cache, translate
+    )
 
 
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(\\d+)_(\\d+)$"))
@@ -227,9 +250,19 @@ async def player_legend_detail_callback(
     if legend_id not in legends_cache:
         await refresh_legends()
 
-    await handle_legend_detail(
+    await handle_legend_personal_details(
         brawl, brawlhalla_id, legends_cache[legend_id], callback, cache, translate
     )
+
+
+@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_stats_(\\d+)$"))
+@user_language
+async def player_legend_details_callback(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
+    regex = callback.matches[0]
+    legend_id = int(regex.group(1))
+    await handle_legend_details(legends_cache[legend_id], callback, translate)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_TEAM_DETAIL}_(\\d+)_(\\d+)$"))
@@ -264,7 +297,7 @@ async def language_command(_: Client, message: Message, translate: Translator):
     )
 
 
-@bot.on_callback_query(filters.regex("en|it"))
+@bot.on_callback_query(filters.regex(r"^(en|it)$"))
 @user_language
 async def language_callback(_: Client, callback: CallbackQuery, translate: Translator):
     lang = callback.data
@@ -280,7 +313,7 @@ async def language_callback(_: Client, callback: CallbackQuery, translate: Trans
     await callback.message.delete()
 
 
-@bot.on_callback_query(filters.regex("^close$"))
+@bot.on_callback_query(filters.regex(r"^close$"))
 async def close_callback(_: Client, callback: CallbackQuery):
     await callback.message.delete()
 
@@ -302,6 +335,7 @@ async def set_commands(bot: Client):
                 BotCommand(translate.search(), translate.description_search()),
                 BotCommand("id", translate.description_id()),
                 BotCommand("me", translate.description_me()),
+                BotCommand("legend", translate.description_legend()),
                 BotCommand(translate.language(), translate.description_language()),
             ],
             language_code=lang_code,
