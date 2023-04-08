@@ -71,7 +71,10 @@ class Keyboard:
         )
 
     def teams(
-        player: RankingResult, current: int, total_pages: int, limit: int, _
+        player: RankingResult,
+        current: int,
+        total_pages: int,
+        limit: int,
     ) -> InlineKeyboardMarkup:
         buttons = Keyboard.navigation_buttons(
             current,
@@ -104,7 +107,6 @@ class Keyboard:
                 for team in player.teams[current * limit : (current + 1) * limit]
             ]
             + [buttons]
-            + Keyboard.close_buttons(_)
         )
 
     def clan_components(
@@ -141,14 +143,14 @@ class Keyboard:
         rows: int = 2,
     ) -> InlineKeyboardMarkup:
         if player:
-            buttons = Keyboard.navigation_buttons(
+            navigation_buttons = Keyboard.navigation_buttons(
                 current,
                 total_pages,
                 f"legend_prev_{player.brawlhalla_id}",
                 f"legend_next_{player.brawlhalla_id}",
             )
-        elif legends:
-            buttons = Keyboard.navigation_buttons(
+        else:
+            navigation_buttons = Keyboard.navigation_buttons(
                 current,
                 total_pages,
                 "legend_prev",
@@ -172,7 +174,7 @@ class Keyboard:
             ]
 
         else:
-            iterator = legends.all()[current * limit : (current + 1) * limit]
+            iterator = legends.all[current * limit : (current + 1) * limit]
             keys = [
                 InlineKeyboardButton(
                     legend.bio_name,
@@ -181,11 +183,14 @@ class Keyboard:
                 for legend in iterator
             ]
 
-        keys = [keys[i : i + rows] for i in range(0, len(keys), rows)]
+        keys = [keys[i : i + rows] for i in range(0, len(keys), rows)] + [
+            navigation_buttons
+        ]
 
-        return InlineKeyboardMarkup(
-            keys + [buttons] + Keyboard.close_buttons(translator)
-        )
+        if not player:
+            keys += Keyboard.close_buttons(translator)
+
+        return InlineKeyboardMarkup(keys)
 
     def stats(
         brawlhalla_id_one: int,

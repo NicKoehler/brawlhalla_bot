@@ -134,7 +134,7 @@ async def player_legend(_: Client, message: Message, translate: Translator):
     query = escape(" ".join(message.command[1:]).lower())
     if await is_query_invalid(query, message, translate):
         return
-    for legend in legends.all():
+    for legend in legends.all:
         if legend.legend_name_key == query:
             await handle_legend_details(legend, translate, message)
             return

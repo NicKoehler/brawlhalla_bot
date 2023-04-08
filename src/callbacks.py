@@ -362,9 +362,7 @@ async def handle_ranked_team(
             current=current_page + 1,
             total=total_pages + 1,
         ),
-        reply_markup=Keyboard.teams(
-            player, current_page, total_pages, page_limit, translate
-        ),
+        reply_markup=Keyboard.teams(player, current_page, total_pages, page_limit),
     )
 
 

@@ -86,19 +86,36 @@ class Legends:
 
     async def refresh_legends(self):
         legends = await self._brawl.get_legends()
-        await self._cache.clear()
-        for legend in legends:
-            self._cache.add(legend.legend_id, legend)
+        self.refresh_weapons(legends)
+        self._cache.add("legends", {legend.legend_id: legend for legend in legends})
 
     async def get(self, legend_id: int) -> Legend:
-        legend = self._cache.get(legend_id)
+        legend = self._cache.get("legends").get(legend_id)
         if legend is None:
             await self.refresh_legends()
-            legend = self._cache.get(legend_id)
+            legend = self._cache.get("legends").get(legend_id)
+
         return legend
 
+    def refresh_weapons(self, legends: list[Legend]) -> None:
+        weapons = list(
+            set(
+                item
+                for sublist in [
+                    [legend.weapon_one, legend.weapon_two] for legend in legends
+                ]
+                for item in sublist
+            )
+        )
+        self._cache.add("weapons", weapons)
+
+    @property
     def all(self) -> Legend:
-        return self._cache.values()
+        return list(self._cache.get("legends").values())
+
+    @property
+    def weapons(self) -> list[str]:
+        return self._cache.get("weapons")
 
     def __contains__(self, key: int) -> bool:
         return key in self._cache
@@ -107,4 +124,4 @@ class Legends:
         return self.get(key)
 
     def __len__(self) -> int:
-        return len(self._cache)
+        return len(self._cache.get("legends"))
