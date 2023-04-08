@@ -1,13 +1,13 @@
-import utils
+import helpers.utils as utils
+
 from math import ceil
 from html import escape
-from cache import Cache
-from legends import Legends
 from datetime import timedelta
 from localization import Translator
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
 from brawlhalla_api.types import Legend
+from helpers.cache import Cache, Legends
 from pyrogram.types import Message, CallbackQuery
 from babel.dates import format_datetime, format_timedelta
 
@@ -510,7 +510,7 @@ async def handle_legend_personal_details(
                     id=player.brawlhalla_id,
                     name=player.name,
                 )
-                + translate.stats_legend(
+                + translate.stats_player_legend(
                     id=legend.legend_id,
                     name=legend_obj.bio_name,
                     level=utils.make_progress_bar(legend.level, legend.xp_percentage),
@@ -598,7 +598,30 @@ async def handle_legend_stats(
 
 async def handle_legend_details(
     legend: Legend,
-    callback,
     translator: Translator,
+    message: Message = None,
+    callback: CallbackQuery = None,
 ):
-    await callback.message.edit(legend)
+    to_send = {
+        "text": translator.stats_legend(
+            legend_id=legend.legend_id,
+            legend_name_key=legend.legend_name_key,
+            bio_name=legend.bio_name,
+            bio_aka=legend.bio_aka,
+            weapon_one=legend.weapon_one,
+            weapon_two=legend.weapon_two,
+            strength=legend.strength,
+            dexterity=legend.dexterity,
+            defense=legend.defense,
+            speed=legend.speed,
+        ),
+        "reply_markup": Keyboard.legends_weapons(translator),
+    }
+
+    if callback:
+        send = getattr(callback.message, "edit")
+
+    if message:
+        send = getattr(message, "reply")
+
+    await send(**to_send)

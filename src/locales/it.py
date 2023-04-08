@@ -42,6 +42,7 @@ ERROR_NO_TEAM_DATA = (
 ERROR_MISSING_DEFAULT_PLAYER = (
     "Devi prima impostare un giocatore come predefinito per eseguire questo comando"
 )
+ERROR_LEGEND_NOT_FOUND = "La legenda <b>{query}</b> non è stata trovata"
 ERROR_GENERIC = (
     "Si è verificato un errore:\n\n"
     "<code>{error}</code>\n\n"
@@ -62,7 +63,7 @@ STATUS_DEFAULT_PLAYER_SET = "Giocatore impostato come predefinito"
 
 # Buttons
 BUTTON_GENERAL = "⚔️ • STATS GENERALI • ⚔️"
-BUTTON_LEGEND = "🥷 • LEGENDS • 🥷"
+BUTTON_LEGENDS = "🥷 • LEGENDS • 🥷"
 BUTTON_DEFAULT_PLAYER = "👤 • IMPOSTA PREDEFINITO • 👤"
 BUTTON_RANKED_SOLO = "🏆 • CLASSIFICATA 1V1 • 🏆"
 BUTTON_RANKED_TEAM = "🏆 • CLASSIFICATA 2V2 • 🏆"
@@ -70,6 +71,7 @@ BUTTON_TEAMMATE = "🙋‍♂️ • COMPAGNO DI SQUADRA • 🙋‍♂️"
 BUTTON_ISSUE = "🐙 • APRI UNA ISSUE • 🐱"
 BUTTON_CLAN = "🎖 • CLAN • 🎖"
 BUTTON_CLOSE = "❌ • CHIUDI • ❌"
+BUTTON_WEAPONS = "🔫 • ARMI • 🔫"
 
 # Time
 TIME_DAYS = "Giorni: {t}"
@@ -153,7 +155,7 @@ STATS_CLAN = """🆔 • Clan ID: <b>{id}</b>
 
 <b>{current}/{total}</b>"""
 
-STATS_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
+STATS_PLAYER_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 
 🆔 • Legend ID: <b>{id}</b>
 🥷 • Nome del legend: <b>{name}</b>
@@ -193,3 +195,18 @@ STATS_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 🎯 <b>LANCIO OGGETTI</b> 🎯
 ├─► KO: <b>{kothrownitem}</b>
 ╰─► Danni: <b>{damagethrownitem}</b>"""
+
+STATS_LEGEND = """🎮 • <b>STATISTICHE LEGEND</b> • 🎮
+
+🆔 • ID: <b>{legend_id}</b>
+🎭 • Nome: <b>{legend_name_key}</b>
+🔖 • Nome Alternativo: <b>{bio_name}</b>
+🎖️ • Alias: <b>{bio_aka}</b>
+
+🗡️ • Arma 1: <b>{weapon_one}</b>
+🗡️ • Arma 2: <b>{weapon_two}</b>
+
+💪 • Forza: <b>{strength}</b>
+🏹 • Destrezza: <b>{dexterity}</b>
+🛡️ • Difesa: <b>{defense}</b>
+🏃 • Velocità: <b>{speed}</b>"""

@@ -1,5 +1,5 @@
 from enum import Enum
-from legends import Legends
+from helpers.cache import Legends
 from localization import Translator
 from babel.dates import format_timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -14,6 +14,7 @@ from brawlhalla_api.types import (
 class View(Enum):
     CLAN = "clan"
     LEGEND = "legend"
+    WEAPON = "weapon"
     GENERAL = "general"
     RANKED_SOLO = "rankedsolo"
     RANKED_TEAM = "rankedteam"
@@ -207,7 +208,7 @@ class Keyboard:
             buttons.append(
                 [
                     InlineKeyboardButton(
-                        translate.button_legend(),
+                        translate.button_legends(),
                         callback_data=f"{View.LEGEND}_{brawlhalla_id_one}",
                     )
                 ]
@@ -259,6 +260,24 @@ class Keyboard:
                 ]
             )
         return InlineKeyboardMarkup(buttons)
+
+    def legends_weapons(translate: Translator) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        translate.button_legends(),
+                        callback_data=str(View.LEGEND),
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        translate.button_weapons(),
+                        callback_data=str(View.WEAPON),
+                    )
+                ],
+            ]
+        )
 
     def languages() -> InlineKeyboardMarkup:
         return InlineKeyboardMarkup(

@@ -42,6 +42,8 @@ ERROR_NO_TEAM_DATA = "This player has not played any ranked team games yet"
 ERROR_MISSING_DEFAULT_PLAYER = (
     "You need to set a player as default to execute this command."
 )
+ERROR_LEGEND_NOT_FOUND = "There are no legends matching <b>{query}</b>"
+
 ERROR_GENERIC = (
     "An error occurred:\n\n"
     "<code>{error}</code>\n\n"
@@ -61,7 +63,7 @@ STATUS_DEFAULT_PLAYER_SET = "Player set as default"
 
 # Buttons
 BUTTON_GENERAL = "⚔️ • GENERAL STATS • ⚔️"
-BUTTON_LEGEND = "🥷 • LEGENDS • 🥷"
+BUTTON_LEGENDS = "🥷 • LEGENDS • 🥷"
 BUTTON_DEFAULT_PLAYER = "👤 • SET AS DEFAULT • 👤"
 BUTTON_RANKED_SOLO = "🏆 • RANKED 1V1 • 🏆"
 BUTTON_RANKED_TEAM = "🏆 • RANKED 2V2 • 🏆"
@@ -69,6 +71,7 @@ BUTTON_TEAMMATE = "🙋‍♂️ • TEAM MATE • 🙋‍♂️"
 BUTTON_ISSUE = "🐙 • OPEN AN ISSUE • 🐱"
 BUTTON_CLAN = "🎖 • CLAN • 🎖"
 BUTTON_CLOSE = "❌ • CLOSE • ❌"
+BUTTON_WEAPONS = "🔫 • WEAPONS • 🔫"
 
 # Time
 TIME_DAYS = "Days : {t}"
@@ -153,7 +156,7 @@ STATS_CLAN = """🆔 • Clan ID:<b> {id} </b>
 
 <b>{current}/{total}</b>"""
 
-STATS_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
+STATS_PLAYER_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 
 🆔 • Legend ID: <b>{id}</b>
 🥷 • Legend Name: <b>{name}</b>
@@ -193,3 +196,18 @@ STATS_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 🎯 <b>THROWN ITEMS</b> 🎯
 ├─► KOs: <b>{kothrownitem}</b>
 ╰─► Damage: <b>{damagethrownitem}</b>"""
+
+STATS_LEGEND = """🎮 • <b>LEGEND STATS</b> • 🎮
+
+🆔 • ID: <b>{legend_id}</b>
+🎭 • Name: <b>{legend_name_key}</b>
+🔖 • Alternate Name: <b>{bio_name}</b>
+🎖️ • Alias: <b>{bio_aka}</b>
+
+🗡️ • Weapon 1: <b>{weapon_one}</b>
+🗡️ • Weapon 2: <b>{weapon_two}</b>
+
+💪 • Strength: <b>{strength}</b>
+🏹 • Dexterity: <b>{dexterity}</b>
+🛡️ • Defense: <b>{defense}</b>
+🏃 • Speed: <b>{speed}</b>"""

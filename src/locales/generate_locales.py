@@ -1,4 +1,4 @@
-from locales import en
+import en
 from re import compile
 
 SUPPORTED_LANGUAGES = {"it": "it_IT", "en": "en_US"}
