@@ -1,5 +1,5 @@
 from localization import Translator
-from pyrogram.types import CallbackQuery, Message
+from pyrogram.types import InlineKeyboardMarkup, CallbackQuery, Message
 
 
 def make_progress_bar(level: int, xp_percentage: float) -> str:
@@ -36,3 +36,16 @@ async def is_query_invalid(query, message: Message, translate: Translator) -> bo
         await message.reply(translate.error_length())
         return True
     return False
+
+
+async def send_or_edit_message(
+    update: Message | CallbackQuery, text: str, keyboard: InlineKeyboardMarkup
+) -> None:
+    if isinstance(update, Message):
+        send = getattr(update, "reply")
+    elif isinstance(update, CallbackQuery):
+        send = getattr(update.message, "edit")
+    else:
+        raise TypeError("update must be a Message or CallbackQuery")
+
+    await send(text, reply_markup=keyboard)

@@ -1,6 +1,6 @@
+babel==2.12.1
 TgCrypto==1.2.5
 Pyrogram==2.0.102
 scheduler==0.8.4
-pybabel==0.0.0.dev0
 python-dotenv==1.0.0
 git+https://github.com/NicKoehler/brawlhalla_api@dev

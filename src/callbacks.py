@@ -563,8 +563,7 @@ async def handle_legend_personal_details(
 async def handle_legend_stats(
     legends: Legends,
     translator: Translator,
-    message=None,
-    callback=None,
+    update: Message | CallbackQuery,
     current_page=0,
     limit=20,
 ):
@@ -573,27 +572,18 @@ async def handle_legend_stats(
     if current_page > total_pages:
         current_page = total_pages
 
-    text = translator.results_legends(current=current_page + 1, total=total_pages + 1)
-
-    keyboard = await Keyboard.legends(
-        current_page,
-        total_pages,
-        limit,
-        translator,
-        legends=legends,
-        rows=3,
+    await utils.send_or_edit_message(
+        update,
+        translator.results_legends(current=current_page + 1, total=total_pages + 1),
+        await Keyboard.legends(
+            current_page,
+            total_pages,
+            limit,
+            translator,
+            legends=legends,
+            rows=3,
+        ),
     )
-
-    if message:
-        await message.reply(
-            text,
-            reply_markup=keyboard,
-        )
-    elif callback:
-        await callback.message.edit(
-            text,
-            reply_markup=keyboard,
-        )
 
 
 async def handle_legend_details(

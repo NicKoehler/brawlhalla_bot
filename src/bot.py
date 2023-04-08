@@ -130,7 +130,7 @@ async def player_me(_: Client, message: Message, translate: Translator):
 @user_language
 async def player_legend(_: Client, message: Message, translate: Translator):
     if len(message.command) < 2:
-        await handle_legend_stats(legends, translate, message=message)
+        await handle_legend_stats(legends, translate, message)
         return
     query = escape(" ".join(message.command[1:]).lower())
     if await is_query_invalid(query, message, translate):
@@ -171,9 +171,7 @@ async def search_legend_personal_page(
 @user_language
 async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
     current_page = get_current_page(callback)
-    await handle_legend_stats(
-        legends, translate, callback=callback, current_page=current_page
-    )
+    await handle_legend_stats(legends, translate, callback, current_page=current_page)
 
 
 @bot.on_callback_query(filters.regex(r"^team_(next|prev)_(\d+)$"))
@@ -264,7 +262,7 @@ async def player_clan_callback(
 async def player_legend_list_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
-    await handle_legend_stats(legends, translate, callback=callback)
+    await handle_legend_stats(legends, translate, callback)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(\\d+)$"))
