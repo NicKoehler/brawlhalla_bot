@@ -2,6 +2,7 @@
 SEARCH = "cerca"
 LANGUAGE = "lingua"
 WEAPONS = "armi"
+MISSING = "mancanti"
 
 # Descriptions
 DESCRIPTION_LANGUAGE = "Cambia la lingua del bot"
@@ -11,6 +12,7 @@ DESCRIPTION_ID = "Mostra le statistiche di un giocatore con l'ID specificato"
 DESCRIPTION_LEGEND = "Mostra le statistiche di una legend"
 DESCRIPTION_WEAPONS = "Cerca una legend attraverso le tipologie di armi"
 DESCRIPTION_ME = "Mostra le statistiche del giocatore impostato come predefinito"
+DESCRIPTION_MISSING = "Mostra le combinazioni di armi mancanti"
 
 WELCOME = (
     "Benvenuto <b>{name}</b>.\n\n"
@@ -20,6 +22,7 @@ WELCOME = (
     f"👤 • /me - {DESCRIPTION_ME}\n"
     f"🥷 • /legend - {DESCRIPTION_LEGEND}\n"
     f"🗡️ • /{WEAPONS} - {DESCRIPTION_WEAPONS}\n"
+    f"❓ • /{MISSING} - {DESCRIPTION_MISSING}\n"
     f"🌐 • /{LANGUAGE} - {DESCRIPTION_LANGUAGE}"
 )
 
@@ -49,7 +52,9 @@ ERROR_MISSING_DEFAULT_PLAYER = (
 )
 ERROR_LEGEND_NOT_FOUND = "La legenda <b>{query}</b> non è stata trovata"
 ERROR_WEAPON_NOT_FOUND = "Non sono presenti armi cercando <b>{query}</b>"
-
+ERROR_MISSING_WEAPONS_COMBINATION_NOT_FOUND = (
+    "Non sono presenti combinazioni di armi mancanti cercando <b>{query}</b>"
+)
 ERROR_GENERIC = (
     "Si è verificato un errore:\n\n"
     "<code>{error}</code>\n\n"
@@ -64,6 +69,12 @@ RESULTS_TEAMS = "Squadre:\n<b>{current}/{total}</b>"
 RESULTS_LEGENDS = "Legends:\n<b>{current}/{total}</b>"
 RESULTS_LEGENDS_WITH_WEAPON = (
     "Legends che utilizzano <b>{weapon}</b>\n<b>{current}/{total}</b>:"
+)
+RESULTS_MISSING_WEAPONS_COMBINATION = (
+    "Combinazioni di armi mancanti:\n\n<b>{weapons}</b>"
+)
+RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
+    "Combinazioni di armi mancanti che utilizzano <b>{weapon}</b>:\n\n<b>{weapons}</b>"
 )
 
 # Status messages

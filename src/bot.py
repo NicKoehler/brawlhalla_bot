@@ -5,6 +5,7 @@ from html import escape
 from functools import wraps
 from dotenv import load_dotenv
 from datetime import timedelta
+from itertools import combinations
 from pyrogram import Client, filters
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
@@ -174,6 +175,41 @@ async def weapon(_: Client, message: Message, translate: Translator):
             await handle_legend_details(legend, translate, message)
             return
     await message.reply(translate.error_weapon_not_found(" ".join(weapons)))
+
+
+@bot.on_message(filters.command(["missing", "mancanti"]))
+@user_language
+async def missing_weapons(_: Client, message: Message, translate: Translator):
+    weapon = None
+    if len(message.command) > 1:
+        weapon = escape(message.command[1].lower())
+        if await is_query_invalid(weapon, message, translate):
+            return
+
+    weapons = set(f"{legend.weapon_one}_{legend.weapon_two}" for legend in legends.all)
+    missing = []
+    for combination in combinations(legends.weapons, 2):
+        w1, w2 = combination
+        if f"{w1}_{w2}" in weapons or f"{w2}_{w1}" in weapons:
+            continue
+        if weapon is None or weapon == w1 or weapon == w2:
+            missing.append(f"• {combination[0]} - {combination[1]}")
+
+    if not missing:
+        await message.reply(
+            translate.error_missing_weapons_combination_not_found(weapon)
+        )
+        return
+
+    text = "\n".join(missing)
+    await message.reply(
+        translate.results_missing_weapons_combination(text)
+        if weapon is None
+        else translate.results_missing_weapons_combination_with_weapon(
+            weapon=weapon.capitalize(),
+            weapons=text,
+        )
+    )
 
 
 @bot.on_callback_query(filters.regex(r"^button_(next|prev)$"))
@@ -409,6 +445,7 @@ async def set_commands(bot: Client):
                 BotCommand("me", translate.description_me()),
                 BotCommand("legend", translate.description_legend()),
                 BotCommand(translate.weapons(), translate.description_weapons()),
+                BotCommand(translate.missing(), translate.description_missing()),
                 BotCommand(translate.language(), translate.description_language()),
             ],
             language_code=lang_code,

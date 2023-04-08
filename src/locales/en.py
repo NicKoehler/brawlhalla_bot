@@ -2,6 +2,7 @@
 SEARCH = "search"
 LANGUAGE = "language"
 WEAPONS = "weapons"
+MISSING = "missing"
 
 # Descriptions
 DESCRIPTION_LANGUAGE = "Change the language of the bot"
@@ -10,6 +11,7 @@ DESCRIPTION_START = "Shows the first start message"
 DESCRIPTION_ID = "Shows the statistics of a player with the specified ID"
 DESCRIPTION_LEGEND = "Shows the statistics of a legend"
 DESCRIPTION_WEAPONS = "Search for a legend through weapon types"
+DESCRIPTION_MISSING = "Shows missing weapons combinations"
 DESCRIPTION_ME = "Shows the statistics of the player set as default"
 
 WELCOME = (
@@ -47,6 +49,9 @@ ERROR_MISSING_DEFAULT_PLAYER = (
 )
 ERROR_LEGEND_NOT_FOUND = "There are no legends matching <b>{query}</b>"
 ERROR_WEAPON_NOT_FOUND = "There are no weapons matching <b>{query}</b>"
+ERROR_MISSING_WEAPONS_COMBINATION_NOT_FOUND = (
+    "There are no weapons combination matching <b>{query}</b>"
+)
 
 ERROR_GENERIC = (
     "An error occurred:\n\n"
@@ -62,6 +67,10 @@ RESULTS_TEAMS = "Teams:\n<b>{current}/{total}</b>"
 RESULTS_LEGENDS = "Legends:\n<b>{current}/{total}</b>"
 RESULTS_LEGENDS_WITH_WEAPON = (
     "Legends with weapons <b>{weapon}</b>:\n<b>{current}/{total}</b>"
+)
+RESULTS_MISSING_WEAPONS_COMBINATION = "Missing weapons combination:\n\n<b>{weapons}</b>"
+RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
+    "Missing weapons combination with <b>{weapon}</b>:\n\n<b>{weapons}</b>"
 )
 
 # Status messages
