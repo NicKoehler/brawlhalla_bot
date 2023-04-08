@@ -10,17 +10,14 @@ def make_progress_bar(level: int, xp_percentage: float) -> str:
 
 
 def get_current_page(
-    callback: CallbackQuery, brawlhalla_id=False, clan_id=False, query=False
+    callback: CallbackQuery, get_second_param=False, query=False
 ) -> int:
     splitted = callback.message.text.split("\n")
     pages = splitted[-1]
     current_page = int(pages.split("/")[0]) - 1
     current_page += 1 if callback.matches[0].group(1) == "next" else -1
 
-    if brawlhalla_id:
-        return current_page, int(callback.matches[0].group(2))
-
-    if clan_id:
+    if get_second_param:
         return current_page, int(callback.matches[0].group(2))
 
     if query:

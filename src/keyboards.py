@@ -25,8 +25,28 @@ class View(Enum):
 
 
 class Keyboard:
-    def close_buttons(translate: Translator) -> list[list[InlineKeyboardButton]]:
+    def close_button(translate: Translator) -> list[list[InlineKeyboardButton]]:
         return [[InlineKeyboardButton(translate.button_close(), callback_data="close")]]
+
+    def legend_button(translate: Translator):
+        return [
+            [
+                InlineKeyboardButton(
+                    translate.button_legends(),
+                    callback_data=str(View.LEGEND),
+                )
+            ]
+        ]
+
+    def weapon_button(translate: Translator):
+        return [
+            [
+                InlineKeyboardButton(
+                    translate.button_weapons(),
+                    callback_data=str(View.WEAPON),
+                )
+            ]
+        ]
 
     def navigation_buttons(
         current: int,
@@ -67,7 +87,7 @@ class Keyboard:
                 for player in players[current * limit : (current + 1) * limit]
             ]
             + [buttons]
-            + Keyboard.close_buttons(translate)
+            + Keyboard.close_button(translate)
         )
 
     def teams(
@@ -130,7 +150,6 @@ class Keyboard:
                 for comp in clan.components[current * limit : (current + 1) * limit]
             ]
             + [buttons]
-            + Keyboard.close_buttons(_)
         )
 
     async def legends(
@@ -139,6 +158,7 @@ class Keyboard:
         limit: int,
         translator: Translator,
         legends: list[PlayerStatsLegend] | Legends,
+        weapon: str = None,
         player: PlayerStats = None,
         rows: int = 2,
     ) -> InlineKeyboardMarkup:
@@ -153,8 +173,8 @@ class Keyboard:
             navigation_buttons = Keyboard.navigation_buttons(
                 current,
                 total_pages,
-                "legend_prev",
-                "legend_next",
+                f"legend_prev_{weapon}" if weapon else "legend_prev",
+                f"legend_next_{weapon}" if weapon else "legend_next",
             )
         if player:
             iterator = player.legends[current * limit : (current + 1) * limit]
@@ -174,7 +194,11 @@ class Keyboard:
             ]
 
         else:
-            iterator = legends.all[current * limit : (current + 1) * limit]
+            iterator = legends.all
+            if weapon:
+                iterator = legends.filter(weapon)
+
+            iterator = iterator[current * limit : (current + 1) * limit]
             keys = [
                 InlineKeyboardButton(
                     legend.bio_name,
@@ -188,7 +212,8 @@ class Keyboard:
         ]
 
         if not player:
-            keys += Keyboard.close_buttons(translator)
+            keys += Keyboard.weapon_button(translator)
+            keys += Keyboard.close_button(translator)
 
         return InlineKeyboardMarkup(keys)
 
@@ -268,21 +293,9 @@ class Keyboard:
 
     def legends_weapons(translate: Translator) -> InlineKeyboardMarkup:
         return InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        translate.button_legends(),
-                        callback_data=str(View.LEGEND),
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        translate.button_weapons(),
-                        callback_data=str(View.WEAPON),
-                    )
-                ],
-            ]
-            + Keyboard.close_buttons(translate)
+            Keyboard.legend_button(translate)
+            + Keyboard.weapon_button(translate)
+            + Keyboard.close_button(translate)
         )
 
     def languages() -> InlineKeyboardMarkup:
@@ -303,6 +316,23 @@ class Keyboard:
             ]
         )
 
+    def weapons(weapons: set[str], translate, row=3) -> InlineKeyboardMarkup:
+        keys = [
+            InlineKeyboardButton(
+                weapon.capitalize(),
+                callback_data=f"{View.WEAPON}_{weapon}",
+            )
+            for weapon in weapons
+        ]
+
+        keys = (
+            [keys[i : i + row] for i in range(0, len(keys), row)]
+            + Keyboard.legend_button(translate)
+            + Keyboard.close_button(translate)
+        )
+
+        return InlineKeyboardMarkup(keys)
+
     def issues(translate: Translator) -> InlineKeyboardMarkup:
         return InlineKeyboardMarkup(
             [
@@ -313,5 +343,5 @@ class Keyboard:
                     )
                 ]
             ]
-            + Keyboard.close_buttons(translate)
+            + Keyboard.close_button(translate)
         )

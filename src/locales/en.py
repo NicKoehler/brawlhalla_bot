@@ -1,5 +1,7 @@
+# Commands
 SEARCH = "search"
 LANGUAGE = "language"
+WEAPONS = "weapons"
 
 # Descriptions
 DESCRIPTION_LANGUAGE = "Change the language of the bot"
@@ -7,6 +9,7 @@ DESCRIPTION_SEARCH = "Search for a player"
 DESCRIPTION_START = "Shows the first start message"
 DESCRIPTION_ID = "Shows the statistics of a player with the specified ID"
 DESCRIPTION_LEGEND = "Shows the statistics of a legend"
+DESCRIPTION_WEAPONS = "Search for a legend through weapon types"
 DESCRIPTION_ME = "Shows the statistics of the player set as default"
 
 WELCOME = (
@@ -16,9 +19,9 @@ WELCOME = (
     f"🆔 • /id - {DESCRIPTION_ID}\n"
     f"👤 • /me - {DESCRIPTION_ME}\n"
     f"🥷 • /legend - {DESCRIPTION_LEGEND}\n"
+    f"🗡️ • /{WEAPONS} - {DESCRIPTION_WEAPONS}\n"
     f"🌐 • /{LANGUAGE} - {DESCRIPTION_LANGUAGE}"
 )
-
 
 # Usages
 USAGE_SEARCH = (
@@ -43,6 +46,7 @@ ERROR_MISSING_DEFAULT_PLAYER = (
     "You need to set a player as default to execute this command."
 )
 ERROR_LEGEND_NOT_FOUND = "There are no legends matching <b>{query}</b>"
+ERROR_WEAPON_NOT_FOUND = "There are no weapons matching <b>{query}</b>"
 
 ERROR_GENERIC = (
     "An error occurred:\n\n"
@@ -51,10 +55,14 @@ ERROR_GENERIC = (
     "open a detailed issue on how to reproduce the error you encountered.\n"
     "Before opening a new issue, make sure that the error has not already been reported"
 )
+
 # Results
 RESULTS_SEARCH = "Search results:\n<b>{query}</b>\n<b>{current}/{total}</b>"
 RESULTS_TEAMS = "Teams:\n<b>{current}/{total}</b>"
 RESULTS_LEGENDS = "Legends:\n<b>{current}/{total}</b>"
+RESULTS_LEGENDS_WITH_WEAPON = (
+    "Legends with weapons <b>{weapon}</b>:\n<b>{current}/{total}</b>"
+)
 
 # Status messages
 STATUS_LANGUAGE_CHANGED = "Language changed successfully"
@@ -200,8 +208,7 @@ STATS_PLAYER_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 STATS_LEGEND = """🎮 • <b>LEGEND STATS</b> • 🎮
 
 🆔 • ID: <b>{legend_id}</b>
-🎭 • Name: <b>{legend_name_key}</b>
-🔖 • Alternate Name: <b>{bio_name}</b>
+🔖 • Name: <b>{bio_name}</b>
 🎖️ • Alias: <b>{bio_aka}</b>
 
 🗡️ • Weapon 1: <b>{weapon_one}</b>
@@ -211,3 +218,7 @@ STATS_LEGEND = """🎮 • <b>LEGEND STATS</b> • 🎮
 🏹 • Dexterity: <b>{dexterity}</b>
 🛡️ • Defense: <b>{defense}</b>
 🏃 • Speed: <b>{speed}</b>"""
+
+
+# Other
+ALL_WEAPONS = "All Weapons:"

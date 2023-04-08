@@ -460,8 +460,8 @@ async def handle_legend_personal_stats(
             total_pages,
             page_limit,
             translate,
-            legends,
-            player,
+            legends=legends,
+            player=player,
         ),
     )
 
@@ -548,25 +548,50 @@ async def handle_legend_stats(
     legends: Legends,
     translator: Translator,
     update: Message | CallbackQuery,
+    weapon: str = None,
     current_page=0,
     limit=20,
 ):
-    total_pages = ceil(len(legends) / limit) - 1
+    total_pages = ceil(len(legends.filter(weapon) if weapon else legends) / limit) - 1
 
     if current_page > total_pages:
         current_page = total_pages
 
     await utils.send_or_edit_message(
         update,
-        translator.results_legends(current=current_page + 1, total=total_pages + 1),
+        translator.results_legends_with_weapon(
+            current=current_page + 1, total=total_pages + 1, weapon=weapon.capitalize()
+        )
+        if weapon
+        else translator.results_legends(
+            current=current_page + 1, total=total_pages + 1
+        ),
         await Keyboard.legends(
             current_page,
             total_pages,
             limit,
             translator,
             legends=legends,
+            weapon=weapon,
             rows=3,
         ),
+    )
+
+
+async def handle_weapons(
+    legends: Legends,
+    update: Message | CallbackQuery,
+    translate: Translator,
+    weapon: str = None,
+):
+    if weapon:
+        await handle_legend_stats(legends, translate, update, weapon)
+        return
+
+    await utils.send_or_edit_message(
+        update,
+        translate.all_weapons(),
+        Keyboard.weapons(legends.weapons, translate),
     )
 
 
@@ -579,11 +604,10 @@ async def handle_legend_details(
         update,
         translator.stats_legend(
             legend_id=legend.legend_id,
-            legend_name_key=legend.legend_name_key,
             bio_name=legend.bio_name,
             bio_aka=legend.bio_aka,
-            weapon_one=legend.weapon_one,
-            weapon_two=legend.weapon_two,
+            weapon_one=legend.weapon_one.capitalize(),
+            weapon_two=legend.weapon_two.capitalize(),
             strength=legend.strength,
             dexterity=legend.dexterity,
             defense=legend.defense,

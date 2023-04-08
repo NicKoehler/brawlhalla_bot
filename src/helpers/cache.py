@@ -86,6 +86,9 @@ class Legends:
 
     async def refresh_legends(self):
         legends = await self._brawl.get_legends()
+        for legend in legends:
+            legend.weapon_one = legend.weapon_one.lower()
+            legend.weapon_two = legend.weapon_two.lower()
         self.refresh_weapons(legends)
         self._cache.add("legends", {legend.legend_id: legend for legend in legends})
 
@@ -98,19 +101,25 @@ class Legends:
         return legend
 
     def refresh_weapons(self, legends: list[Legend]) -> None:
-        weapons = list(
-            set(
-                item
-                for sublist in [
-                    [legend.weapon_one, legend.weapon_two] for legend in legends
-                ]
-                for item in sublist
-            )
+        weapons = set(
+            item
+            for sublist in [
+                [legend.weapon_one, legend.weapon_two] for legend in legends
+            ]
+            for item in sublist
         )
+
         self._cache.add("weapons", weapons)
 
+    def filter(self, weapon: str) -> list[Legend]:
+        return [
+            legend
+            for legend in self._cache.get("legends").values()
+            if legend.weapon_one == weapon or legend.weapon_two == weapon
+        ]
+
     @property
-    def all(self) -> Legend:
+    def all(self) -> list[Legend]:
         return list(self._cache.get("legends").values())
 
     @property

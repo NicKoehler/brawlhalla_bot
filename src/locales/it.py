@@ -1,5 +1,7 @@
+# Commands
 SEARCH = "cerca"
 LANGUAGE = "lingua"
+WEAPONS = "armi"
 
 # Descriptions
 DESCRIPTION_LANGUAGE = "Cambia la lingua del bot"
@@ -7,6 +9,7 @@ DESCRIPTION_SEARCH = "Cerca un giocatore"
 DESCRIPTION_START = "Mostra il messaggio di primo avvio"
 DESCRIPTION_ID = "Mostra le statistiche di un giocatore con l'ID specificato"
 DESCRIPTION_LEGEND = "Mostra le statistiche di una legend"
+DESCRIPTION_WEAPONS = "Cerca una legend attraverso le tipologie di armi"
 DESCRIPTION_ME = "Mostra le statistiche del giocatore impostato come predefinito"
 
 WELCOME = (
@@ -16,6 +19,7 @@ WELCOME = (
     f"🆔 • /id - {DESCRIPTION_ID}\n"
     f"👤 • /me - {DESCRIPTION_ME}\n"
     f"🥷 • /legend - {DESCRIPTION_LEGEND}\n"
+    f"🗡️ • /{WEAPONS} - {DESCRIPTION_WEAPONS}\n"
     f"🌐 • /{LANGUAGE} - {DESCRIPTION_LANGUAGE}"
 )
 
@@ -28,6 +32,7 @@ USAGE_ID = (
     "Usa il comando <b>/id</b> per mostrare le statistiche di un giocatore l'ID specificato.\n\n"
     "Esempio: <code>/id 2316541</code>"
 )
+
 # Errors
 ERROR_LENGTH = "La lunghezza della ricerca deve essere tra 2 e 32 caratteri"
 ERROR_SEARCH_RESULT = "Nessun giocatore trovato cercando <b>{query}</b>"
@@ -43,6 +48,8 @@ ERROR_MISSING_DEFAULT_PLAYER = (
     "Devi prima impostare un giocatore come predefinito per eseguire questo comando"
 )
 ERROR_LEGEND_NOT_FOUND = "La legenda <b>{query}</b> non è stata trovata"
+ERROR_WEAPON_NOT_FOUND = "Non sono presenti armi cercando <b>{query}</b>"
+
 ERROR_GENERIC = (
     "Si è verificato un errore:\n\n"
     "<code>{error}</code>\n\n"
@@ -55,6 +62,9 @@ ERROR_GENERIC = (
 RESULTS_SEARCH = "Risultati della ricerca:\n<b>{query}</b>\n<b>{current}/{total}</b>"
 RESULTS_TEAMS = "Squadre:\n<b>{current}/{total}</b>"
 RESULTS_LEGENDS = "Legends:\n<b>{current}/{total}</b>"
+RESULTS_LEGENDS_WITH_WEAPON = (
+    "Legends che utilizzano <b>{weapon}</b>\n<b>{current}/{total}</b>:"
+)
 
 # Status messages
 STATUS_LANGUAGE_CHANGED = "La lingua è stata cambiata correttamente"
@@ -199,8 +209,7 @@ STATS_PLAYER_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 STATS_LEGEND = """🎮 • <b>STATISTICHE LEGEND</b> • 🎮
 
 🆔 • ID: <b>{legend_id}</b>
-🎭 • Nome: <b>{legend_name_key}</b>
-🔖 • Nome Alternativo: <b>{bio_name}</b>
+🔖 • Nome: <b>{bio_name}</b>
 🎖️ • Alias: <b>{bio_aka}</b>
 
 🗡️ • Arma 1: <b>{weapon_one}</b>
@@ -210,3 +219,6 @@ STATS_LEGEND = """🎮 • <b>STATISTICHE LEGEND</b> • 🎮
 🏹 • Destrezza: <b>{dexterity}</b>
 🛡️ • Difesa: <b>{defense}</b>
 🏃 • Velocità: <b>{speed}</b>"""
+
+# Other
+ALL_WEAPONS = "Tutte le armi:"

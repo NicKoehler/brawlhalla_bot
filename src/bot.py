@@ -1,4 +1,3 @@
-import asyncio
 import traceback
 
 from os import environ
@@ -19,6 +18,7 @@ from callbacks import (
     handle_clan,
     handle_search,
     handle_general,
+    handle_weapons,
     handle_ranked_solo,
     handle_ranked_team,
     handle_legend_stats,
@@ -127,7 +127,7 @@ async def player_me(_: Client, message: Message, translate: Translator):
 
 @bot.on_message(filters.command("legend"))
 @user_language
-async def player_legend(_: Client, message: Message, translate: Translator):
+async def legend(_: Client, message: Message, translate: Translator):
     if len(message.command) < 2:
         await handle_legend_stats(legends, translate, message)
         return
@@ -142,6 +142,40 @@ async def player_legend(_: Client, message: Message, translate: Translator):
     await message.reply(translate.error_legend_not_found(query))
 
 
+@bot.on_message(filters.command(["weapons", "armi"]))
+@user_language
+async def weapon(_: Client, message: Message, translate: Translator):
+    len_commands = len(message.command)
+
+    if len_commands < 2:
+        await handle_weapons(legends, message, translate)
+        return
+
+    if len_commands == 2:
+        weapon = escape(message.command[1].lower())
+        if await is_query_invalid(weapon, message, translate):
+            return
+        if weapon not in legends.weapons:
+            await message.reply(translate.error_weapon_not_found(weapon))
+            return
+        await handle_weapons(legends, message, translate, weapon)
+        return
+
+    weapons = [
+        escape(message.command[1].lower()),
+        escape(message.command[2].lower()),
+    ]
+
+    weapons_set = set(weapons)
+
+    for legend in legends.all:
+        legend_weapons = set([legend.weapon_one, legend.weapon_two])
+        if weapons_set.issubset(legend_weapons):
+            await handle_legend_details(legend, translate, message)
+            return
+    await message.reply(translate.error_weapon_not_found(" ".join(weapons)))
+
+
 @bot.on_callback_query(filters.regex(r"^button_(next|prev)$"))
 @user_language
 async def search_player_page(_: Client, callback: CallbackQuery, translate: Translator):
@@ -153,7 +187,7 @@ async def search_player_page(_: Client, callback: CallbackQuery, translate: Tran
 async def search_legend_personal_page(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
-    current_page, brawlhalla_id = get_current_page(callback, brawlhalla_id=True)
+    current_page, brawlhalla_id = get_current_page(callback, get_second_param=True)
 
     await handle_legend_personal_stats(
         brawl,
@@ -166,17 +200,22 @@ async def search_legend_personal_page(
     )
 
 
-@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(next|prev)$"))
+@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(next|prev)_?(\\w+)?$"))
 @user_language
 async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
     current_page = get_current_page(callback)
-    await handle_legend_stats(legends, translate, callback, current_page=current_page)
+    weapon = None
+    if len(callback.matches[0].groups()) > 1:
+        weapon = callback.matches[0].group(2)
+    await handle_legend_stats(
+        legends, translate, callback, weapon=weapon, current_page=current_page
+    )
 
 
 @bot.on_callback_query(filters.regex(r"^team_(next|prev)_(\d+)$"))
 @user_language
 async def search_team_page(_: Client, callback: CallbackQuery, translate: Translator):
-    current_page, brawlhalla_id = get_current_page(callback, brawlhalla_id=True)
+    current_page, brawlhalla_id = get_current_page(callback, get_second_param=True)
 
     await handle_ranked_team(
         brawl,
@@ -192,7 +231,7 @@ async def search_team_page(_: Client, callback: CallbackQuery, translate: Transl
 @bot.on_callback_query(filters.regex(f"^{View.CLAN}_(next|prev)_(\\d+)$"))
 @user_language
 async def search_clan_page(_: Client, callback: CallbackQuery, translate: Translator):
-    current_page, clan_id = get_current_page(callback, clan_id=True)
+    current_page, clan_id = get_current_page(callback, get_second_param=True)
 
     await handle_clan(
         brawl,
@@ -305,6 +344,23 @@ async def player_ranked_team_detail_callback(
     )
 
 
+@bot.on_callback_query(lambda _, x: x.data[7:] in legends.weapons)
+@user_language
+async def legend_weapon_callback(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
+    weapon = callback.data[7:]
+    await handle_weapons(legends, callback, translate, weapon)
+
+
+@bot.on_callback_query(filters.regex(f"^{View.WEAPON}$"))
+@user_language
+async def legend_weapon_list_callback(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
+    await handle_weapons(legends, callback, translate)
+
+
 @bot.on_callback_query(filters.regex(r"^set_(\d+)$"))
 @user_language
 async def set_default_callback(
@@ -329,14 +385,12 @@ async def language_callback(_: Client, callback: CallbackQuery, translate: Trans
     lang = callback.data
 
     if lang == users_settings.get_user(callback.from_user.id, "language"):
-        await callback.message.edit(translate.status_language_unchanged())
+        await callback.answer(translate.status_language_unchanged(), show_alert=True)
     else:
         users_settings.set_user(callback.from_user.id, "language", lang)
         translate = localization.get_translator(lang)
-        await callback.message.edit(translate.status_language_changed())
-
-    await asyncio.sleep(3)
-    await callback.message.delete()
+        await callback.answer(translate.status_language_changed(), show_alert=True)
+        await callback.message.delete()
 
 
 @bot.on_callback_query(filters.regex(r"^close$"))
@@ -354,6 +408,7 @@ async def set_commands(bot: Client):
                 BotCommand("id", translate.description_id()),
                 BotCommand("me", translate.description_me()),
                 BotCommand("legend", translate.description_legend()),
+                BotCommand(translate.weapons(), translate.description_weapons()),
                 BotCommand(translate.language(), translate.description_language()),
             ],
             language_code=lang_code,
