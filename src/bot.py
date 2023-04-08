@@ -37,12 +37,11 @@ API_KEY = environ.get("API_KEY")
 API_HASH = environ.get("API_HASH")
 BOT_TOKEN = environ.get("BOT_TOKEN")
 
-
-localization = Localization()
-brawl = Brawlhalla(API_KEY)
 bot = Client("Brawltool", API_ID, API_HASH, bot_token=BOT_TOKEN)
+brawl = Brawlhalla(API_KEY)
 cache = Cache(180)
 legends = Legends(brawl)
+localization = Localization()
 users_settings = UserSettings()
 
 

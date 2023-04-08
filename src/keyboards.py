@@ -277,6 +277,7 @@ class Keyboard:
                     )
                 ],
             ]
+            + Keyboard.close_buttons(translate)
         )
 
     def languages() -> InlineKeyboardMarkup:
