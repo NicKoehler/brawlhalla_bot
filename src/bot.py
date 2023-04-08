@@ -87,7 +87,7 @@ async def start(_: Client, message: Message, translate: Translator):
 @bot.on_message(filters.command(["search", "cerca"]))
 @user_language
 async def search_player(_: Client, message: Message, translate: Translator):
-    await handle_search(brawl, cache, legends, translate, message=message)
+    await handle_search(brawl, cache, legends, translate, message)
 
 
 @bot.on_message(filters.command("id"))
@@ -105,7 +105,7 @@ async def player_id(_: Client, message: Message, translate: Translator):
         cache,
         legends,
         translate,
-        message=message,
+        message,
     )
 
 
@@ -122,7 +122,7 @@ async def player_me(_: Client, message: Message, translate: Translator):
         cache,
         legends,
         translate,
-        message=message,
+        message,
     )
 
 
@@ -137,7 +137,7 @@ async def player_legend(_: Client, message: Message, translate: Translator):
         return
     for legend in legends.all():
         if legend.legend_name_key == query:
-            await handle_legend_details(legend, translate, message=message)
+            await handle_legend_details(legend, translate, message)
             return
 
     await message.reply(translate.error_legend_not_found(query))
@@ -146,7 +146,7 @@ async def player_legend(_: Client, message: Message, translate: Translator):
 @bot.on_callback_query(filters.regex(r"^button_(next|prev)$"))
 @user_language
 async def search_player_page(_: Client, callback: CallbackQuery, translate: Translator):
-    await handle_search(brawl, cache, legends, translate, callback=callback)
+    await handle_search(brawl, cache, legends, translate, callback)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(next|prev)_(\\d+)$"))
@@ -211,14 +211,7 @@ async def player_general_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
     brawlhalla_id = int(callback.matches[0].group(1))
-    await handle_general(
-        brawl,
-        brawlhalla_id,
-        cache,
-        legends,
-        translate,
-        callback=callback,
-    )
+    await handle_general(brawl, brawlhalla_id, cache, legends, translate, callback)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_SOLO}_(\\d+)$"))
@@ -296,9 +289,7 @@ async def player_legend_details_callback(
 ):
     regex = callback.matches[0]
     legend_id = int(regex.group(1))
-    await handle_legend_details(
-        await legends.get(legend_id), translate, callback=callback
-    )
+    await handle_legend_details(await legends.get(legend_id), translate, callback)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_TEAM_DETAIL}_(\\d+)_(\\d+)$"))

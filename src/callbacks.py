@@ -53,43 +53,42 @@ async def handle_search(
     cache: Cache,
     legends: Legends,
     translate: Translator,
-    message: Message = None,
-    callback: CallbackQuery = None,
+    update: Message | CallbackQuery,
     page_limit=10,
     current_page=0,
 ):
-    if message:
-        query = escape(" ".join(message.command[1:]))
+    if isinstance(update, Message):
+        query = escape(" ".join(update.command[1:]))
 
         if not query:
-            await message.reply(translate.usage_search())
+            await update.reply(translate.usage_search())
             return
 
-        if await utils.is_query_invalid(query, message, translate):
+        if await utils.is_query_invalid(query, update, translate):
             return
 
-    elif callback:
-        current_page, query = utils.get_current_page(callback, query=True)
+    elif isinstance(update, CallbackQuery):
+        current_page, query = utils.get_current_page(update, query=True)
 
     else:
-        return
+        raise TypeError("update must be either Message or CallbackQuery")
 
     results = cache.get(query)
 
     if results is None:
         results = await brawl.get_rankings(name=query)
         if not results:
-            if callback:
-                await callback.answer(
+            if isinstance(update, Message):
+                await update.reply(
+                    translate.error_search_result(query),
+                )
+                return
+            else:
+                await update.answer(
                     translate.error_search_result(query),
                     show_alert=True,
                 )
-                await callback.message.delete()
-                return
-            elif message:
-                await message.reply(
-                    translate.error_search_result(query),
-                )
+                await update.message.delete()
                 return
 
         cache.add(query, results)
@@ -101,8 +100,7 @@ async def handle_search(
             cache,
             legends,
             translate,
-            message=message,
-            callback=callback,
+            update,
         )
         return
 
@@ -110,8 +108,7 @@ async def handle_search(
         results,
         translate,
         query,
-        message,
-        callback,
+        update,
         page_limit=page_limit,
         current_page=current_page,
     )
@@ -121,8 +118,7 @@ async def send_results(
     results,
     translate: Translator,
     query,
-    message: Message = None,
-    callback: CallbackQuery = None,
+    update: Message | CallbackQuery,
     page_limit=10,
     current_page=0,
 ):
@@ -131,21 +127,17 @@ async def send_results(
     if current_page > total_pages:
         current_page = total_pages
 
-    to_send = {
-        "text": translate.results_search(
+    await utils.send_or_edit_message(
+        update,
+        translate.results_search(
             query=query,
             current=current_page + 1,
             total=total_pages + 1,
         ),
-        "reply_markup": Keyboard.search_player(
+        Keyboard.search_player(
             results, current_page, total_pages, page_limit, translate
         ),
-    }
-
-    if message:
-        await message.reply(**to_send)
-    elif callback:
-        await callback.message.edit(**to_send)
+    )
 
 
 async def handle_general(
@@ -154,16 +146,15 @@ async def handle_general(
     cache: Cache,
     legends: Legends,
     translate: Translator,
-    message: Message = None,
-    callback: CallbackQuery = None,
+    update: Message | CallbackQuery,
 ) -> None:
     player = await general_checks(brawl, brawlhalla_id, cache)
 
     if not player:
-        if message:
-            await message.reply(translate.error_player_not_found(id=brawlhalla_id))
-        elif callback:
-            await callback.answer(
+        if isinstance(update, Message):
+            await update.reply(translate.error_player_not_found(id=brawlhalla_id))
+        elif isinstance(update, CallbackQuery):
+            await update.answer(
                 translate.error_player_not_found(id=brawlhalla_id), show_alert=True
             )
         return
@@ -180,8 +171,9 @@ async def handle_general(
         most_used_id = player.legends[0].legend_id
         most_used_legend_name = (await legends.get(most_used_id)).bio_name
 
-    to_send = {
-        "text": translate.stats_base(
+    await utils.send_or_edit_message(
+        update,
+        translate.stats_base(
             id=player.brawlhalla_id,
             name=player.name,
         )
@@ -210,20 +202,14 @@ async def handle_general(
             kosnowball=player.kosnowball,
             hitsnowball=player.hitsnowball,
         ),
-        "reply_markup": Keyboard.stats(
+        Keyboard.stats(
             player.brawlhalla_id,
             current_view=View.GENERAL,
             translate=translate,
             show_clan=player.clan is not None,
             show_legends=len(player.legends) > 0,
         ),
-    }
-
-    if message:
-        await message.reply(**to_send)
-    elif callback:
-        await callback.message.edit(**to_send)
-    return True
+    )
 
 
 def make_played_time(translate, total_game_time):
@@ -589,11 +575,11 @@ async def handle_legend_stats(
 async def handle_legend_details(
     legend: Legend,
     translator: Translator,
-    message: Message = None,
-    callback: CallbackQuery = None,
+    update: Message | CallbackQuery,
 ):
-    to_send = {
-        "text": translator.stats_legend(
+    await utils.send_or_edit_message(
+        update,
+        translator.stats_legend(
             legend_id=legend.legend_id,
             legend_name_key=legend.legend_name_key,
             bio_name=legend.bio_name,
@@ -605,13 +591,5 @@ async def handle_legend_details(
             defense=legend.defense,
             speed=legend.speed,
         ),
-        "reply_markup": Keyboard.legends_weapons(translator),
-    }
-
-    if callback:
-        send = getattr(callback.message, "edit")
-
-    if message:
-        send = getattr(message, "reply")
-
-    await send(**to_send)
+        Keyboard.legends_weapons(translator),
+    )
