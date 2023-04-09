@@ -1,4 +1,4 @@
-from localization import Translator
+from localization import Localization, Translator
 from pyrogram.types import InlineKeyboardMarkup, CallbackQuery, Message
 
 
@@ -46,3 +46,7 @@ async def send_or_edit_message(
         raise TypeError("update must be a Message or CallbackQuery")
 
     await send(text, reply_markup=keyboard)
+
+
+def get_localized_commands(string: str, localization: Localization) -> list[str]:
+    return [getattr(translator, string)() for translator in localization]

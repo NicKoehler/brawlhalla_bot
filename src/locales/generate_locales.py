@@ -30,7 +30,7 @@ print(
 """
 )
 
-
+print("from typing import Iterator")
 print(f"from locales import {', '.join(SUPPORTED_LANGUAGES)}\n\n")
 
 print(f"SUPPORTED_LANGUAGES = {SUPPORTED_LANGUAGES}\n\n")
@@ -74,5 +74,7 @@ print(
     "    def get_translator(self, lang: str) -> Translator:\n"
     "        if lang not in self._strings:\n"
     '            raise ValueError(f"Unsupported language: {lang}")\n'
-    "        return self._strings[lang]"
+    "        return self._strings[lang]\n\n"
+    "    def __iter__(self) -> Iterator[Translator]:\n"
+    "        return iter(self._strings.values())"
 )

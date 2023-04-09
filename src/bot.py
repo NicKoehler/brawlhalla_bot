@@ -12,9 +12,9 @@ from brawlhalla_api import Brawlhalla
 from helpers.cache import Cache, Legends
 from helpers.user_settings import UserSettings
 from pyrogram.methods.utilities.idle import idle
-from helpers.utils import get_current_page, is_query_invalid
 from pyrogram.types import Message, CallbackQuery, BotCommand
 from localization import Localization, Translator, SUPPORTED_LANGUAGES
+from helpers.utils import get_current_page, is_query_invalid, get_localized_commands
 from callbacks import (
     handle_clan,
     handle_search,
@@ -84,7 +84,7 @@ async def start(_: Client, message: Message, translate: Translator):
     )
 
 
-@bot.on_message(filters.command(["search", "cerca"]))
+@bot.on_message(filters.command(get_localized_commands("search", localization)))
 @user_language
 async def search_player(_: Client, message: Message, translate: Translator):
     await handle_search(brawl, cache, legends, translate, message)
@@ -143,7 +143,7 @@ async def legend(_: Client, message: Message, translate: Translator):
     await message.reply(translate.error_legend_not_found(query))
 
 
-@bot.on_message(filters.command(["weapons", "armi"]))
+@bot.on_message(filters.command(get_localized_commands("weapons", localization)))
 @user_language
 async def weapon(_: Client, message: Message, translate: Translator):
     len_commands = len(message.command)
@@ -177,7 +177,7 @@ async def weapon(_: Client, message: Message, translate: Translator):
     await message.reply(translate.error_weapon_not_found(" ".join(weapons)))
 
 
-@bot.on_message(filters.command(["missing", "mancanti"]))
+@bot.on_message(filters.command(get_localized_commands("missing", localization)))
 @user_language
 async def missing_weapons(_: Client, message: Message, translate: Translator):
     weapon = None
@@ -216,6 +216,14 @@ async def missing_weapons(_: Client, message: Message, translate: Translator):
 @user_language
 async def search_player_page(_: Client, callback: CallbackQuery, translate: Translator):
     await handle_search(brawl, cache, legends, translate, callback)
+
+
+@bot.on_message(filters.command(get_localized_commands("language", localization)))
+@user_language
+async def language_command(_: Client, message: Message, translate: Translator):
+    await message.reply_text(
+        translate.description_language(), reply_markup=Keyboard.languages()
+    )
 
 
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(next|prev)_(\\d+)$"))
@@ -405,14 +413,6 @@ async def set_default_callback(
     brawlhalla_id = int(callback.matches[0].group(1))
     users_settings.set_user(callback.from_user.id, "me", brawlhalla_id)
     await callback.answer(translate.status_default_player_set(), show_alert=True)
-
-
-@bot.on_message(filters.command(["lingua", "language"]))
-@user_language
-async def language_command(_: Client, message: Message, translate: Translator):
-    await message.reply_text(
-        translate.description_language(), reply_markup=Keyboard.languages()
-    )
 
 
 @bot.on_callback_query(filters.regex(r"^(en|it)$"))

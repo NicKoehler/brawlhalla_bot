@@ -111,7 +111,7 @@ class Legends:
 
         self._cache.add("weapons", weapons)
 
-    def filter(self, weapon: str) -> list[Legend]:
+    def filter_weapon(self, weapon: str) -> list[Legend]:
         return [
             legend
             for legend in self._cache.get("legends").values()
