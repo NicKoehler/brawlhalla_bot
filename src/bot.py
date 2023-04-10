@@ -243,18 +243,18 @@ async def missing_weapons(_: Client, message: Message, translate: Translator):
     )
 
 
-@bot.on_callback_query(filters.regex(r"^button_(next|prev)$"))
-@user_handling
-async def search_player_page(_: Client, callback: CallbackQuery, translate: Translator):
-    await handle_search(brawl, cache, legends, translate, callback)
-
-
 @bot.on_message(filters.command(get_localized_commands("language", localization)))
 @user_handling
 async def language_command(_: Client, message: Message, translate: Translator):
     await message.reply_text(
         translate.description_language(), reply_markup=Keyboard.languages()
     )
+
+
+@bot.on_callback_query(filters.regex(r"^button_(next|prev)$"))
+@user_handling
+async def search_player_page(_: Client, callback: CallbackQuery, translate: Translator):
+    await handle_search(brawl, cache, legends, translate, callback)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(next|prev)_(\\d+)$"))
