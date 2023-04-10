@@ -55,6 +55,10 @@ ERROR_WEAPON_NOT_FOUND = "Non sono presenti armi cercando <b>{query}</b>"
 ERROR_MISSING_WEAPONS_COMBINATION_NOT_FOUND = (
     "Non sono presenti combinazioni di armi mancanti cercando <b>{query}</b>"
 )
+ERROR_FLOOD_WAIT = (
+    "Stai inviando troppe richieste in un breve periodo di tempo.\n"
+    "Sei stato bloccato per <b>{seconds}</b> secondi."
+)
 ERROR_GENERIC = (
     "Si è verificato un errore:\n\n"
     "<code>{error}</code>\n\n"

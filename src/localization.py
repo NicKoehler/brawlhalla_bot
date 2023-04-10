@@ -70,6 +70,14 @@ class Translator:
     def description_weapons(self):
         return self.locale.DESCRIPTION_WEAPONS
 
+    def error_flood_wait(
+        self,
+        seconds
+    ):
+        return self.locale.ERROR_FLOOD_WAIT.format(
+            seconds=seconds
+        )
+
     def error_generic(
         self,
         error

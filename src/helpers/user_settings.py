@@ -15,3 +15,10 @@ class UserSettings:
         if attribute not in self._users_settings[user_id]:
             self._users_settings[user_id][attribute] = value
         self._users_settings[user_id][attribute] = value
+
+    def del_user(self, user_id: int, attribute: str):
+        if user_id not in self._users_settings:
+            return
+        if attribute not in self._users_settings[user_id]:
+            return
+        del self._users_settings[user_id][attribute]

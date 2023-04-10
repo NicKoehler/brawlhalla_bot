@@ -52,7 +52,10 @@ ERROR_WEAPON_NOT_FOUND = "There are no weapons matching <b>{query}</b>"
 ERROR_MISSING_WEAPONS_COMBINATION_NOT_FOUND = (
     "There are no weapons combination matching <b>{query}</b>"
 )
-
+ERROR_FLOOD_WAIT = (
+    "You are sending too many requests in a short period of time.\n"
+    "You have been blocked for <b>{seconds}</b> seconds."
+)
 ERROR_GENERIC = (
     "An error occurred:\n\n"
     "<code>{error}</code>\n\n"
@@ -68,9 +71,11 @@ RESULTS_LEGENDS = "Legends:\n<b>{current}/{total}</b>"
 RESULTS_LEGENDS_WITH_WEAPON = (
     "Legends with weapons <b>{weapon}</b>:\n<b>{current}/{total}</b>"
 )
-RESULTS_MISSING_WEAPONS_COMBINATION = "Missing weapons combination:\n\n<b>{weapons}</b>"
+RESULTS_MISSING_WEAPONS_COMBINATION = (
+    "Missing weapons combinations:\n\n<b>{weapons}</b>"
+)
 RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
-    "Missing weapons combination with <b>{weapon}</b>:\n\n<b>{weapons}</b>"
+    "Missing weapons combinations with <b>{weapon}</b>:\n\n<b>{weapons}</b>"
 )
 
 # Status messages

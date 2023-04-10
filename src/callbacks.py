@@ -82,14 +82,13 @@ async def handle_search(
                 await update.reply(
                     translate.error_search_result(query),
                 )
-                return
             else:
                 await update.answer(
                     translate.error_search_result(query),
                     show_alert=True,
                 )
                 await update.message.delete()
-                return
+            return
 
         cache.add(query, results)
 
