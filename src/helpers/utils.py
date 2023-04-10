@@ -1,8 +1,4 @@
-import asyncio
-
 from localization import Localization, Translator
-
-from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardMarkup, CallbackQuery, Message
 
 
