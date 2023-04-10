@@ -551,7 +551,9 @@ async def handle_legend_stats(
     current_page=0,
     limit=20,
 ):
-    total_pages = ceil(len(legends.filter(weapon) if weapon else legends) / limit) - 1
+    total_pages = (
+        ceil(len(legends.filter_weapon(weapon) if weapon else legends) / limit) - 1
+    )
 
     if current_page > total_pages:
         current_page = total_pages
