@@ -194,9 +194,7 @@ class Keyboard:
             ]
 
         else:
-            iterator = legends.all
-            if weapon:
-                iterator = legends.filter_weapon(weapon)
+            iterator = legends if weapon else legends.all
 
             iterator = iterator[current * limit : (current + 1) * limit]
             keys = [
