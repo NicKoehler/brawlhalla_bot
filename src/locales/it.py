@@ -35,12 +35,14 @@ USAGE_ID = (
     "Usa il comando <b>/id</b> per mostrare le statistiche di un giocatore l'ID specificato.\n\n"
     "Esempio: <code>/id 2316541</code>"
 )
+USAGE_INLINE = "Digita il nome del giocatore che stai cercando"
 
 # Errors
 ERROR_LENGTH = "La lunghezza della ricerca deve essere tra 2 e 32 caratteri"
 ERROR_SEARCH_RESULT = "Nessun giocatore trovato cercando <b>{query}</b>"
 ERROR_LEGEND_RESULT = "Nessuna legend trovata"
 ERROR_TEAM_RESULT = "Nessuna squadra trovata"
+ERROR_PLAYER_RESULT = "Nessun giocatore trovato"
 ERROR_PLAYER_NOT_FOUND = "Giocatore con ID <b>{id}</b> non trovato"
 ERROR_NO_CLAN_DATA = "Questo giocatore non è più in un clan"
 ERROR_NO_RANKED_DATA = "Questo giocatore non ha ancora giocato partite classificate"
@@ -59,6 +61,9 @@ ERROR_FLOOD_WAIT = (
     "Stai inviando troppe richieste in un breve periodo di tempo.\n"
     "Sei stato bloccato per <b>{seconds}</b> secondi."
 )
+ERROR_API_OFFLINE = (
+    "Le API di Brawlhalla sono temporaneamente offline.\nRiprova più tardi."
+)
 ERROR_GENERIC = (
     "Si è verificato un errore:\n\n"
     "<code>{error}</code>\n\n"
@@ -68,12 +73,10 @@ ERROR_GENERIC = (
 )
 
 # Results
-RESULTS_SEARCH = "Risultati della ricerca:\n<b>{query}</b>\n<b>{current}/{total}</b>"
-RESULTS_TEAMS = "Squadre:\n<b>{current}/{total}</b>"
-RESULTS_LEGENDS = "Legends:\n<b>{current}/{total}</b>"
-RESULTS_LEGENDS_WITH_WEAPON = (
-    "Legends che utilizzano <b>{weapon}</b>\n<b>{current}/{total}</b>:"
-)
+RESULTS_SEARCH = "Risultati della ricerca: <b>{query} ({total})</b>"
+RESULTS_TEAMS = "Squadre:"
+RESULTS_LEGENDS = "Legends:"
+RESULTS_LEGENDS_WITH_WEAPON = "Legends che utilizzano <b>{weapon}</b>:"
 RESULTS_MISSING_WEAPONS_COMBINATION = (
     "Combinazioni di armi mancanti:\n\n<b>{weapons}</b>"
 )
@@ -97,6 +100,7 @@ BUTTON_ISSUE = "🐙 • APRI UNA ISSUE • 🐱"
 BUTTON_CLAN = "🎖 • CLAN • 🎖"
 BUTTON_CLOSE = "❌ • CHIUDI • ❌"
 BUTTON_WEAPONS = "🔫 • ARMI • 🔫"
+BUTTON_INLINE = "▶️ • UTILIZZA IL BOT INLINE • ◀️"
 
 # Time
 TIME_DAYS = "Giorni: {t}"

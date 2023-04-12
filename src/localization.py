@@ -28,6 +28,9 @@ class Translator:
     def button_general(self):
         return self.locale.BUTTON_GENERAL
 
+    def button_inline(self):
+        return self.locale.BUTTON_INLINE
+
     def button_issue(self):
         return self.locale.BUTTON_ISSUE
 
@@ -69,6 +72,9 @@ class Translator:
 
     def description_weapons(self):
         return self.locale.DESCRIPTION_WEAPONS
+
+    def error_api_offline(self):
+        return self.locale.ERROR_API_OFFLINE
 
     def error_flood_wait(
         self,
@@ -128,6 +134,9 @@ class Translator:
             id=id
         )
 
+    def error_player_result(self):
+        return self.locale.ERROR_PLAYER_RESULT
+
     def error_search_result(
         self,
         query
@@ -153,26 +162,15 @@ class Translator:
     def missing(self):
         return self.locale.MISSING
 
-    def results_legends(
-        self,
-        current,
-        total
-    ):
-        return self.locale.RESULTS_LEGENDS.format(
-            current=current,
-            total=total
-        )
+    def results_legends(self):
+        return self.locale.RESULTS_LEGENDS
 
     def results_legends_with_weapon(
         self,
-        weapon,
-        current,
-        total
+        weapon
     ):
         return self.locale.RESULTS_LEGENDS_WITH_WEAPON.format(
-            weapon=weapon,
-            current=current,
-            total=total
+            weapon=weapon
         )
 
     def results_missing_weapons_combination(
@@ -196,24 +194,15 @@ class Translator:
     def results_search(
         self,
         query,
-        current,
         total
     ):
         return self.locale.RESULTS_SEARCH.format(
             query=query,
-            current=current,
             total=total
         )
 
-    def results_teams(
-        self,
-        current,
-        total
-    ):
-        return self.locale.RESULTS_TEAMS.format(
-            current=current,
-            total=total
-        )
+    def results_teams(self):
+        return self.locale.RESULTS_TEAMS
 
     def search(self):
         return self.locale.SEARCH
@@ -477,6 +466,9 @@ class Translator:
 
     def usage_id(self):
         return self.locale.USAGE_ID
+
+    def usage_inline(self):
+        return self.locale.USAGE_INLINE
 
     def usage_search(self):
         return self.locale.USAGE_SEARCH

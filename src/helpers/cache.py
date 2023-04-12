@@ -3,6 +3,7 @@ import logging
 from time import time
 from brawlhalla_api import Brawlhalla
 from brawlhalla_api.types import Legend
+from brawlhalla_api.errors import ServiceUnavailable
 
 logger = logging.getLogger("Cache")
 
@@ -85,14 +86,22 @@ class Legends:
         self._cache = Cache()
 
     async def refresh_legends(self):
-        legends = await self._brawl.get_legends()
+        try:
+            legends = await self._brawl.get_legends()
+        except ServiceUnavailable:
+            if self._cache.get("legends"):
+                return
+            legends = []
+
         for legend in legends:
             legend.weapon_one = legend.weapon_one.lower()
             legend.weapon_two = legend.weapon_two.lower()
         self.refresh_weapons(legends)
         self._cache.add("legends", {legend.legend_id: legend for legend in legends})
 
-    async def get(self, legend_id: int) -> Legend:
+    async def get(self, legend_id: int | str) -> Legend:
+        if isinstance(legend_id, str):
+            legend_id = int(legend_id)
         legend = self._cache.get("legends").get(legend_id)
         if legend is None:
             await self.refresh_legends()

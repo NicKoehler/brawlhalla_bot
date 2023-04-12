@@ -9,14 +9,22 @@ from datetime import timedelta
 from itertools import combinations
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
+from brawlhalla_api.errors import ServiceUnavailable
 
 from helpers.cache import Cache, Legends
 from helpers.user_settings import UserSettings
-from helpers.utils import get_current_page, is_query_invalid, get_localized_commands
+from helpers.utils import is_query_invalid, get_localized_commands
 
 from pyrogram import Client, filters
 from pyrogram.methods.utilities.idle import idle
-from pyrogram.types import Message, CallbackQuery, BotCommand
+from pyrogram.types import (
+    Message,
+    CallbackQuery,
+    BotCommand,
+    InlineQuery,
+    InlineQueryResultArticle,
+    InputTextMessageContent,
+)
 
 from localization import Localization, Translator, SUPPORTED_LANGUAGES
 from callbacks import (
@@ -30,7 +38,7 @@ from callbacks import (
     handle_legend_details,
     handle_ranked_team_detail,
     handle_legend_personal_stats,
-    handle_legend_personal_details,
+    handle_player_legend_details,
 )
 
 from scheduler.asyncio import Scheduler
@@ -94,10 +102,8 @@ def user_handling(f):
                 **kwargs,
             )
         except Exception:
-            if not is_message:
-                update = update.message
             return await bot.send_message(
-                update.chat.id,
+                update.from_user.id,
                 translate.error_generic(error=traceback.format_exc()),
                 reply_markup=Keyboard.issues(translate),
             )
@@ -111,7 +117,8 @@ async def start(_: Client, message: Message, translate: Translator):
     await message.reply(
         translate.welcome(
             name=escape(message.from_user.first_name),
-        )
+        ),
+        reply_markup=Keyboard.start(translate),
     )
 
 
@@ -128,7 +135,7 @@ async def player_id(_: Client, message: Message, translate: Translator):
         await message.reply(translate.usage_id())
         return
 
-    brawlhalla_id = int(message.command[1])
+    brawlhalla_id = message.command[1]
 
     await handle_general(
         brawl,
@@ -251,18 +258,27 @@ async def language_command(_: Client, message: Message, translate: Translator):
     )
 
 
-@bot.on_callback_query(filters.regex(r"^button_(next|prev)$"))
+@bot.on_callback_query(filters.regex(f"^(\\d+)_{View.SEARCH}_(.+)$"))
 @user_handling
 async def search_player_page(_: Client, callback: CallbackQuery, translate: Translator):
-    await handle_search(brawl, cache, legends, translate, callback)
+    current_page, query = callback.matches[0].groups()
+    await handle_search(
+        brawl,
+        cache,
+        legends,
+        translate,
+        callback,
+        query=query,
+        current_page=int(current_page),
+    )
 
 
-@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(next|prev)_(\\d+)$"))
+@bot.on_callback_query(filters.regex(f"^(\\d+)_{View.LEGEND}_(\\d+)$"))
 @user_handling
 async def search_legend_personal_page(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
-    current_page, brawlhalla_id = get_current_page(callback, get_second_param=True)
+    current_page, brawlhalla_id = callback.matches[0].groups()
 
     await handle_legend_personal_stats(
         brawl,
@@ -271,50 +287,22 @@ async def search_legend_personal_page(
         cache,
         legends,
         translate,
-        current_page=current_page,
+        current_page=int(current_page),
     )
 
 
-@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(next|prev)_?(\\w+)?$"))
-@user_handling
-async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
-    current_page = get_current_page(callback)
-    weapon = None
-    if len(callback.matches[0].groups()) > 1:
-        weapon = callback.matches[0].group(2)
-    await handle_legend_stats(
-        legends, translate, callback, weapon=weapon, current_page=current_page
-    )
-
-
-@bot.on_callback_query(filters.regex(r"^team_(next|prev)_(\d+)$"))
+@bot.on_callback_query(filters.regex(r"^(\d+)_team_(\d+)$"))
 @user_handling
 async def search_team_page(_: Client, callback: CallbackQuery, translate: Translator):
-    current_page, brawlhalla_id = get_current_page(callback, get_second_param=True)
-
+    current_page, brawlhalla_id = callback.matches[0].groups()
     await handle_ranked_team(
         brawl,
         brawlhalla_id,
         callback,
         cache,
         translate,
-        current_page=current_page,
+        current_page=int(current_page),
         is_page_view=True,
-    )
-
-
-@bot.on_callback_query(filters.regex(f"^{View.CLAN}_(next|prev)_(\\d+)$"))
-@user_handling
-async def search_clan_page(_: Client, callback: CallbackQuery, translate: Translator):
-    current_page, clan_id = get_current_page(callback, get_second_param=True)
-
-    await handle_clan(
-        brawl,
-        clan_id,
-        callback,
-        cache,
-        translate,
-        current_page=current_page,
     )
 
 
@@ -350,17 +338,38 @@ async def player_ranked_team_callback(
 async def player_clan_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
-    brawlhalla_id = int(callback.matches[0].group(1))
+    brawlhalla_id = callback.matches[0].group(1)
     player = cache.get(f"{View.GENERAL}_{brawlhalla_id}")
 
     if player is None:
-        player = await brawl.get_stats(brawlhalla_id)
+        try:
+            player = await brawl.get_stats(brawlhalla_id)
+        except ServiceUnavailable:
+            await callback.answer(translate.error_api_offline(), show_alert=True)
+            return
 
     if player.clan is None:
         await callback.answer(translate.error_no_clan_data(), show_alert=True)
         return
 
     await handle_clan(brawl, player.clan.clan_id, callback, cache, translate)
+
+
+@bot.on_callback_query(filters.regex(f"^(\\d+)_{View.CLAN}_(\\d+)$"))
+@user_handling
+async def search_clan_page(_: Client, callback: CallbackQuery, translate: Translator):
+    regex = callback.matches[0]
+    current_page = int(regex.group(1))
+    clan_id = regex.group(2)
+
+    await handle_clan(
+        brawl,
+        clan_id,
+        callback,
+        cache,
+        translate,
+        current_page=current_page,
+    )
 
 
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}$"))
@@ -371,27 +380,52 @@ async def player_legend_list_callback(
     await handle_legend_stats(legends, translate, callback)
 
 
-@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(\\d+)$"))
+@bot.on_callback_query(filters.regex(f"^(\\d+)?_?{View.LEGEND}_(\\w+)?$"))
+@user_handling
+async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
+    current_page, weapon = callback.matches[0].groups()
+
+    await handle_legend_stats(
+        legends,
+        translate,
+        callback,
+        weapon=weapon,
+        current_page=int(current_page or "0"),
+    )
+
+
+@bot.on_callback_query(filters.regex(f"^(\\d+)_{View.LEGEND}_(\\d+)$"))
 @user_handling
 async def player_legend_stats_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
-    brawlhalla_id = int(callback.matches[0].group(1))
+    current_page, brawlhalla_id = callback.matches[0].groups()
+
     await handle_legend_personal_stats(
-        brawl, brawlhalla_id, callback, cache, legends, translate
+        brawl,
+        brawlhalla_id,
+        callback,
+        cache,
+        legends,
+        translate,
+        current_page=int(current_page),
     )
 
 
-@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(\\d+)_(\\d+)$"))
+@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(\\d+)_(\\d+)_$"))
 @user_handling
 async def player_legend_detail_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
-    regex = callback.matches[0]
-    brawlhalla_id = int(regex.group(1))
-    legend_id = int(regex.group(2))
-    await handle_legend_personal_details(
-        brawl, brawlhalla_id, await legends.get(legend_id), callback, cache, translate
+    brawlhalla_id, legend_id = callback.matches[0].groups()
+
+    await handle_player_legend_details(
+        brawl,
+        brawlhalla_id,
+        await legends.get(legend_id),
+        callback,
+        cache,
+        translate,
     )
 
 
@@ -400,8 +434,7 @@ async def player_legend_detail_callback(
 async def player_legend_details_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
-    regex = callback.matches[0]
-    legend_id = int(regex.group(1))
+    legend_id = callback.matches[0].group(1)
     await handle_legend_details(await legends.get(legend_id), translate, callback)
 
 
@@ -410,9 +443,7 @@ async def player_legend_details_callback(
 async def player_ranked_team_detail_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
-    regex = callback.matches[0]
-    brawlhalla_id_one = int(regex.group(1))
-    brawlhalla_id_two = int(regex.group(2))
+    brawlhalla_id_one, brawlhalla_id_two = callback.matches[0].groups()
 
     await handle_ranked_team_detail(
         brawl, brawlhalla_id_one, brawlhalla_id_two, callback, cache, translate
@@ -463,6 +494,81 @@ async def language_callback(_: Client, callback: CallbackQuery, translate: Trans
 @bot.on_callback_query(filters.regex(r"^close$"))
 async def close_callback(_: Client, callback: CallbackQuery):
     await callback.message.delete()
+
+
+@bot.on_inline_query()
+@user_handling
+async def inline_query_handler(
+    _: Client,
+    inline_query: InlineQuery,
+    translate: Translator,
+):
+    if not inline_query.query:
+        text = translate.usage_inline()
+        await inline_query.answer(
+            [
+                InlineQueryResultArticle(
+                    title=text, input_message_content=InputTextMessageContent(text)
+                )
+            ]
+        )
+
+    query = escape(" ".join(inline_query.query.split()).lower())
+    results = cache.get(query)
+
+    if not results:
+        try:
+            results = await brawl.get_rankings(query)
+        except ServiceUnavailable:
+            text = translate.error_api_offline()
+            await inline_query.answer(
+                [
+                    InlineQueryResultArticle(
+                        title=text,
+                        input_message_content=InputTextMessageContent(
+                            text,
+                        ),
+                    )
+                ],
+                is_personal=True,
+            )
+            return
+    if not results:
+        await inline_query.answer(
+            [
+                InlineQueryResultArticle(
+                    title=translate.error_player_result(),
+                    input_message_content=InputTextMessageContent(
+                        translate.error_player_result(),
+                    ),
+                )
+            ],
+            is_personal=True,
+        )
+        return
+
+    cache.add(query, results)
+
+    await inline_query.answer(
+        [
+            InlineQueryResultArticle(
+                title=f"{result.name} ({result.rating})",
+                description=f"🏆 {result.wins:<8} 🤬 {result.games - result.wins:<8}",
+                input_message_content=InputTextMessageContent(
+                    f"{result.name} ({result.rating})"
+                ),
+                reply_markup=Keyboard.stats(
+                    result.brawlhalla_id,
+                    None,
+                    translate,
+                    show_clan=False,
+                    show_legends=False,
+                ),
+            )
+            for result in results
+        ],
+        is_personal=True,
+    )
 
 
 async def set_commands(bot: Client):
