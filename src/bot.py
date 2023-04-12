@@ -1,6 +1,6 @@
-from time import time
 import traceback
 
+from time import time
 from os import environ
 from html import escape
 from functools import wraps
@@ -380,11 +380,19 @@ async def player_legend_list_callback(
     await handle_legend_stats(legends, translate, callback)
 
 
-@bot.on_callback_query(filters.regex(f"^(\\d+)?_?{View.LEGEND}_(\\w+)?$"))
+@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_stats_(\\d+)$"))
+@user_handling
+async def player_legend_details_callback(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
+    legend_id = callback.matches[0].group(1)
+    await handle_legend_details(await legends.get(legend_id), translate, callback)
+
+
+@bot.on_callback_query(filters.regex(f"^(\\d+)?_?{View.LEGEND}_([az]+)?$"))
 @user_handling
 async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
     current_page, weapon = callback.matches[0].groups()
-
     await handle_legend_stats(
         legends,
         translate,
@@ -412,7 +420,7 @@ async def player_legend_stats_callback(
     )
 
 
-@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(\\d+)_(\\d+)_$"))
+@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_(\\d+)_(\\d+)$"))
 @user_handling
 async def player_legend_detail_callback(
     _: Client, callback: CallbackQuery, translate: Translator
@@ -427,15 +435,6 @@ async def player_legend_detail_callback(
         cache,
         translate,
     )
-
-
-@bot.on_callback_query(filters.regex(f"^{View.LEGEND}_stats_(\\d+)$"))
-@user_handling
-async def player_legend_details_callback(
-    _: Client, callback: CallbackQuery, translate: Translator
-):
-    legend_id = callback.matches[0].group(1)
-    await handle_legend_details(await legends.get(legend_id), translate, callback)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_TEAM_DETAIL}_(\\d+)_(\\d+)$"))
