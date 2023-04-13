@@ -280,6 +280,14 @@ class Keyboard:
                     )
                 ]
             )
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    translate.button_share(),
+                    switch_inline_query=f".id {brawlhalla_id_one}",
+                )
+            ]
+        )
         return InlineKeyboardMarkup(buttons)
 
     def legends_weapons(translate: Translator) -> InlineKeyboardMarkup:
