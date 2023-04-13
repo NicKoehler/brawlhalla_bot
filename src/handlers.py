@@ -2,141 +2,26 @@ import helpers.utils as utils
 
 from html import escape
 from datetime import timedelta
+from re import compile, RegexFlag
 from localization import Translator
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
 from helpers.cache import Cache, Legends
-from pyrogram.types import Message, CallbackQuery
-from brawlhalla_api.types import Legend, PlayerStats
+from brawlhalla_api.types import Legend, Region
 from brawlhalla_api.errors import ServiceUnavailable
 from babel.dates import format_datetime, format_timedelta
+from helpers.checkers import general_checks, ranked_checks
+from pyrogram.types import (
+    Message,
+    InlineQuery,
+    CallbackQuery,
+    InputTextMessageContent,
+    InlineQueryResultArticle,
+)
 
-
-async def general_checks(
-    brawl: Brawlhalla,
-    brawlhalla_id: int,
-    cache: Cache,
-) -> PlayerStats | None:
-    player = cache.get(f"{View.GENERAL}_{brawlhalla_id}")
-
-    if player is None:
-        player = await brawl.get_stats(brawlhalla_id)
-        player.legends.sort(key=lambda x: x.matchtime, reverse=True)
-        cache.add(f"{View.GENERAL}_{brawlhalla_id}", player)
-
-    return player
-
-
-async def ranked_checks(
-    brawl: Brawlhalla,
-    brawlhalla_id: int,
-    callback: CallbackQuery,
-    cache: Cache,
-    translate: Translator,
-):
-    player = cache.get(f"{View.RANKED_SOLO}_{brawlhalla_id}")
-
-    if player is None:
-        try:
-            player = await brawl.get_ranked(brawlhalla_id)
-        except ServiceUnavailable:
-            await callback.answer(translate.error_api_offline(), show_alert=True)
-            return
-        player.teams.sort(key=lambda x: x.rating, reverse=True)
-        cache.add(f"{View.RANKED_SOLO}_{brawlhalla_id}", player)
-
-    if player is None or player.games == 0:
-        await callback.answer(translate.error_no_ranked_data(), show_alert=True)
-        return
-
-    return player
-
-
-async def handle_search(
-    brawl: Brawlhalla,
-    cache: Cache,
-    legends: Legends,
-    translate: Translator,
-    update: Message | CallbackQuery,
-    query: str = None,
-    page_limit=10,
-    current_page=0,
-):
-    if isinstance(update, Message):
-        query = escape(" ".join(update.command[1:]))
-
-        if not query:
-            await update.reply(translate.usage_search())
-            return
-
-        if await utils.is_query_invalid(query, update, translate):
-            return
-
-    results = cache.get(query)
-
-    if results is None:
-        try:
-            results = await brawl.get_rankings(name=query)
-        except ServiceUnavailable:
-            await utils.send_or_edit_message(
-                update,
-                translate.error_api_offline(),
-            )
-            return
-        if not results:
-            if isinstance(update, Message):
-                await update.reply(
-                    translate.error_search_result(query),
-                )
-            else:
-                await update.answer(
-                    translate.error_search_result(query),
-                    show_alert=True,
-                )
-                await update.message.delete()
-            return
-
-        cache.add(query, results)
-
-    if len(results) == 1:
-        await handle_general(
-            brawl,
-            results[0].brawlhalla_id,
-            cache,
-            legends,
-            translate,
-            update,
-        )
-        return
-
-    await send_results(
-        results,
-        translate,
-        query,
-        update,
-        page_limit=page_limit,
-        current_page=current_page,
-    )
-
-
-async def send_results(
-    results,
-    translate: Translator,
-    query,
-    update: Message | CallbackQuery,
-    page_limit=10,
-    current_page=0,
-):
-    len_results = len(results)
-
-    await utils.send_or_edit_message(
-        update,
-        translate.results_search(
-            query=query,
-            total=len_results,
-        ),
-        Keyboard.search_player(results, query, current_page, page_limit, translate),
-    )
+REGION_REGEX = compile(
+    r"\.(JPN|US\-E|EU|SEA|BRZ|AUS|US\-W|ME|SA)\s*(.+)?", RegexFlag.IGNORECASE
+)
 
 
 async def handle_general(
@@ -145,15 +30,26 @@ async def handle_general(
     cache: Cache,
     legends: Legends,
     translate: Translator,
-    update: Message | CallbackQuery,
+    update: Message | CallbackQuery | InlineQuery,
 ) -> None:
     try:
         player = await general_checks(brawl, brawlhalla_id, cache)
     except ServiceUnavailable:
+        text = translate.error_api_offline()
         if isinstance(update, Message):
-            await update.reply(translate.error_api_offline())
+            await update.reply(text)
         if isinstance(update, CallbackQuery):
-            await update.answer(translate.error_api_offline(), show_alert=True)
+            await update.answer(text, show_alert=True)
+        if isinstance(update, InlineQuery):
+            await update.answer(
+                [
+                    InlineQueryResultArticle(
+                        title=text,
+                        input_message_content=InputTextMessageContent(text),
+                    )
+                ],
+                is_personal=True,
+            )
         return
 
     if not player:
@@ -161,7 +57,20 @@ async def handle_general(
             await update.reply(translate.error_player_not_found(id=brawlhalla_id))
         elif isinstance(update, CallbackQuery):
             await update.answer(
-                translate.error_player_not_found(id=brawlhalla_id), show_alert=True
+                translate.error_player_not_found(id=brawlhalla_id),
+                show_alert=True,
+            )
+        elif isinstance(update, InlineQuery):
+            await update.answer(
+                [
+                    InlineQueryResultArticle(
+                        title=translate.error_player_result(),
+                        input_message_content=InputTextMessageContent(
+                            translate.error_player_result()
+                        ),
+                    )
+                ],
+                is_personal=True,
             )
         return
 
@@ -177,45 +86,61 @@ async def handle_general(
         most_used_id = player.legends[0].legend_id
         most_used_legend_name = (await legends.get(most_used_id)).bio_name
 
-    await utils.send_or_edit_message(
-        update,
-        translate.stats_base(
-            id=player.brawlhalla_id,
-            name=player.name,
-        )
-        + translate.stats_general(
-            level=utils.make_progress_bar(player.level, player.xp_percentage),
-            xp=player.xp,
-            clan=player.clan.clan_name if player.clan else "❌",
-            most_used_legend=most_used_legend_name,
-            total_game_time="\n".join(total_game_time_list) or "❌",
-            games=player.games,
-            wins=player.wins,
-            loses=player.games - player.wins,
-            winperc=round(player.wins / player.games * 100, 2) if player.games else 0,
-            totalko=sum(legend.kos for legend in player.legends),
-            totaldeath=sum(legend.falls for legend in player.legends),
-            totalsuicide=sum(legend.suicides for legend in player.legends),
-            totalteamko=sum(legend.teamkos for legend in player.legends),
-            kobomb=player.kobomb,
-            damagebomb=player.damagebomb,
-            komine=player.komine,
-            damagemine=player.damagemine,
-            kospikeball=player.kospikeball,
-            damagespikeball=player.damagespikeball,
-            kosidekick=player.kosidekick,
-            damagesidekick=player.damagesidekick,
-            kosnowball=player.kosnowball,
-            hitsnowball=player.hitsnowball,
-        ),
-        Keyboard.stats(
-            player.brawlhalla_id,
-            current_view=View.GENERAL,
-            translate=translate,
-            show_clan=player.clan is not None,
-            show_legends=len(player.legends) > 0,
-        ),
+    text = translate.stats_base(
+        id=player.brawlhalla_id,
+        name=player.name,
+    ) + translate.stats_general(
+        level=utils.make_progress_bar(player.level, player.xp_percentage),
+        xp=player.xp,
+        clan=player.clan.clan_name if player.clan else "❌",
+        most_used_legend=most_used_legend_name,
+        total_game_time="\n".join(total_game_time_list) or "❌",
+        games=player.games,
+        wins=player.wins,
+        loses=player.games - player.wins,
+        winperc=round(player.wins / player.games * 100, 2) if player.games else 0,
+        totalko=sum(legend.kos for legend in player.legends),
+        totaldeath=sum(legend.falls for legend in player.legends),
+        totalsuicide=sum(legend.suicides for legend in player.legends),
+        totalteamko=sum(legend.teamkos for legend in player.legends),
+        kobomb=player.kobomb,
+        damagebomb=player.damagebomb,
+        komine=player.komine,
+        damagemine=player.damagemine,
+        kospikeball=player.kospikeball,
+        damagespikeball=player.damagespikeball,
+        kosidekick=player.kosidekick,
+        damagesidekick=player.damagesidekick,
+        kosnowball=player.kosnowball,
+        hitsnowball=player.hitsnowball,
     )
+
+    keyboard = Keyboard.stats(
+        player.brawlhalla_id,
+        current_view=View.GENERAL,
+        translate=translate,
+        show_clan=player.clan is not None,
+        show_legends=len(player.legends) > 0,
+    )
+
+    if isinstance(update, InlineQuery):
+        await update.answer(
+            [
+                InlineQueryResultArticle(
+                    title=player.name,
+                    input_message_content=InputTextMessageContent(
+                        text,
+                    ),
+                    reply_markup=keyboard,
+                )
+            ]
+        )
+    else:
+        await utils.send_or_edit_message(
+            update,
+            text,
+            keyboard,
+        )
 
 
 def make_played_time(translate, total_game_time):
@@ -445,8 +370,7 @@ async def handle_legend_personal_stats(
         translate.stats_base(
             id=player.brawlhalla_id,
             name=player.name,
-        )
-        + translate.results_legends(),
+        ),
         reply_markup=await Keyboard.legends(
             current_page,
             page_limit,
@@ -543,7 +467,7 @@ async def handle_player_legend_details(
 
 async def handle_legend_stats(
     legends: Legends,
-    translator: Translator,
+    translate: Translator,
     update: Message | CallbackQuery,
     weapon: str = None,
     current_page=0,
@@ -554,13 +478,13 @@ async def handle_legend_stats(
 
     await utils.send_or_edit_message(
         update,
-        translator.results_legends_with_weapon(weapon=weapon.capitalize())
+        translate.results_legends_with_weapon(weapon=weapon.capitalize())
         if weapon
-        else translator.results_legends(),
+        else translate.results_legends(),
         await Keyboard.legends(
             current_page,
             limit,
-            translator,
+            translate,
             legends=legends,
             weapon=weapon,
             rows=3,
@@ -587,12 +511,12 @@ async def handle_weapons(
 
 async def handle_legend_details(
     legend: Legend,
-    translator: Translator,
+    translate: Translator,
     update: Message | CallbackQuery,
 ):
     await utils.send_or_edit_message(
         update,
-        translator.stats_legend(
+        translate.stats_legend(
             legend_id=legend.legend_id,
             bio_name=legend.bio_name,
             bio_aka=legend.bio_aka,
@@ -603,5 +527,87 @@ async def handle_legend_details(
             defense=legend.defense,
             speed=legend.speed,
         ),
-        Keyboard.legends_weapons(translator),
+        Keyboard.legends_weapons(translate),
+    )
+
+
+async def handle_search(
+    inline_query: InlineQuery,
+    brawl: Brawlhalla,
+    translate: Translator,
+    cache: Cache,
+):
+    region = Region.ALL
+    complete_query = escape(" ".join(inline_query.query.split()).lower())
+    query = complete_query
+
+    parse_region = REGION_REGEX.match(complete_query)
+    if parse_region:
+        region, query = parse_region.groups()
+        region = Region.from_str(region)
+
+    if not query:
+        text = translate.usage_inline()
+        await inline_query.answer(
+            [
+                InlineQueryResultArticle(
+                    title=text, input_message_content=InputTextMessageContent(text)
+                )
+            ]
+        )
+
+    results = cache.get(complete_query)
+
+    if not results:
+        try:
+            results = await brawl.get_rankings(query, region=region)
+            if results:
+                cache.add(complete_query, results)
+        except ServiceUnavailable:
+            text = translate.error_api_offline()
+            await inline_query.answer(
+                [
+                    InlineQueryResultArticle(
+                        title=text,
+                        input_message_content=InputTextMessageContent(
+                            text,
+                        ),
+                    )
+                ],
+                is_personal=True,
+            )
+            return
+    if not results:
+        await inline_query.answer(
+            [
+                InlineQueryResultArticle(
+                    title=translate.error_player_result(),
+                    input_message_content=InputTextMessageContent(
+                        translate.error_player_result(),
+                    ),
+                )
+            ],
+            is_personal=True,
+        )
+        return
+
+    await inline_query.answer(
+        [
+            InlineQueryResultArticle(
+                title=f"{result.name} ({result.rating})",
+                description=f"🏆 {result.wins:<8} 🤬 {result.games - result.wins:<8}",
+                input_message_content=InputTextMessageContent(
+                    f"{result.name} ({result.rating})"
+                ),
+                reply_markup=Keyboard.stats(
+                    result.brawlhalla_id,
+                    None,
+                    translate,
+                    show_clan=False,
+                    show_legends=False,
+                ),
+            )
+            for result in results
+        ],
+        is_personal=True,
     )

@@ -28,8 +28,7 @@ WELCOME = (
 
 # Usages
 USAGE_SEARCH = (
-    "Usa il comando <b>/cerca</b> per ricercare un giocatore.\n\n"
-    "Esempio: <code>/cerca nickoehler</code>"
+    "Tocca uno dei pulsanti qui sotto per iniziare la ricerca di un giocatore"
 )
 USAGE_ID = (
     "Usa il comando <b>/id</b> per mostrare le statistiche di un giocatore l'ID specificato.\n\n"
@@ -73,7 +72,6 @@ ERROR_GENERIC = (
 )
 
 # Results
-RESULTS_SEARCH = "Risultati della ricerca: <b>{query} ({total})</b>"
 RESULTS_TEAMS = "Squadre:"
 RESULTS_LEGENDS = "Legends:"
 RESULTS_LEGENDS_WITH_WEAPON = "Legends che utilizzano <b>{weapon}</b>:"
@@ -100,7 +98,17 @@ BUTTON_ISSUE = "🐙 • APRI UNA ISSUE • 🐱"
 BUTTON_CLAN = "🎖 • CLAN • 🎖"
 BUTTON_CLOSE = "❌ • CHIUDI • ❌"
 BUTTON_WEAPONS = "🔫 • ARMI • 🔫"
-BUTTON_INLINE = "▶️ • UTILIZZA IL BOT INLINE • ◀️"
+BUTTON_SHARE = "💬 • CONDIVIDI • 💬"
+BUTTON_SEARCH_ALL = "🌍 • RICERCA GLOBALE • 🌍"
+BUTTON_SEARCH_AUS = "🇦🇺 • RICERCA IN AUS • 🇦🇺"
+BUTTON_SEARCH_BRZ = "🇧🇷 • RICERCA IN BRZ • 🇧🇷"
+BUTTON_SEARCH_EU = "🇪🇺 • RICERCA IN EU • 🇪🇺"
+BUTTON_SEARCH_JPN = "🇯🇵 • RICERCA IN JPN • 🇯🇵"
+BUTTON_SEARCH_ME = "🇦🇪 • RICERCA IN ME • 🇦🇪"
+BUTTON_SEARCH_SA = "🇿🇦 • RICERCA IN SA • 🇿🇦"
+BUTTON_SEARCH_SEA = "🇨🇳 • RICERCA IN SEA • 🇨🇳"
+BUTTON_SEARCH_US_E = "🇺🇸 • RICERCA IN US-E • 🇺🇸"
+BUTTON_SEARCH_US_W = "🇺🇸 • RICERCA IN US-W • 🇺🇸"
 
 # Time
 TIME_DAYS = "Giorni: {t}"
@@ -180,9 +188,7 @@ STATS_CLAN = """🆔 • Clan ID: <b>{id}</b>
 
 🔺 • XP: <b>{xp}</b>
 👥 • Membri: <b>{num}</b>
-📅 • Data di creazione: <b>{date}</b>
-
-<b>{current}/{total}</b>"""
+📅 • Data di creazione: <b>{date}</b>"""
 
 STATS_PLAYER_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 

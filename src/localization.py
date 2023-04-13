@@ -28,9 +28,6 @@ class Translator:
     def button_general(self):
         return self.locale.BUTTON_GENERAL
 
-    def button_inline(self):
-        return self.locale.BUTTON_INLINE
-
     def button_issue(self):
         return self.locale.BUTTON_ISSUE
 
@@ -42,6 +39,39 @@ class Translator:
 
     def button_ranked_team(self):
         return self.locale.BUTTON_RANKED_TEAM
+
+    def button_search_all(self):
+        return self.locale.BUTTON_SEARCH_ALL
+
+    def button_search_aus(self):
+        return self.locale.BUTTON_SEARCH_AUS
+
+    def button_search_brz(self):
+        return self.locale.BUTTON_SEARCH_BRZ
+
+    def button_search_eu(self):
+        return self.locale.BUTTON_SEARCH_EU
+
+    def button_search_jpn(self):
+        return self.locale.BUTTON_SEARCH_JPN
+
+    def button_search_me(self):
+        return self.locale.BUTTON_SEARCH_ME
+
+    def button_search_sa(self):
+        return self.locale.BUTTON_SEARCH_SA
+
+    def button_search_sea(self):
+        return self.locale.BUTTON_SEARCH_SEA
+
+    def button_search_us_e(self):
+        return self.locale.BUTTON_SEARCH_US_E
+
+    def button_search_us_w(self):
+        return self.locale.BUTTON_SEARCH_US_W
+
+    def button_share(self):
+        return self.locale.BUTTON_SHARE
 
     def button_teammate(self):
         return self.locale.BUTTON_TEAMMATE
@@ -191,16 +221,6 @@ class Translator:
             weapons=weapons
         )
 
-    def results_search(
-        self,
-        query,
-        total
-    ):
-        return self.locale.RESULTS_SEARCH.format(
-            query=query,
-            total=total
-        )
-
     def results_teams(self):
         return self.locale.RESULTS_TEAMS
 
@@ -223,18 +243,14 @@ class Translator:
         name,
         xp,
         num,
-        date,
-        current,
-        total
+        date
     ):
         return self.locale.STATS_CLAN.format(
             id=id,
             name=name,
             xp=xp,
             num=num,
-            date=date,
-            current=current,
-            total=total
+            date=date
         )
 
     def stats_general(

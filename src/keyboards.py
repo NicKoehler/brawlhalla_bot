@@ -8,6 +8,7 @@ from brawlhalla_api.types import (
     PlayerStatsLegend,
     RankingResult,
     PlayerStats,
+    Region,
     Clan,
 )
 
@@ -17,7 +18,6 @@ class View(Enum):
     LEGEND = "legend"
     WEAPON = "weapon"
     GENERAL = "general"
-    SEARCH = "search"
     RANKED_SOLO = "rankedsolo"
     RANKED_TEAM = "rankedteam"
     RANKED_TEAM_DETAIL = "rankedteamdetail"
@@ -30,15 +30,56 @@ class Keyboard:
     def close_button(translate: Translator) -> list[list[InlineKeyboardButton]]:
         return [[InlineKeyboardButton(translate.button_close(), callback_data="close")]]
 
-    def start(translate: Translator) -> list[list[InlineKeyboardButton]]:
+    def search(translate: Translator) -> list[list[InlineKeyboardButton]]:
+        regions = [
+            (translate.button_search_all(), ""),
+            (
+                translate.button_search_aus(),
+                Region.AUS,
+            ),
+            (
+                translate.button_search_brz(),
+                Region.BRZ,
+            ),
+            (
+                translate.button_search_eu(),
+                Region.EU,
+            ),
+            (
+                translate.button_search_jpn(),
+                Region.JPN,
+            ),
+            (
+                translate.button_search_me(),
+                Region.ME,
+            ),
+            (
+                translate.button_search_sa(),
+                Region.SA,
+            ),
+            (
+                translate.button_search_sea(),
+                Region.SEA,
+            ),
+            (
+                translate.button_search_us_e(),
+                Region.US_E,
+            ),
+            (
+                translate.button_search_us_w(),
+                Region.US_W,
+            ),
+        ]
+
         return InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        translate.button_inline(),
-                        switch_inline_query_current_chat="",
+                        text,
+                        switch_inline_query_current_chat=f".{query} " if query else "",
                     )
                 ]
+                for text, query in regions
             ]
         )
 
@@ -85,34 +126,6 @@ class Keyboard:
 
         return buttons
 
-    def search_player(
-        players: list[RankingResult],
-        query: str,
-        current_page: int,
-        limit: int,
-        translate: Translator,
-    ) -> InlineKeyboardMarkup:
-        buttons = Keyboard.navigation_buttons(
-            current_page,
-            limit,
-            f"{View.SEARCH}_{query}",
-            players,
-        )
-
-        return InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        f"{player.name} ({player.rating})",
-                        callback_data=f"{View.GENERAL}_{player.brawlhalla_id}",
-                    )
-                ]
-                for player in players[current_page * limit : (current_page + 1) * limit]
-            ]
-            + [buttons]
-            + Keyboard.close_button(translate)
-        )
-
     def teams(
         player: RankingResult,
         current: int,
@@ -154,11 +167,6 @@ class Keyboard:
     def clan_components(
         clan: Clan, current_page: int, limit: int, _
     ) -> InlineKeyboardMarkup:
-        total_pages = ceil(clan.components / limit) - 1
-
-        if current_page > total_pages:
-            current_page = total_pages
-
         buttons = Keyboard.navigation_buttons(
             current_page,
             limit,
@@ -314,6 +322,14 @@ class Keyboard:
                     )
                 ]
             )
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    translate.button_share(),
+                    switch_inline_query=f".id {brawlhalla_id_one}",
+                )
+            ]
+        )
         return InlineKeyboardMarkup(buttons)
 
     def legends_weapons(translate: Translator) -> InlineKeyboardMarkup:
