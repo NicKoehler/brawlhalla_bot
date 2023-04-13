@@ -26,15 +26,13 @@ WELCOME = (
 )
 
 # Usages
-USAGE_SEARCH = (
-    "Use the <b>/search</b> command to search for a player.\n\n"
-    "Example: <code>/search nickoehler</code>"
-)
+USAGE_SEARCH = "Tap on the button bellow to start the search"
 USAGE_ID = (
     "Use the <b>/id</b> command to show the statistics of a player with the specified ID.\n\n"
     "Example: <code>/id 2316541</code>"
 )
 USAGE_INLINE = "Enter the name of the player you want to search"
+
 # Errors
 ERROR_LENGTH = "The search query must be between 2 and 32 characters"
 ERROR_SEARCH_RESULT = "No player found searching <b>{query}</b>"
@@ -67,7 +65,6 @@ ERROR_GENERIC = (
 )
 
 # Results
-RESULTS_SEARCH = "Search results: <b>{query} ({total})</b>"
 RESULTS_TEAMS = "Teams:"
 RESULTS_LEGENDS = "Legends:"
 RESULTS_LEGENDS_WITH_WEAPON = "Legends with weapons <b>{weapon}</b>"
@@ -94,7 +91,8 @@ BUTTON_ISSUE = "🐙 • OPEN AN ISSUE • 🐱"
 BUTTON_CLAN = "🎖 • CLAN • 🎖"
 BUTTON_CLOSE = "❌ • CLOSE • ❌"
 BUTTON_WEAPONS = "🔫 • WEAPONS • 🔫"
-BUTTON_INLINE = "▶️ • USE INLINE BOT • ◀️"
+BUTTON_SEARCH = "🔍 • SEARCH • 🔍"
+BUTTON_SHARE = "💬 • SHARE • 💬"
 
 # Time
 TIME_DAYS = "Days : {t}"
@@ -175,9 +173,7 @@ STATS_CLAN = """🆔 • Clan ID:<b> {id} </b>
 
 🔺 • XP: <b>{xp}</b>
 👥 • Members: <b>{num}</b>
-📅 • Creation date: <b>{date}</b>
-
-<b>{current}/{total}</b>"""
+📅 • Creation date: <b>{date}</b>"""
 
 STATS_PLAYER_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 

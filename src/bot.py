@@ -29,7 +29,6 @@ from pyrogram.types import (
 from localization import Localization, Translator, SUPPORTED_LANGUAGES
 from callbacks import (
     handle_clan,
-    handle_search,
     handle_general,
     handle_weapons,
     handle_ranked_solo,
@@ -118,14 +117,16 @@ async def start(_: Client, message: Message, translate: Translator):
         translate.welcome(
             name=escape(message.from_user.first_name),
         ),
-        reply_markup=Keyboard.start(translate),
     )
 
 
 @bot.on_message(filters.command(get_localized_commands("search", localization)))
 @user_handling
 async def search_player(_: Client, message: Message, translate: Translator):
-    await handle_search(brawl, cache, legends, translate, message)
+    await message.reply(
+        translate.usage_search(),
+        reply_markup=Keyboard.search(translate),
+    )
 
 
 @bot.on_message(filters.command("id"))
@@ -255,21 +256,6 @@ async def missing_weapons(_: Client, message: Message, translate: Translator):
 async def language_command(_: Client, message: Message, translate: Translator):
     await message.reply_text(
         translate.description_language(), reply_markup=Keyboard.languages()
-    )
-
-
-@bot.on_callback_query(filters.regex(f"^(\\d+)_{View.SEARCH}_(.+)$"))
-@user_handling
-async def search_player_page(_: Client, callback: CallbackQuery, translate: Translator):
-    current_page, query = callback.matches[0].groups()
-    await handle_search(
-        brawl,
-        cache,
-        legends,
-        translate,
-        callback,
-        query=query,
-        current_page=int(current_page),
     )
 
 

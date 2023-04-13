@@ -27,10 +27,7 @@ WELCOME = (
 )
 
 # Usages
-USAGE_SEARCH = (
-    "Usa il comando <b>/cerca</b> per ricercare un giocatore.\n\n"
-    "Esempio: <code>/cerca nickoehler</code>"
-)
+USAGE_SEARCH = "Tocca il pulsante qui sotto per iniziare la ricerca"
 USAGE_ID = (
     "Usa il comando <b>/id</b> per mostrare le statistiche di un giocatore l'ID specificato.\n\n"
     "Esempio: <code>/id 2316541</code>"
@@ -73,7 +70,6 @@ ERROR_GENERIC = (
 )
 
 # Results
-RESULTS_SEARCH = "Risultati della ricerca: <b>{query} ({total})</b>"
 RESULTS_TEAMS = "Squadre:"
 RESULTS_LEGENDS = "Legends:"
 RESULTS_LEGENDS_WITH_WEAPON = "Legends che utilizzano <b>{weapon}</b>:"
@@ -100,7 +96,8 @@ BUTTON_ISSUE = "🐙 • APRI UNA ISSUE • 🐱"
 BUTTON_CLAN = "🎖 • CLAN • 🎖"
 BUTTON_CLOSE = "❌ • CHIUDI • ❌"
 BUTTON_WEAPONS = "🔫 • ARMI • 🔫"
-BUTTON_INLINE = "▶️ • UTILIZZA IL BOT INLINE • ◀️"
+BUTTON_SEARCH = "🔎 • CERCA • 🔎"
+BUTTON_SHARE = "💬 • CONDIVIDI • 💬"
 
 # Time
 TIME_DAYS = "Giorni: {t}"
@@ -180,9 +177,7 @@ STATS_CLAN = """🆔 • Clan ID: <b>{id}</b>
 
 🔺 • XP: <b>{xp}</b>
 👥 • Membri: <b>{num}</b>
-📅 • Data di creazione: <b>{date}</b>
-
-<b>{current}/{total}</b>"""
+📅 • Data di creazione: <b>{date}</b>"""
 
 STATS_PLAYER_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 

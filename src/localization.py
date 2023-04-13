@@ -28,9 +28,6 @@ class Translator:
     def button_general(self):
         return self.locale.BUTTON_GENERAL
 
-    def button_inline(self):
-        return self.locale.BUTTON_INLINE
-
     def button_issue(self):
         return self.locale.BUTTON_ISSUE
 
@@ -42,6 +39,12 @@ class Translator:
 
     def button_ranked_team(self):
         return self.locale.BUTTON_RANKED_TEAM
+
+    def button_search(self):
+        return self.locale.BUTTON_SEARCH
+
+    def button_share(self):
+        return self.locale.BUTTON_SHARE
 
     def button_teammate(self):
         return self.locale.BUTTON_TEAMMATE
@@ -191,16 +194,6 @@ class Translator:
             weapons=weapons
         )
 
-    def results_search(
-        self,
-        query,
-        total
-    ):
-        return self.locale.RESULTS_SEARCH.format(
-            query=query,
-            total=total
-        )
-
     def results_teams(self):
         return self.locale.RESULTS_TEAMS
 
@@ -223,18 +216,14 @@ class Translator:
         name,
         xp,
         num,
-        date,
-        current,
-        total
+        date
     ):
         return self.locale.STATS_CLAN.format(
             id=id,
             name=name,
             xp=xp,
             num=num,
-            date=date,
-            current=current,
-            total=total
+            date=date
         )
 
     def stats_general(
