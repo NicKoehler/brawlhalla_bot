@@ -66,9 +66,9 @@ class Keyboard:
         current_page: int,
         limit_page: int,
         data: str,
-        l: list,
+        lst: list,
     ) -> list[InlineKeyboardButton]:
-        total_pages = ceil(len(l) / limit_page) - 1
+        total_pages = ceil(len(lst) / limit_page) - 1
 
         if current_page > total_pages:
             current_page = total_pages

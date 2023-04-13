@@ -273,7 +273,6 @@ async def search_player_page(_: Client, callback: CallbackQuery, translate: Tran
     )
 
 
-
 @bot.on_callback_query(filters.regex(r"^(\d+)_team_(\d+)$"))
 @user_handling
 async def search_team_page(_: Client, callback: CallbackQuery, translate: Translator):
@@ -372,6 +371,7 @@ async def search_legend_personal_page(
         current_page=int(current_page or "0"),
     )
 
+
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}$"))
 @user_handling
 async def player_legend_list_callback(
@@ -445,7 +445,12 @@ async def player_ranked_team_detail_callback(
     brawlhalla_id_one, brawlhalla_id_two = callback.matches[0].groups()
 
     await handle_ranked_team_detail(
-        brawl, int(brawlhalla_id_one), int(brawlhalla_id_two), callback, cache, translate
+        brawl,
+        int(brawlhalla_id_one),
+        int(brawlhalla_id_two),
+        callback,
+        cache,
+        translate,
     )
 
 
