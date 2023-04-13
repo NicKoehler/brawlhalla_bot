@@ -1,3 +1,5 @@
+from keyboards import Keyboard, View
+from brawlhalla_api.types import PlayerStats
 from localization import Localization, Translator
 from pyrogram.types import InlineKeyboardMarkup, CallbackQuery, Message
 

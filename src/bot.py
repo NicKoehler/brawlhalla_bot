@@ -22,13 +22,12 @@ from pyrogram.types import (
     CallbackQuery,
     BotCommand,
     InlineQuery,
-    InlineQueryResultArticle,
-    InputTextMessageContent,
 )
 
 from localization import Localization, Translator, SUPPORTED_LANGUAGES
-from callbacks import (
+from handlers import (
     handle_clan,
+    handle_search,
     handle_general,
     handle_weapons,
     handle_ranked_solo,
@@ -486,6 +485,17 @@ async def close_callback(_: Client, callback: CallbackQuery):
     await callback.message.delete()
 
 
+@bot.on_inline_query(filters.regex(r"^.id\s+(\d+)$"))
+@user_handling
+async def inline_query_id_handler(
+    _: Client,
+    inline_query: InlineQuery,
+    translate: Translator,
+):
+    brawlhalla_id = inline_query.matches[0].group(1)
+    await handle_general(brawl, brawlhalla_id, cache, legends, translate, inline_query)
+
+
 @bot.on_inline_query()
 @user_handling
 async def inline_query_handler(
@@ -493,72 +503,7 @@ async def inline_query_handler(
     inline_query: InlineQuery,
     translate: Translator,
 ):
-    if not inline_query.query:
-        text = translate.usage_inline()
-        await inline_query.answer(
-            [
-                InlineQueryResultArticle(
-                    title=text, input_message_content=InputTextMessageContent(text)
-                )
-            ]
-        )
-
-    query = escape(" ".join(inline_query.query.split()).lower())
-    results = cache.get(query)
-
-    if not results:
-        try:
-            results = await brawl.get_rankings(query)
-        except ServiceUnavailable:
-            text = translate.error_api_offline()
-            await inline_query.answer(
-                [
-                    InlineQueryResultArticle(
-                        title=text,
-                        input_message_content=InputTextMessageContent(
-                            text,
-                        ),
-                    )
-                ],
-                is_personal=True,
-            )
-            return
-    if not results:
-        await inline_query.answer(
-            [
-                InlineQueryResultArticle(
-                    title=translate.error_player_result(),
-                    input_message_content=InputTextMessageContent(
-                        translate.error_player_result(),
-                    ),
-                )
-            ],
-            is_personal=True,
-        )
-        return
-
-    cache.add(query, results)
-
-    await inline_query.answer(
-        [
-            InlineQueryResultArticle(
-                title=f"{result.name} ({result.rating})",
-                description=f"🏆 {result.wins:<8} 🤬 {result.games - result.wins:<8}",
-                input_message_content=InputTextMessageContent(
-                    f"{result.name} ({result.rating})"
-                ),
-                reply_markup=Keyboard.stats(
-                    result.brawlhalla_id,
-                    None,
-                    translate,
-                    show_clan=False,
-                    show_legends=False,
-                ),
-            )
-            for result in results
-        ],
-        is_personal=True,
-    )
+    await handle_search(inline_query, brawl, translate, cache)
 
 
 async def set_commands(bot: Client):
