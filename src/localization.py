@@ -40,8 +40,35 @@ class Translator:
     def button_ranked_team(self):
         return self.locale.BUTTON_RANKED_TEAM
 
-    def button_search(self):
-        return self.locale.BUTTON_SEARCH
+    def button_search_all(self):
+        return self.locale.BUTTON_SEARCH_ALL
+
+    def button_search_aus(self):
+        return self.locale.BUTTON_SEARCH_AUS
+
+    def button_search_brz(self):
+        return self.locale.BUTTON_SEARCH_BRZ
+
+    def button_search_eu(self):
+        return self.locale.BUTTON_SEARCH_EU
+
+    def button_search_jpn(self):
+        return self.locale.BUTTON_SEARCH_JPN
+
+    def button_search_me(self):
+        return self.locale.BUTTON_SEARCH_ME
+
+    def button_search_sa(self):
+        return self.locale.BUTTON_SEARCH_SA
+
+    def button_search_sea(self):
+        return self.locale.BUTTON_SEARCH_SEA
+
+    def button_search_us_e(self):
+        return self.locale.BUTTON_SEARCH_US_E
+
+    def button_search_us_w(self):
+        return self.locale.BUTTON_SEARCH_US_W
 
     def button_share(self):
         return self.locale.BUTTON_SHARE

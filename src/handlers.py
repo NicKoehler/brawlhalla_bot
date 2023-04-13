@@ -2,20 +2,25 @@ import helpers.utils as utils
 
 from html import escape
 from datetime import timedelta
+from re import compile, RegexFlag
 from localization import Translator
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
-from brawlhalla_api.types import Legend
 from helpers.cache import Cache, Legends
+from brawlhalla_api.types import Legend, Region
 from brawlhalla_api.errors import ServiceUnavailable
 from babel.dates import format_datetime, format_timedelta
 from helpers.checkers import general_checks, ranked_checks
 from pyrogram.types import (
     Message,
-    CallbackQuery,
     InlineQuery,
-    InlineQueryResultArticle,
+    CallbackQuery,
     InputTextMessageContent,
+    InlineQueryResultArticle,
+)
+
+REGION_REGEX = compile(
+    r"\.(JPN|US\-E|EU|SEA|BRZ|AUS|US\-W|ME|SA)\s*(.+)?", RegexFlag.IGNORECASE
 )
 
 
@@ -30,18 +35,17 @@ async def handle_general(
     try:
         player = await general_checks(brawl, brawlhalla_id, cache)
     except ServiceUnavailable:
+        text = translate.error_api_offline()
         if isinstance(update, Message):
-            await update.reply(translate.error_api_offline())
+            await update.reply(text)
         if isinstance(update, CallbackQuery):
-            await update.answer(translate.error_api_offline(), show_alert=True)
+            await update.answer(text, show_alert=True)
         if isinstance(update, InlineQuery):
             await update.answer(
                 [
                     InlineQueryResultArticle(
-                        title=translate.error_api_offline(),
-                        input_message_content=InputTextMessageContent(
-                            translate.error_api_offline()
-                        ),
+                        title=text,
+                        input_message_content=InputTextMessageContent(text),
                     )
                 ],
                 is_personal=True,
@@ -53,7 +57,8 @@ async def handle_general(
             await update.reply(translate.error_player_not_found(id=brawlhalla_id))
         elif isinstance(update, CallbackQuery):
             await update.answer(
-                translate.error_player_not_found(id=brawlhalla_id), show_alert=True
+                translate.error_player_not_found(id=brawlhalla_id),
+                show_alert=True,
             )
         elif isinstance(update, InlineQuery):
             await update.answer(
@@ -365,8 +370,7 @@ async def handle_legend_personal_stats(
         translate.stats_base(
             id=player.brawlhalla_id,
             name=player.name,
-        )
-        + translate.results_legends(),
+        ),
         reply_markup=await Keyboard.legends(
             current_page,
             page_limit,
@@ -463,7 +467,7 @@ async def handle_player_legend_details(
 
 async def handle_legend_stats(
     legends: Legends,
-    translator: Translator,
+    translate: Translator,
     update: Message | CallbackQuery,
     weapon: str = None,
     current_page=0,
@@ -474,13 +478,13 @@ async def handle_legend_stats(
 
     await utils.send_or_edit_message(
         update,
-        translator.results_legends_with_weapon(weapon=weapon.capitalize())
+        translate.results_legends_with_weapon(weapon=weapon.capitalize())
         if weapon
-        else translator.results_legends(),
+        else translate.results_legends(),
         await Keyboard.legends(
             current_page,
             limit,
-            translator,
+            translate,
             legends=legends,
             weapon=weapon,
             rows=3,
@@ -507,12 +511,12 @@ async def handle_weapons(
 
 async def handle_legend_details(
     legend: Legend,
-    translator: Translator,
+    translate: Translator,
     update: Message | CallbackQuery,
 ):
     await utils.send_or_edit_message(
         update,
-        translator.stats_legend(
+        translate.stats_legend(
             legend_id=legend.legend_id,
             bio_name=legend.bio_name,
             bio_aka=legend.bio_aka,
@@ -523,7 +527,7 @@ async def handle_legend_details(
             defense=legend.defense,
             speed=legend.speed,
         ),
-        Keyboard.legends_weapons(translator),
+        Keyboard.legends_weapons(translate),
     )
 
 
@@ -533,7 +537,16 @@ async def handle_search(
     translate: Translator,
     cache: Cache,
 ):
-    if not inline_query.query:
+    region = Region.ALL
+    complete_query = escape(" ".join(inline_query.query.split()).lower())
+    query = complete_query
+
+    parse_region = REGION_REGEX.match(complete_query)
+    if parse_region:
+        region, query = parse_region.groups()
+        region = Region.from_str(region)
+
+    if not query:
         text = translate.usage_inline()
         await inline_query.answer(
             [
@@ -542,12 +555,14 @@ async def handle_search(
                 )
             ]
         )
-    query = escape(" ".join(inline_query.query.split()).lower())
-    results = cache.get(query)
+
+    results = cache.get(complete_query)
 
     if not results:
         try:
-            results = await brawl.get_rankings(query)
+            results = await brawl.get_rankings(query, region=region)
+            if results:
+                cache.add(complete_query, results)
         except ServiceUnavailable:
             text = translate.error_api_offline()
             await inline_query.answer(
@@ -575,8 +590,6 @@ async def handle_search(
             is_personal=True,
         )
         return
-
-    cache.add(query, results)
 
     await inline_query.answer(
         [

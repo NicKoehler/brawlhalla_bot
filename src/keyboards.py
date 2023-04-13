@@ -8,6 +8,7 @@ from brawlhalla_api.types import (
     PlayerStatsLegend,
     RankingResult,
     PlayerStats,
+    Region,
     Clan,
 )
 
@@ -30,14 +31,55 @@ class Keyboard:
         return [[InlineKeyboardButton(translate.button_close(), callback_data="close")]]
 
     def search(translate: Translator) -> list[list[InlineKeyboardButton]]:
+        regions = [
+            (translate.button_search_all(), ""),
+            (
+                translate.button_search_aus(),
+                Region.AUS,
+            ),
+            (
+                translate.button_search_brz(),
+                Region.BRZ,
+            ),
+            (
+                translate.button_search_eu(),
+                Region.EU,
+            ),
+            (
+                translate.button_search_jpn(),
+                Region.JPN,
+            ),
+            (
+                translate.button_search_me(),
+                Region.ME,
+            ),
+            (
+                translate.button_search_sa(),
+                Region.SA,
+            ),
+            (
+                translate.button_search_sea(),
+                Region.SEA,
+            ),
+            (
+                translate.button_search_us_e(),
+                Region.US_E,
+            ),
+            (
+                translate.button_search_us_w(),
+                Region.US_W,
+            ),
+        ]
+
         return InlineKeyboardMarkup(
             [
                 [
                     InlineKeyboardButton(
-                        translate.button_search(),
-                        switch_inline_query_current_chat="",
+                        text,
+                        switch_inline_query_current_chat=f".{query} " if query else "",
                     )
                 ]
+                for text, query in regions
             ]
         )
 

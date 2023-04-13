@@ -27,7 +27,9 @@ WELCOME = (
 )
 
 # Usages
-USAGE_SEARCH = "Tocca il pulsante qui sotto per iniziare la ricerca"
+USAGE_SEARCH = (
+    "Tocca uno dei pulsanti qui sotto per iniziare la ricerca di un giocatore"
+)
 USAGE_ID = (
     "Usa il comando <b>/id</b> per mostrare le statistiche di un giocatore l'ID specificato.\n\n"
     "Esempio: <code>/id 2316541</code>"
@@ -96,8 +98,17 @@ BUTTON_ISSUE = "🐙 • APRI UNA ISSUE • 🐱"
 BUTTON_CLAN = "🎖 • CLAN • 🎖"
 BUTTON_CLOSE = "❌ • CHIUDI • ❌"
 BUTTON_WEAPONS = "🔫 • ARMI • 🔫"
-BUTTON_SEARCH = "🔎 • CERCA • 🔎"
 BUTTON_SHARE = "💬 • CONDIVIDI • 💬"
+BUTTON_SEARCH_ALL = "🌍 • RICERCA GLOBALE • 🌍"
+BUTTON_SEARCH_AUS = "🇦🇺 • RICERCA IN AUS • 🇦🇺"
+BUTTON_SEARCH_BRZ = "🇧🇷 • RICERCA IN BRZ • 🇧🇷"
+BUTTON_SEARCH_EU = "🇪🇺 • RICERCA IN EU • 🇪🇺"
+BUTTON_SEARCH_JPN = "🇯🇵 • RICERCA IN JPN • 🇯🇵"
+BUTTON_SEARCH_ME = "🇦🇪 • RICERCA IN ME • 🇦🇪"
+BUTTON_SEARCH_SA = "🇿🇦 • RICERCA IN SA • 🇿🇦"
+BUTTON_SEARCH_SEA = "🇨🇳 • RICERCA IN SEA • 🇨🇳"
+BUTTON_SEARCH_US_E = "🇺🇸 • RICERCA IN US-E • 🇺🇸"
+BUTTON_SEARCH_US_W = "🇺🇸 • RICERCA IN US-W • 🇺🇸"
 
 # Time
 TIME_DAYS = "Giorni: {t}"
