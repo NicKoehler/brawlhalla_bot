@@ -1,3 +1,4 @@
+from math import ceil
 from enum import Enum
 from helpers.cache import Legends
 from localization import Translator
@@ -16,6 +17,7 @@ class View(Enum):
     LEGEND = "legend"
     WEAPON = "weapon"
     GENERAL = "general"
+    SEARCH = "search"
     RANKED_SOLO = "rankedsolo"
     RANKED_TEAM = "rankedteam"
     RANKED_TEAM_DETAIL = "rankedteamdetail"
@@ -27,6 +29,18 @@ class View(Enum):
 class Keyboard:
     def close_button(translate: Translator) -> list[list[InlineKeyboardButton]]:
         return [[InlineKeyboardButton(translate.button_close(), callback_data="close")]]
+
+    def start(translate: Translator) -> list[list[InlineKeyboardButton]]:
+        return InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        translate.button_inline(),
+                        switch_inline_query_current_chat="",
+                    )
+                ]
+            ]
+        )
 
     def legend_button(translate: Translator):
         return [
@@ -49,31 +63,40 @@ class Keyboard:
         ]
 
     def navigation_buttons(
-        current: int,
-        total_pages: int,
-        prev_data: str,
-        next_data: str,
+        current_page: int,
+        limit_page: int,
+        data: str,
+        lst: list,
     ) -> list[InlineKeyboardButton]:
+        total_pages = ceil(len(lst) / limit_page) - 1
+
+        if current_page > total_pages:
+            current_page = total_pages
+
         buttons = []
-        if current > 0:
-            buttons.append(InlineKeyboardButton("◀️", callback_data=prev_data))
-        if current < total_pages:
-            buttons.append(InlineKeyboardButton("▶️", callback_data=next_data))
+        if current_page > 0:
+            buttons.append(
+                InlineKeyboardButton("◀️", callback_data=f"{current_page - 1}_{data}")
+            )
+        if current_page < total_pages:
+            buttons.append(
+                InlineKeyboardButton("▶️", callback_data=f"{current_page + 1}_{data}")
+            )
 
         return buttons
 
     def search_player(
         players: list[RankingResult],
-        current: int,
-        total_pages: int,
+        query: str,
+        current_page: int,
         limit: int,
         translate: Translator,
     ) -> InlineKeyboardMarkup:
         buttons = Keyboard.navigation_buttons(
-            current,
-            total_pages,
-            "button_prev",
-            "button_next",
+            current_page,
+            limit,
+            f"{View.SEARCH}_{query}",
+            players,
         )
 
         return InlineKeyboardMarkup(
@@ -84,7 +107,7 @@ class Keyboard:
                         callback_data=f"{View.GENERAL}_{player.brawlhalla_id}",
                     )
                 ]
-                for player in players[current * limit : (current + 1) * limit]
+                for player in players[current_page * limit : (current_page + 1) * limit]
             ]
             + [buttons]
             + Keyboard.close_button(translate)
@@ -93,14 +116,13 @@ class Keyboard:
     def teams(
         player: RankingResult,
         current: int,
-        total_pages: int,
         limit: int,
     ) -> InlineKeyboardMarkup:
         buttons = Keyboard.navigation_buttons(
             current,
-            total_pages,
-            f"team_prev_{player.brawlhalla_id}",
-            f"team_next_{player.brawlhalla_id}",
+            limit,
+            f"team_{player.brawlhalla_id}",
+            player.teams,
         )
 
         get_real_id = (
@@ -130,13 +152,18 @@ class Keyboard:
         )
 
     def clan_components(
-        clan: Clan, current: int, total_pages: int, limit: int, _
+        clan: Clan, current_page: int, limit: int, _
     ) -> InlineKeyboardMarkup:
+        total_pages = ceil(clan.components / limit) - 1
+
+        if current_page > total_pages:
+            current_page = total_pages
+
         buttons = Keyboard.navigation_buttons(
-            current,
-            total_pages,
-            f"clan_prev_{clan.clan_id}",
-            f"clan_next_{clan.clan_id}",
+            current_page,
+            limit,
+            f"clan_{clan.clan_id}",
+            clan.components,
         )
 
         return InlineKeyboardMarkup(
@@ -147,14 +174,15 @@ class Keyboard:
                         callback_data=f"{View.GENERAL}_{comp.brawlhalla_id}",
                     )
                 ]
-                for comp in clan.components[current * limit : (current + 1) * limit]
+                for comp in clan.components[
+                    current_page * limit : (current_page + 1) * limit
+                ]
             ]
             + [buttons]
         )
 
     async def legends(
         current: int,
-        total_pages: int,
         limit: int,
         translator: Translator,
         legends: list[PlayerStatsLegend] | Legends,
@@ -165,16 +193,17 @@ class Keyboard:
         if player:
             navigation_buttons = Keyboard.navigation_buttons(
                 current,
-                total_pages,
-                f"legend_prev_{player.brawlhalla_id}",
-                f"legend_next_{player.brawlhalla_id}",
+                limit,
+                f"legend_{player.brawlhalla_id}",
+                player.legends,
             )
         else:
+            iterator = legends if weapon else legends.all
             navigation_buttons = Keyboard.navigation_buttons(
                 current,
-                total_pages,
-                f"legend_prev_{weapon}" if weapon else "legend_prev",
-                f"legend_next_{weapon}" if weapon else "legend_next",
+                limit,
+                f"legend_{weapon}" if weapon else "legend",
+                iterator,
             )
         if player:
             iterator = player.legends[current * limit : (current + 1) * limit]
@@ -194,8 +223,6 @@ class Keyboard:
             ]
 
         else:
-            iterator = legends if weapon else legends.all
-
             iterator = iterator[current * limit : (current + 1) * limit]
             keys = [
                 InlineKeyboardButton(

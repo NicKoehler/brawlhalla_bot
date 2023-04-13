@@ -9,23 +9,6 @@ def make_progress_bar(level: int, xp_percentage: float) -> str:
     return f"\n{level} &gt; <code>▕{'█' * value}{'—' * (10 - value) }▏</code> &gt; {level + 1}"
 
 
-def get_current_page(
-    callback: CallbackQuery, get_second_param=False, query=False
-) -> int:
-    splitted = callback.message.text.split("\n")
-    pages = splitted[-1]
-    current_page = int(pages.split("/")[0]) - 1
-    current_page += 1 if callback.matches[0].group(1) == "next" else -1
-
-    if get_second_param:
-        return current_page, int(callback.matches[0].group(2))
-
-    if query:
-        return current_page, splitted[-2]
-
-    return current_page
-
-
 async def is_query_invalid(query, message: Message, translate: Translator) -> bool:
     len_query = len(query)
 
@@ -36,12 +19,12 @@ async def is_query_invalid(query, message: Message, translate: Translator) -> bo
 
 
 async def send_or_edit_message(
-    update: Message | CallbackQuery, text: str, keyboard: InlineKeyboardMarkup
+    update: Message | CallbackQuery, text: str, keyboard: InlineKeyboardMarkup = None
 ) -> None:
     if isinstance(update, Message):
         send = getattr(update, "reply")
     elif isinstance(update, CallbackQuery):
-        send = getattr(update.message, "edit")
+        send = getattr(update, "edit_message_text")
     else:
         raise TypeError("update must be a Message or CallbackQuery")
 
