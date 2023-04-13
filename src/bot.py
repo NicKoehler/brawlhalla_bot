@@ -445,7 +445,7 @@ async def player_ranked_team_detail_callback(
     brawlhalla_id_one, brawlhalla_id_two = callback.matches[0].groups()
 
     await handle_ranked_team_detail(
-        brawl, brawlhalla_id_one, brawlhalla_id_two, callback, cache, translate
+        brawl, int(brawlhalla_id_one), int(brawlhalla_id_two), callback, cache, translate
     )
 
 
