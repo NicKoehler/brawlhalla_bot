@@ -52,7 +52,7 @@ BOT_TOKEN = environ.get("BOT_TOKEN")
 
 FLOOD_WAIT_SECONDS = 60
 
-bot = Client("Brawltool", API_ID, API_HASH, bot_token=BOT_TOKEN)
+bot = Client("brawlhalla", API_ID, API_HASH, bot_token=BOT_TOKEN)
 brawl = Brawlhalla(API_KEY)
 cache = Cache(180)
 legends = Legends(brawl)
@@ -273,23 +273,6 @@ async def search_player_page(_: Client, callback: CallbackQuery, translate: Tran
     )
 
 
-@bot.on_callback_query(filters.regex(f"^(\\d+)_{View.LEGEND}_(\\d+)$"))
-@user_handling
-async def search_legend_personal_page(
-    _: Client, callback: CallbackQuery, translate: Translator
-):
-    current_page, brawlhalla_id = callback.matches[0].groups()
-
-    await handle_legend_personal_stats(
-        brawl,
-        brawlhalla_id,
-        callback,
-        cache,
-        legends,
-        translate,
-        current_page=int(current_page),
-    )
-
 
 @bot.on_callback_query(filters.regex(r"^(\d+)_team_(\d+)$"))
 @user_handling
@@ -372,6 +355,23 @@ async def search_clan_page(_: Client, callback: CallbackQuery, translate: Transl
     )
 
 
+@bot.on_callback_query(filters.regex(f"^(\\d+)?_?{View.LEGEND}_(\\d+)$"))
+@user_handling
+async def search_legend_personal_page(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
+    current_page, brawlhalla_id = callback.matches[0].groups()
+
+    await handle_legend_personal_stats(
+        brawl,
+        brawlhalla_id,
+        callback,
+        cache,
+        legends,
+        translate,
+        current_page=int(current_page or "0"),
+    )
+
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}$"))
 @user_handling
 async def player_legend_list_callback(
@@ -389,7 +389,7 @@ async def player_legend_details_callback(
     await handle_legend_details(await legends.get(legend_id), translate, callback)
 
 
-@bot.on_callback_query(filters.regex(f"^(\\d+)?_?{View.LEGEND}_([az]+)?$"))
+@bot.on_callback_query(filters.regex(f"^(\\d+)_{View.LEGEND}_?([az]+)?$"))
 @user_handling
 async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
     current_page, weapon = callback.matches[0].groups()
