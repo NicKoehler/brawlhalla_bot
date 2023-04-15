@@ -76,7 +76,9 @@ RESULTS_TEAMS = "Squadre:"
 RESULTS_LEGENDS = (
     "Tutti i legends:\n\n"
     f"<i>NB: È anche possibile scrivere <code>/{WEAPONS} arma</code> per vedere tutti i legends che utilizzano questa specifica arma.</i>\n\n"
-    f"Ad esempio: <code>/{WEAPONS} sword</code>"
+    f"Ad esempio: <code>/{WEAPONS} sword</code>\n\n"
+    f"<i>In alternativa è possibile anche scrivere <code>/{WEAPONS} arma1 arma2</code> per vedere direttamente la legend che utilizza queste armi.</i>\n\n"
+    f"Ad esempio: <code>/{WEAPONS} sword hammer</code>"
 )
 RESULTS_LEGENDS_WITH_WEAPON = "Legends che utilizzano <b>{weapon}</b>:"
 RESULTS_MISSING_WEAPONS_COMBINATION = (
