@@ -74,7 +74,9 @@ RESULTS_LEGENDS = (
 
 RESULTS_LEGENDS_WITH_WEAPON = "Legends with <b>{weapon}</b>"
 RESULTS_MISSING_WEAPONS_COMBINATION = (
-    "Missing weapons combinations:\n\n<b>{weapons}</b>"
+    "Missing weapons combinations:\n\n<b>{weapons}</b>\n\n"
+    f"<i>NB: You can also write <code>/{MISSING} weapon</code> to see all the missing weapons combinations.</i>\n\n"
+    f"For example: <code>/{MISSING} sword</code>"
 )
 RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
     "Missing weapons combinations with <b>{weapon}</b>:\n\n<b>{weapons}</b>"
