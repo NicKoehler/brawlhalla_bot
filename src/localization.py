@@ -13,9 +13,6 @@ class Translator:
         self.locale = locale
         self.locale_str = locale_str
 
-    def all_weapons(self):
-        return self.locale.ALL_WEAPONS
-
     def button_clan(self):
         return self.locale.BUTTON_CLAN
 
@@ -223,6 +220,9 @@ class Translator:
 
     def results_teams(self):
         return self.locale.RESULTS_TEAMS
+
+    def results_weapons(self):
+        return self.locale.RESULTS_WEAPONS
 
     def search(self):
         return self.locale.SEARCH

@@ -66,19 +66,20 @@ ERROR_GENERIC = (
 
 # Results
 RESULTS_TEAMS = "Teams:"
-RESULTS_LEGENDS = (
-    "All legends:\n\n"
-    f"<i>Note: You can also write <code>/{WEAPONS} weapon</code> to see all the legends that use that specific weapon.</i>\n\n"
-    f"For example: <code>/{WEAPONS} sword</code>\n\n"
-    f"<i>Alternatively, you can also write <code>/{WEAPONS} weapon1 weapon2</code> to directly see the legend that uses these weapons.</i>\n\n"
-    f"For example: <code>/{WEAPONS} sword hammer</code>"
-)
+RESULTS_LEGENDS = "All legends:"
 
 RESULTS_LEGENDS_WITH_WEAPON = "Legends with <b>{weapon}</b>"
 RESULTS_MISSING_WEAPONS_COMBINATION = (
     "Missing weapons combinations:\n\n<b>{weapons}</b>\n\n"
     f"<i>Note: You can also write <code>/{MISSING} weapon</code> to see all the missing weapons combinations.</i>\n\n"
     f"For example: <code>/{MISSING} sword</code>"
+)
+RESULTS_WEAPONS = (
+    "All Weapons:\n\n"
+    f"<i>Note: You can also write <code>/{WEAPONS} weapon</code> to see all the legends that use that specific weapon.</i>\n\n"
+    f"For example: <code>/{WEAPONS} sword</code>\n\n"
+    f"<i>Alternatively, you can also write <code>/{WEAPONS} weapon1 weapon2</code> to directly see the legend that uses these weapons.</i>\n\n"
+    f"For example: <code>/{WEAPONS} sword hammer</code>"
 )
 RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
     "Missing weapons combinations with <b>{weapon}</b>:\n\n<b>{weapons}</b>"
@@ -246,7 +247,3 @@ STATS_LEGEND = """🎮 • <b>LEGEND STATS</b> • 🎮
 🏹 • Dexterity: <b>{dexterity}</b>
 🛡️ • Defense: <b>{defense}</b>
 🏃 • Speed: <b>{speed}</b>"""
-
-
-# Other
-ALL_WEAPONS = "All Weapons:"

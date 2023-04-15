@@ -514,7 +514,7 @@ async def handle_weapons(
 
     await utils.send_or_edit_message(
         update,
-        translate.all_weapons(),
+        translate.results_weapons(),
         Keyboard.weapons(legends.weapons, translate),
     )
 

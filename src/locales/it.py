@@ -73,18 +73,19 @@ ERROR_GENERIC = (
 
 # Results
 RESULTS_TEAMS = "Squadre:"
-RESULTS_LEGENDS = (
-    "Tutti i legends:\n\n"
-    f"<i>NB: È anche possibile scrivere <code>/{WEAPONS} arma</code> per vedere tutti i legends che utilizzano questa specifica arma.</i>\n\n"
-    f"Ad esempio: <code>/{WEAPONS} sword</code>\n\n"
-    f"<i>In alternativa è possibile anche scrivere <code>/{WEAPONS} arma1 arma2</code> per vedere direttamente la legend che utilizza queste armi.</i>\n\n"
-    f"Ad esempio: <code>/{WEAPONS} sword hammer</code>"
-)
+RESULTS_LEGENDS = "Tutti i legends:"
 RESULTS_LEGENDS_WITH_WEAPON = "Legends che utilizzano <b>{weapon}</b>:"
 RESULTS_MISSING_WEAPONS_COMBINATION = (
     "Combinazioni di armi mancanti:\n\n<b>{weapons}</b>\n\n"
     f"<i>NB: È anche possibile scrivere <code>/{MISSING} arma</code> per vedere tutte le combinazioni di armi mancanti.</i>\n\n"
     f"Ad esempio: <code>/{MISSING} sword</code>"
+)
+RESULTS_WEAPONS = (
+    "Tutte le armi:\n\n"
+    f"<i>NB: È anche possibile scrivere <code>/{WEAPONS} arma</code> per vedere tutti i legends che utilizzano questa specifica arma.</i>\n\n"
+    f"Ad esempio: <code>/{WEAPONS} sword</code>\n\n"
+    f"<i>In alternativa è possibile anche scrivere <code>/{WEAPONS} arma1 arma2</code> per vedere direttamente la legend che utilizza queste armi.</i>\n\n"
+    f"Ad esempio: <code>/{WEAPONS} sword hammer</code>"
 )
 RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
     "Combinazioni di armi mancanti che utilizzano <b>{weapon}</b>:\n\n<b>{weapons}</b>"
@@ -252,6 +253,3 @@ STATS_LEGEND = """🎮 • <b>STATISTICHE LEGEND</b> • 🎮
 🏹 • Destrezza: <b>{dexterity}</b>
 🛡️ • Difesa: <b>{defense}</b>
 🏃 • Velocità: <b>{speed}</b>"""
-
-# Other
-ALL_WEAPONS = "Tutte le armi:"
