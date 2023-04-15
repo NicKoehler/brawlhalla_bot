@@ -66,8 +66,13 @@ ERROR_GENERIC = (
 
 # Results
 RESULTS_TEAMS = "Teams:"
-RESULTS_LEGENDS = "Legends:"
-RESULTS_LEGENDS_WITH_WEAPON = "Legends with weapons <b>{weapon}</b>"
+RESULTS_LEGENDS = (
+    "All the legends:\n\n"
+    f"<i>NB: You can also write <code>/{WEAPONS} weapon</code> to see all the legends that use this specific weapon.</i>\n\n"
+    f"For example: <code>/{WEAPONS} sword</code>"
+)
+
+RESULTS_LEGENDS_WITH_WEAPON = "Legends with <b>{weapon}</b>"
 RESULTS_MISSING_WEAPONS_COMBINATION = (
     "Missing weapons combinations:\n\n<b>{weapons}</b>"
 )
