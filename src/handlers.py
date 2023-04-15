@@ -86,33 +86,37 @@ async def handle_general(
         most_used_id = player.legends[0].legend_id
         most_used_legend_name = (await legends.get(most_used_id)).bio_name
 
-    text = translate.stats_base(
-        id=player.brawlhalla_id,
-        name=player.name,
-    ) + translate.stats_general(
-        level=utils.make_progress_bar(player.level, player.xp_percentage),
-        xp=player.xp,
-        clan=player.clan.clan_name if player.clan else "❌",
-        most_used_legend=most_used_legend_name,
-        total_game_time="\n".join(total_game_time_list) or "❌",
-        games=player.games,
-        wins=player.wins,
-        loses=player.games - player.wins,
-        winperc=round(player.wins / player.games * 100, 2) if player.games else 0,
-        totalko=sum(legend.kos for legend in player.legends),
-        totaldeath=sum(legend.falls for legend in player.legends),
-        totalsuicide=sum(legend.suicides for legend in player.legends),
-        totalteamko=sum(legend.teamkos for legend in player.legends),
-        kobomb=player.kobomb,
-        damagebomb=player.damagebomb,
-        komine=player.komine,
-        damagemine=player.damagemine,
-        kospikeball=player.kospikeball,
-        damagespikeball=player.damagespikeball,
-        kosidekick=player.kosidekick,
-        damagesidekick=player.damagesidekick,
-        kosnowball=player.kosnowball,
-        hitsnowball=player.hitsnowball,
+    text = (
+        translate.stats_base(
+            id=player.brawlhalla_id,
+            name=player.name,
+        )
+        + "\n\n"
+        + translate.stats_general(
+            level=utils.make_progress_bar(player.level, player.xp_percentage),
+            xp=player.xp,
+            clan=player.clan.clan_name if player.clan else "❌",
+            most_used_legend=most_used_legend_name,
+            total_game_time="\n".join(total_game_time_list) or "❌",
+            games=player.games,
+            wins=player.wins,
+            loses=player.games - player.wins,
+            winperc=round(player.wins / player.games * 100, 2) if player.games else 0,
+            totalko=sum(legend.kos for legend in player.legends),
+            totaldeath=sum(legend.falls for legend in player.legends),
+            totalsuicide=sum(legend.suicides for legend in player.legends),
+            totalteamko=sum(legend.teamkos for legend in player.legends),
+            kobomb=player.kobomb,
+            damagebomb=player.damagebomb,
+            komine=player.komine,
+            damagemine=player.damagemine,
+            kospikeball=player.kospikeball,
+            damagespikeball=player.damagespikeball,
+            kosidekick=player.kosidekick,
+            damagesidekick=player.damagesidekick,
+            kosnowball=player.kosnowball,
+            hitsnowball=player.hitsnowball,
+        )
     )
 
     keyboard = Keyboard.stats(
@@ -420,6 +424,7 @@ async def handle_player_legend_details(
                     id=player.brawlhalla_id,
                     name=player.name,
                 )
+                + "\n\n"
                 + translate.stats_player_legend(
                     id=legend.legend_id,
                     name=legend_obj.bio_name,
