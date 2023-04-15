@@ -231,6 +231,7 @@ async def handle_ranked_solo(
             id=player.brawlhalla_id,
             name=player.name,
         )
+        + "\n\n"
         + translate.stats_ranked(
             rating=player.rating,
             peak=player.peak_rating,
@@ -239,6 +240,9 @@ async def handle_ranked_solo(
             wins=player.wins,
             loses=player.games - player.wins,
             region=player.region,
+        )
+        + "\n\n"
+        + translate.stats_glory_elo(
             glory=player.estimated_glory,
             elo_reset=player.estimated_elo_reset,
         ),
@@ -321,6 +325,7 @@ async def handle_ranked_team_detail(
                     id=player.brawlhalla_id,
                     name=player.name,
                 )
+                + "\n\n"
                 + translate.stats_ranked_team(
                     teamname=team.teamname,
                     rating=team.rating,
@@ -597,7 +602,20 @@ async def handle_search(
                 title=f"{result.name} ({result.rating})",
                 description=f"🏆 {result.wins:<8} 🤬 {result.games - result.wins:<8}",
                 input_message_content=InputTextMessageContent(
-                    f"{result.name} ({result.rating})"
+                    translate.stats_base(
+                        id=result.brawlhalla_id,
+                        name=result.name,
+                    )
+                    + "\n\n"
+                    + translate.stats_ranked(
+                        rating=result.rating,
+                        peak=result.peak_rating,
+                        tier=result.tier,
+                        wins=result.wins,
+                        games=result.games,
+                        loses=result.games - result.wins,
+                        region=result.region,
+                    )
                 ),
                 reply_markup=Keyboard.stats(
                     result.brawlhalla_id,

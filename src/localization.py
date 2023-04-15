@@ -305,6 +305,16 @@ class Translator:
             hitsnowball=hitsnowball
         )
 
+    def stats_glory_elo(
+        self,
+        glory,
+        elo_reset
+    ):
+        return self.locale.STATS_GLORY_ELO.format(
+            glory=glory,
+            elo_reset=elo_reset
+        )
+
     def stats_legend(
         self,
         legend_id,
@@ -401,9 +411,7 @@ class Translator:
         games,
         wins,
         loses,
-        region,
-        glory,
-        elo_reset
+        region
     ):
         return self.locale.STATS_RANKED.format(
             rating=rating,
@@ -412,9 +420,7 @@ class Translator:
             games=games,
             wins=wins,
             loses=loses,
-            region=region,
-            glory=glory,
-            elo_reset=elo_reset
+            region=region
         )
 
     def stats_ranked_team(

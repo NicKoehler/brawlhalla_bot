@@ -110,7 +110,7 @@ TIME_MINUTES = "Minutes : {t}"
 TIME_SECONDS = "Seconds : {t}"
 
 # Stats
-STATS_BASE = "🆔 • ID:<b> {id} </b>\n🙋‍♂️ • Name: <b>{name}</b>\n\n"
+STATS_BASE = "🆔 • ID:<b> {id} </b>\n🙋‍♂️ • Name: <b>{name}</b>"
 STATS_GENERAL = """⚔ • <b>GENERAL STATS</b> • ⚔
 
 🎖 • Clan: <b>{clan}</b>
@@ -158,11 +158,10 @@ STATS_RANKED = """🏆 • <b>RANKED 1v1</b> • 🏆
 🎮 • Games played: <b>{games}</b>
 🥇 • Games won: <b>{wins}</b>
 🥉 • Games lost: <b>{loses}</b>
-🌎 • Region: <b>{region}</b>
+🌎 • Region: <b>{region}</b>"""
 
-💎 • Estimated glory: <b>{glory}</b>
+STATS_GLORY_ELO = """💎 • Estimated glory: <b>{glory}</b>
 👑 • Estimated elo reset: <b>{elo_reset}</b>"""
-
 
 STATS_RANKED_TEAM = """🏆 • <b>RANKED 2v2</b> • 🏆
 
