@@ -343,7 +343,7 @@ async def handle_ranked_team_detail(
                 reply_markup=Keyboard.stats(
                     brawlhalla_id_one=player.brawlhalla_id,
                     brawlhalla_id_two=brawlhalla_id_two,
-                    current_view=View.RANKED_SOLO,
+                    current_view=View.RANKED_TEAM,
                     translate=translate,
                 ),
             )
