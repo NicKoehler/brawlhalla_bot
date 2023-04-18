@@ -46,8 +46,10 @@ print(
 strings = [item for item in dir(en) if not item.startswith("__")]
 for string in strings:
     args = parse_strings(en.__dict__[string])
+    docstring = getattr(en, string).replace("\n", "\n        ")
     if not args:
-        print(f"    def {string.lower()}(self):")
+        print(f"    def {string.lower()}(self) -> str:")
+        print(f'        """\n        {docstring}\n        """')
         print(f"        return self.locale.{string}\n")
     else:
         args_str = ",\n".join(f"        {arg}" for arg in args)
@@ -55,7 +57,8 @@ for string in strings:
         print(f"    def {string.lower()}(")
         print("        self,")
         print(f"{args_str}")
-        print("    ):")
+        print("    ) -> str:")
+        print(f'        """\n        {docstring}\n        """')
         print(
             f"        return self.locale.{string}.format(\n{args_kwargs}\n        )\n"
         )

@@ -13,100 +13,195 @@ class Translator:
         self.locale = locale
         self.locale_str = locale_str
 
-    def button_clan(self):
+    def button_clan(self) -> str:
+        """
+        🎖 • CLAN • 🎖
+        """
         return self.locale.BUTTON_CLAN
 
-    def button_close(self):
+    def button_close(self) -> str:
+        """
+        ❌ • CLOSE • ❌
+        """
         return self.locale.BUTTON_CLOSE
 
-    def button_default_player(self):
+    def button_default_player(self) -> str:
+        """
+        👤 • SET AS DEFAULT • 👤
+        """
         return self.locale.BUTTON_DEFAULT_PLAYER
 
-    def button_general(self):
+    def button_general(self) -> str:
+        """
+        ⚔️ • GENERAL STATS • ⚔️
+        """
         return self.locale.BUTTON_GENERAL
 
-    def button_issue(self):
+    def button_issue(self) -> str:
+        """
+        🐙 • OPEN AN ISSUE • 🐱
+        """
         return self.locale.BUTTON_ISSUE
 
-    def button_legends(self):
+    def button_legends(self) -> str:
+        """
+        🥷 • LEGENDS • 🥷
+        """
         return self.locale.BUTTON_LEGENDS
 
-    def button_ranked_solo(self):
+    def button_ranked_solo(self) -> str:
+        """
+        🏆 • RANKED 1V1 • 🏆
+        """
         return self.locale.BUTTON_RANKED_SOLO
 
-    def button_ranked_team(self):
+    def button_ranked_team(self) -> str:
+        """
+        🏆 • RANKED 2V2 • 🏆
+        """
         return self.locale.BUTTON_RANKED_TEAM
 
-    def button_search_all(self):
+    def button_search_all(self) -> str:
+        """
+        🌍 • SEARCH ALL • 🌍
+        """
         return self.locale.BUTTON_SEARCH_ALL
 
-    def button_search_aus(self):
+    def button_search_aus(self) -> str:
+        """
+        🇦🇺 • SEARCH AUS • 🇦🇺
+        """
         return self.locale.BUTTON_SEARCH_AUS
 
-    def button_search_brz(self):
+    def button_search_brz(self) -> str:
+        """
+        🇧🇷 • SEARCH BRZ • 🇧🇷
+        """
         return self.locale.BUTTON_SEARCH_BRZ
 
-    def button_search_eu(self):
+    def button_search_eu(self) -> str:
+        """
+        🇪🇺 • SEARCH EU • 🇪🇺
+        """
         return self.locale.BUTTON_SEARCH_EU
 
-    def button_search_jpn(self):
+    def button_search_jpn(self) -> str:
+        """
+        🇯🇵 • SEARCH JPN • 🇯🇵
+        """
         return self.locale.BUTTON_SEARCH_JPN
 
-    def button_search_me(self):
+    def button_search_me(self) -> str:
+        """
+        🇦🇪 • SEARCH ME • 🇦🇪
+        """
         return self.locale.BUTTON_SEARCH_ME
 
-    def button_search_sa(self):
+    def button_search_sa(self) -> str:
+        """
+        🇿🇦 • SEARCH SA • 🇿🇦
+        """
         return self.locale.BUTTON_SEARCH_SA
 
-    def button_search_sea(self):
+    def button_search_sea(self) -> str:
+        """
+        🇨🇳 • SEARCH SEA • 🇨🇳
+        """
         return self.locale.BUTTON_SEARCH_SEA
 
-    def button_search_us_e(self):
+    def button_search_us_e(self) -> str:
+        """
+        🇺🇸 • SEARCH US-E • 🇺🇸
+        """
         return self.locale.BUTTON_SEARCH_US_E
 
-    def button_search_us_w(self):
+    def button_search_us_w(self) -> str:
+        """
+        🇺🇸 • SEARCH US-W • 🇺🇸
+        """
         return self.locale.BUTTON_SEARCH_US_W
 
-    def button_share(self):
+    def button_share(self) -> str:
+        """
+        💬 • SHARE • 💬
+        """
         return self.locale.BUTTON_SHARE
 
-    def button_teammate(self):
+    def button_teammate(self) -> str:
+        """
+        🙋‍♂️ • TEAM MATE • 🙋‍♂️
+        """
         return self.locale.BUTTON_TEAMMATE
 
-    def button_weapons(self):
+    def button_weapons(self) -> str:
+        """
+        🔫 • WEAPONS • 🔫
+        """
         return self.locale.BUTTON_WEAPONS
 
-    def description_id(self):
+    def description_id(self) -> str:
+        """
+        Shows the statistics of a player with the specified ID
+        """
         return self.locale.DESCRIPTION_ID
 
-    def description_language(self):
+    def description_language(self) -> str:
+        """
+        Change the language of the bot
+        """
         return self.locale.DESCRIPTION_LANGUAGE
 
-    def description_legend(self):
+    def description_legend(self) -> str:
+        """
+        Shows the statistics of a legend
+        """
         return self.locale.DESCRIPTION_LEGEND
 
-    def description_me(self):
+    def description_me(self) -> str:
+        """
+        Shows the statistics of the player set as default
+        """
         return self.locale.DESCRIPTION_ME
 
-    def description_missing(self):
+    def description_missing(self) -> str:
+        """
+        Shows missing weapons combinations
+        """
         return self.locale.DESCRIPTION_MISSING
 
-    def description_search(self):
+    def description_search(self) -> str:
+        """
+        Search for a player
+        """
         return self.locale.DESCRIPTION_SEARCH
 
-    def description_start(self):
+    def description_start(self) -> str:
+        """
+        Shows the first start message
+        """
         return self.locale.DESCRIPTION_START
 
-    def description_weapons(self):
+    def description_weapons(self) -> str:
+        """
+        Search for a legend through weapon types
+        """
         return self.locale.DESCRIPTION_WEAPONS
 
-    def error_api_offline(self):
+    def error_api_offline(self) -> str:
+        """
+        Brawlhalla's API are temporarily offline.
+        Try again later.
+        """
         return self.locale.ERROR_API_OFFLINE
 
     def error_flood_wait(
         self,
         seconds
-    ):
+    ) -> str:
+        """
+        You are sending too many requests in a short period of time.
+        You have been blocked for <b>{seconds}</b> seconds.
+        """
         return self.locale.ERROR_FLOOD_WAIT.format(
             seconds=seconds
         )
@@ -114,7 +209,15 @@ class Translator:
     def error_generic(
         self,
         error
-    ):
+    ) -> str:
+        """
+        An error occurred:
+        
+        <code>{error}</code>
+        
+        If you want to help development, open a detailed issue on how to reproduce the error you encountered.
+        Before opening a new issue, make sure that the error has not already been reported
+        """
         return self.locale.ERROR_GENERIC.format(
             error=error
         )
@@ -122,80 +225,135 @@ class Translator:
     def error_legend_not_found(
         self,
         query
-    ):
+    ) -> str:
+        """
+        There are no legends matching <b>{query}</b>
+        """
         return self.locale.ERROR_LEGEND_NOT_FOUND.format(
             query=query
         )
 
-    def error_legend_result(self):
+    def error_legend_result(self) -> str:
+        """
+        No legend found
+        """
         return self.locale.ERROR_LEGEND_RESULT
 
-    def error_length(self):
+    def error_length(self) -> str:
+        """
+        The search query must be between 2 and 32 characters
+        """
         return self.locale.ERROR_LENGTH
 
-    def error_missing_default_player(self):
+    def error_missing_default_player(self) -> str:
+        """
+        You need to set a player as default to execute this command.
+        """
         return self.locale.ERROR_MISSING_DEFAULT_PLAYER
 
     def error_missing_weapons_combination_not_found(
         self,
         query
-    ):
+    ) -> str:
+        """
+        There are no weapons combination matching <b>{query}</b>
+        """
         return self.locale.ERROR_MISSING_WEAPONS_COMBINATION_NOT_FOUND.format(
             query=query
         )
 
-    def error_no_clan_data(self):
+    def error_no_clan_data(self) -> str:
+        """
+        This player is not in a clan anymore
+        """
         return self.locale.ERROR_NO_CLAN_DATA
 
-    def error_no_ranked_data(self):
+    def error_no_ranked_data(self) -> str:
+        """
+        This player has not played any ranked games yet
+        """
         return self.locale.ERROR_NO_RANKED_DATA
 
-    def error_no_team_data(self):
+    def error_no_team_data(self) -> str:
+        """
+        This player has not played any ranked team games yet
+        """
         return self.locale.ERROR_NO_TEAM_DATA
 
     def error_player_not_found(
         self,
         id
-    ):
+    ) -> str:
+        """
+        Player with ID <b>{id}</b> not found
+        """
         return self.locale.ERROR_PLAYER_NOT_FOUND.format(
             id=id
         )
 
-    def error_player_result(self):
+    def error_player_result(self) -> str:
+        """
+        No player found
+        """
         return self.locale.ERROR_PLAYER_RESULT
 
     def error_search_result(
         self,
         query
-    ):
+    ) -> str:
+        """
+        No player found searching <b>{query}</b>
+        """
         return self.locale.ERROR_SEARCH_RESULT.format(
             query=query
         )
 
-    def error_team_result(self):
+    def error_team_result(self) -> str:
+        """
+        No team found
+        """
         return self.locale.ERROR_TEAM_RESULT
 
     def error_weapon_not_found(
         self,
         query
-    ):
+    ) -> str:
+        """
+        There are no weapons matching <b>{query}</b>
+        """
         return self.locale.ERROR_WEAPON_NOT_FOUND.format(
             query=query
         )
 
-    def language(self):
+    def language(self) -> str:
+        """
+        language
+        """
         return self.locale.LANGUAGE
 
-    def missing(self):
+    def missing(self) -> str:
+        """
+        missing
+        """
         return self.locale.MISSING
 
-    def results_legends(self):
+    def results_legends(self) -> str:
+        """
+        All legends:
+        
+        <i>Note: You can also write <code>/legend name</code> to see the statistics of that specific legend.</i>
+        
+        For example: <code>/legend bodvar</code>
+        """
         return self.locale.RESULTS_LEGENDS
 
     def results_legends_with_weapon(
         self,
         weapon
-    ):
+    ) -> str:
+        """
+        Legends with <b>{weapon}</b>
+        """
         return self.locale.RESULTS_LEGENDS_WITH_WEAPON.format(
             weapon=weapon
         )
@@ -203,7 +361,16 @@ class Translator:
     def results_missing_weapons_combination(
         self,
         weapons
-    ):
+    ) -> str:
+        """
+        Missing weapons combinations:
+        
+        <b>{weapons}</b>
+        
+        <i>Note: You can also write <code>/missing weapon</code> to see all the missing weapons combinations.</i>
+        
+        For example: <code>/missing sword</code>
+        """
         return self.locale.RESULTS_MISSING_WEAPONS_COMBINATION.format(
             weapons=weapons
         )
@@ -212,26 +379,52 @@ class Translator:
         self,
         weapon,
         weapons
-    ):
+    ) -> str:
+        """
+        Missing weapons combinations with <b>{weapon}</b>:
+        
+        <b>{weapons}</b>
+        """
         return self.locale.RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON.format(
             weapon=weapon,
             weapons=weapons
         )
 
-    def results_teams(self):
+    def results_teams(self) -> str:
+        """
+        Teams:
+        """
         return self.locale.RESULTS_TEAMS
 
-    def results_weapons(self):
+    def results_weapons(self) -> str:
+        """
+        All Weapons:
+        
+        <i>Note: You can also write <code>/weapons weapon</code> to see all the legends that use that specific weapon.</i>
+        
+        For example: <code>/weapons sword</code>
+        
+        <i>Alternatively, you can also write <code>/weapons weapon1 weapon2</code> to directly see the legend that uses these weapons.</i>
+        
+        For example: <code>/weapons sword hammer</code>
+        """
         return self.locale.RESULTS_WEAPONS
 
-    def search(self):
+    def search(self) -> str:
+        """
+        search
+        """
         return self.locale.SEARCH
 
     def stats_base(
         self,
         id,
         name
-    ):
+    ) -> str:
+        """
+        🆔 • ID:<b> {id} </b>
+        🙋‍♂️ • Name: <b>{name}</b>
+        """
         return self.locale.STATS_BASE.format(
             id=id,
             name=name
@@ -244,7 +437,15 @@ class Translator:
         xp,
         num,
         date
-    ):
+    ) -> str:
+        """
+        🆔 • Clan ID:<b> {id} </b>
+        👑 • Clan name: <b>{name}</b>
+        
+        🔺 • XP: <b>{xp}</b>
+        👥 • Members: <b>{num}</b>
+        📅 • Creation date: <b>{date}</b>
+        """
         return self.locale.STATS_CLAN.format(
             id=id,
             name=name,
@@ -278,7 +479,46 @@ class Translator:
         damagesidekick,
         kosnowball,
         hitsnowball
-    ):
+    ) -> str:
+        """
+        ⚔ • <b>GENERAL STATS</b> • ⚔
+        
+        🎖 • Clan: <b>{clan}</b>
+        🆙 • Lv: <b>{level}</b>
+        🔺 • XP: <b>{xp}</b>
+        ⌚ • Most used legend: <b>{most_used_legend}</b>
+        ⌛ • Total Playtime:
+        <b>{total_game_time}</b>
+        
+        🎮 • Games played: <b>{games}</b>
+        🥇 • Games won: <b>{wins}</b>
+        🥉 • Games lost: <b>{loses}</b>
+        ⚖ • Win percentage: <b>{winperc}%</b>
+        👊 • Total KOs: <b>{totalko}</b>
+        ⚰ • Total Deaths: <b>{totaldeath}</b>
+        💀 • Total Suicides: <b>{totalsuicide}</b>
+        😐 • Team KOs: <b>{totalteamko}</b>
+        
+        💣 <b>BOMBS</b> 💣
+        ├─► KOs: <b>{kobomb}</b>
+        ╰─► Damage: <b>{damagebomb}</b>
+        
+        💥 <b>MINES</b> 💥
+        ├─► KOs: <b>{komine}</b>
+        ╰─► Damage: <b>{damagemine}</b>
+        
+        ☀️ <b>SPIKEBALLS</b> ☀️
+        ├─► KOs: <b>{kospikeball}</b>
+        ╰─► Damage: <b>{damagespikeball}</b>
+        
+        👟 <b>SIDE KICK</b> 👟
+        ├─► KOs: <b>{kosidekick}</b>
+        ╰─► Damage: <b>{damagesidekick}</b>
+        
+        ❄️ <b>SNOWBALLS</b> ❄️
+        ├─► KOs: <b>{kosnowball}</b>
+        ╰─► Hits: <b>{hitsnowball}</b>
+        """
         return self.locale.STATS_GENERAL.format(
             clan=clan,
             level=level,
@@ -309,7 +549,11 @@ class Translator:
         self,
         glory,
         elo_reset
-    ):
+    ) -> str:
+        """
+        💎 • Estimated glory: <b>{glory}</b>
+        👑 • Estimated elo reset: <b>{elo_reset}</b>
+        """
         return self.locale.STATS_GLORY_ELO.format(
             glory=glory,
             elo_reset=elo_reset
@@ -326,7 +570,22 @@ class Translator:
         dexterity,
         defense,
         speed
-    ):
+    ) -> str:
+        """
+        🎮 • <b>LEGEND STATS</b> • 🎮
+        
+        🆔 • ID: <b>{legend_id}</b>
+        🔖 • Name: <b>{bio_name}</b>
+        🎖️ • Alias: <b>{bio_aka}</b>
+        
+        🗡️ • Weapon 1: <b>{weapon_one}</b>
+        🗡️ • Weapon 2: <b>{weapon_two}</b>
+        
+        💪 • Strength: <b>{strength}</b>
+        🏹 • Dexterity: <b>{dexterity}</b>
+        🛡️ • Defense: <b>{defense}</b>
+        🏃 • Speed: <b>{speed}</b>
+        """
         return self.locale.STATS_LEGEND.format(
             legend_id=legend_id,
             bio_name=bio_name,
@@ -370,7 +629,49 @@ class Translator:
         damagegadgets,
         kothrownitem,
         damagethrownitem
-    ):
+    ) -> str:
+        """
+        🥷 • <b>LEGEND</b> • 🥷
+        
+        🆔 • Legend ID: <b>{id}</b>
+        🥷 • Legend Name: <b>{name}</b>
+        
+        🆙 • Level: <b>{level}</b>
+        🔺 • XP: <b>{xp}</b>
+        ⌚ • Playtime:
+        <b>{matchtime}</b>
+        
+        🎮 • Matches Played: <b>{games}</b>
+        🥇 • Matches Won: <b>{wins}</b>
+        🥉 • Matches Lost: <b>{loses}</b>
+        ⚖️ • Win Percentage: <b>{winperc}%</b>
+        👊 • Total KOs: <b>{ko}</b>
+        ⚰ • Total Deaths: <b>{death}</b>
+        💀 • Total Suicides: <b>{suicide}</b>
+        💥 • Total damage dealt: <b>{damagedealt}</b>
+        💢 • Total damage taken: <b>{damagetaken}</b>
+        😐 • Team KOs: <b>{teamko}</b>
+        
+        🔫 <b>WEAPONS</b> 🔫
+        ├─► {weaponone} Time Held: <b>{timeheldweaponone}</b>
+        ├─► {weaponone} KOs: <b>{koweaponone}</b>
+        ├─► {weaponone} Damage: <b>{damageweaponone}</b>
+        ├─►{weapontwo} Time Held: <b>{timeheldweapontwo}</b>
+        ├─►{weapontwo} KOs: <b>{koweapontwo}</b>
+        ╰─►{weapontwo} Damage: <b>{damageweapontwo}</b>
+        
+        👊 <b>UNARMED</b> 👊
+        ├─► KOs: <b>{kounarmed}</b>
+        ╰─► Damage: <b>{damageunarmed}</b>
+        
+        📱 <b>GADGETS</b>📱
+        ├─► KOs: <b>{kogadgets}</b>
+        ╰─► Damage: <b>{damagegadgets}</b>
+        
+        🎯 <b>THROWN ITEMS</b> 🎯
+        ├─► KOs: <b>{kothrownitem}</b>
+        ╰─► Damage: <b>{damagethrownitem}</b>
+        """
         return self.locale.STATS_PLAYER_LEGEND.format(
             id=id,
             name=name,
@@ -412,7 +713,19 @@ class Translator:
         wins,
         loses,
         region
-    ):
+    ) -> str:
+        """
+        🏆 • <b>RANKED 1v1</b> • 🏆
+        
+        🔶 • Current elo: <b>{rating}</b>
+        🔷 • Elo peak: <b>{peak}</b>
+        👑 • Tier: <b>{tier}</b>
+        
+        🎮 • Games played: <b>{games}</b>
+        🥇 • Games won: <b>{wins}</b>
+        🥉 • Games lost: <b>{loses}</b>
+        🌎 • Region: <b>{region}</b>
+        """
         return self.locale.STATS_RANKED.format(
             rating=rating,
             peak=peak,
@@ -433,7 +746,21 @@ class Translator:
         wins,
         loses,
         region
-    ):
+    ) -> str:
+        """
+        🏆 • <b>RANKED 2v2</b> • 🏆
+        
+        👥 • Team: <b>{teamname}</b>
+        
+        🔶 • Current elo: <b>{rating}</b>
+        🔷 • Elo peak: <b>{peak}</b>
+        👑 • Tier: <b>{tier}</b>
+        
+        🎮 • Games played: <b>{games}</b>
+        🥇 • Games won: <b>{wins}</b>
+        🥉 • Games lost: <b>{loses}</b>
+        🌎 • Region: <b>{region}</b>
+        """
         return self.locale.STATS_RANKED_TEAM.format(
             teamname=teamname,
             rating=rating,
@@ -445,19 +772,31 @@ class Translator:
             region=region
         )
 
-    def status_default_player_set(self):
+    def status_default_player_set(self) -> str:
+        """
+        Player set as default
+        """
         return self.locale.STATUS_DEFAULT_PLAYER_SET
 
-    def status_language_changed(self):
+    def status_language_changed(self) -> str:
+        """
+        Language changed successfully
+        """
         return self.locale.STATUS_LANGUAGE_CHANGED
 
-    def status_language_unchanged(self):
+    def status_language_unchanged(self) -> str:
+        """
+        Language unchanged
+        """
         return self.locale.STATUS_LANGUAGE_UNCHANGED
 
     def time_days(
         self,
         t
-    ):
+    ) -> str:
+        """
+        Days : {t}
+        """
         return self.locale.TIME_DAYS.format(
             t=t
         )
@@ -465,7 +804,10 @@ class Translator:
     def time_hours(
         self,
         t
-    ):
+    ) -> str:
+        """
+        Hours : {t}
+        """
         return self.locale.TIME_HOURS.format(
             t=t
         )
@@ -473,7 +815,10 @@ class Translator:
     def time_minutes(
         self,
         t
-    ):
+    ) -> str:
+        """
+        Minutes : {t}
+        """
         return self.locale.TIME_MINUTES.format(
             t=t
         )
@@ -481,27 +826,56 @@ class Translator:
     def time_seconds(
         self,
         t
-    ):
+    ) -> str:
+        """
+        Seconds : {t}
+        """
         return self.locale.TIME_SECONDS.format(
             t=t
         )
 
-    def usage_id(self):
+    def usage_id(self) -> str:
+        """
+        Use the <b>/id</b> command to show the statistics of a player with the specified ID.
+        
+        Example: <code>/id 2316541</code>
+        """
         return self.locale.USAGE_ID
 
-    def usage_inline(self):
+    def usage_inline(self) -> str:
+        """
+        Enter the name of the player you want to search
+        """
         return self.locale.USAGE_INLINE
 
-    def usage_search(self):
+    def usage_search(self) -> str:
+        """
+        Tap one of the buttons bellow to start searching for a player
+        """
         return self.locale.USAGE_SEARCH
 
-    def weapons(self):
+    def weapons(self) -> str:
+        """
+        weapons
+        """
         return self.locale.WEAPONS
 
     def welcome(
         self,
         name
-    ):
+    ) -> str:
+        """
+        Welcome <b>{name}</b>.
+        
+        Here are the commands currently available:
+        
+        🔍 • /search - Search for a player
+        🆔 • /id - Shows the statistics of a player with the specified ID
+        👤 • /me - Shows the statistics of the player set as default
+        🥷 • /legend - Shows the statistics of a legend
+        🗡️ • /weapons - Search for a legend through weapon types
+        🌐 • /language - Change the language of the bot
+        """
         return self.locale.WELCOME.format(
             name=name
         )
