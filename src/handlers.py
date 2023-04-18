@@ -604,8 +604,15 @@ async def handle_search(
     await inline_query.answer(
         [
             InlineQueryResultArticle(
-                title=f"{result.name} ({result.rating})",
-                description=f"🏆 {result.wins:<8} 🤬 {result.games - result.wins:<8}",
+                title=f"👤 • {result.name} ({result.rating})",
+                description=(
+                    f"🏆 • {result.wins}\n" f"🤬 • {result.games - result.wins}"
+                ),
+                thumb_url=(
+                    "https://raw.githubusercontent.com/"
+                    "NicKoehler/brawlhalla_bot/images/"
+                    f"src/assets/legends/{result.best_legend}.png"
+                ),
                 input_message_content=InputTextMessageContent(
                     translate.stats_base(
                         id=result.brawlhalla_id,

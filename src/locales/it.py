@@ -130,7 +130,7 @@ TIME_MINUTES = "Minuti: {t}"
 TIME_SECONDS = "Secondi: {t}"
 
 # Stats
-STATS_BASE = "🆔 • ID:<b> {id} </b>\n🙋‍♂️ • Nome: <b>{name}</b>"
+STATS_BASE = "🆔 • ID:<b> {id} </b>\n👤 • Nome: <b>{name}</b>"
 STATS_GENERAL = """⚔ • <b>GENERICHE</b> • ⚔
 
 🎖 • Clan: <b>{clan}</b>
