@@ -75,8 +75,8 @@ ERROR_GENERIC = (
 RESULTS_TEAMS = "Squadre:"
 RESULTS_LEGENDS = (
     "Tutti i legends:\n\n"
-    f"<i>NB: È anche possibile scrivere <code>/legend nome</code> per vedere direttamente le statistiche di una specifica legend.</i>\n\n"
-    f"Ad esempio: <code>/legend bodvar</code>"
+    "<i>NB: È anche possibile scrivere <code>/legend nome</code> per vedere direttamente le statistiche di una specifica legend.</i>\n\n"
+    "Ad esempio: <code>/legend bodvar</code>"
 )
 RESULTS_LEGENDS_WITH_WEAPON = "Legends che utilizzano <b>{weapon}</b>:"
 RESULTS_MISSING_WEAPONS_COMBINATION = (
