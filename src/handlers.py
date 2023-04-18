@@ -604,7 +604,7 @@ async def handle_search(
     await inline_query.answer(
         [
             InlineQueryResultArticle(
-                title=f"👤 • {result.name} ({result.rating})",
+                title=f"{utils.make_emoji_from_tier(result.tier)} • {result.name} ({result.rating})",
                 description=(
                     f"🏆 • {result.wins}\n" f"🤬 • {result.games - result.wins}"
                 ),
