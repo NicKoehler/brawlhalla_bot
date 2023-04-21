@@ -180,9 +180,7 @@ async def handle_clan(
             date=format_datetime(clan.clan_create_date, locale=translate.locale_str),
             num=len(clan.components),
         ),
-        reply_markup=Keyboard.clan_components(
-            clan, current_page, page_limit, translate
-        ),
+        reply_markup=Keyboard.clan_components(clan, current_page, page_limit),
     )
 
 
@@ -578,7 +576,8 @@ async def handle_search(
         [
             InlineQueryResultArticle(
                 title=(
-                    f"{utils.make_emoji_from_tier(result.tier)} • {result.name} ({result.rating})"
+                    f"{utils.make_emoji_from_tier(result.tier)} • "
+                    f"{result.name} ({result.rating})"
                 ),
                 description=(
                     f"🏆 • {result.wins}\n" f"🤬 • {result.games - result.wins}"

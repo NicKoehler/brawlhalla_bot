@@ -138,11 +138,12 @@ class Keyboard:
             player.teams,
         )
 
-        get_real_id = (
-            lambda p_id, team_id_one, team_id_two: (team_id_one, team_id_two)
-            if team_id_one == p_id
-            else (team_id_two, team_id_one)
-        )
+        def get_real_id(p_id, team_id_one, team_id_two):
+            return (
+                (team_id_one, team_id_two)
+                if team_id_one == p_id
+                else (team_id_two, team_id_one)
+            )
 
         return InlineKeyboardMarkup(
             [
@@ -165,7 +166,7 @@ class Keyboard:
         )
 
     def clan_components(
-        clan: Clan, current_page: int, limit: int, _
+        clan: Clan, current_page: int, limit: int
     ) -> InlineKeyboardMarkup:
         buttons = Keyboard.navigation_buttons(
             current_page,
