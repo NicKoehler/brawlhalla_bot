@@ -9,6 +9,66 @@ def make_progress_bar(level: int, xp_percentage: float) -> str:
     return f"\n{level} &gt; <code>▕{'█' * value}{'—' * (10 - value) }▏</code> &gt; {level + 1}"
 
 
+def make_played_time(translate: Translator, total_game_time: int) -> list[str]:
+    days = int(total_game_time // 86400)
+    hours = int((total_game_time % 86400) // 3600)
+    minutes = int((total_game_time % 3600) // 60)
+    seconds = int(total_game_time % 60)
+
+    translated_game_times = []
+
+    for s, v in (
+        (translate.time_days(days), days),
+        (translate.time_hours(hours), hours),
+        (translate.time_minutes(minutes), minutes),
+        (translate.time_seconds(seconds), seconds),
+    ):
+        if v == 0:
+            continue
+
+        translated_game_times.append(s)
+
+    total_game_time_list = []
+
+    for n, time in enumerate(translated_game_times):
+        (
+            total_game_time_list.append(
+                ("╰─► " if n == len(translated_game_times) - 1 else "├─► ") + time
+            )
+        )
+
+    return total_game_time_list
+
+
+def make_emoji_from_tier(tier: str) -> str:
+    """
+    Valhallan 	Diamond players who won 100 matches or more and are in top of their region
+    Diamond 	2000+ Elo
+    Platinum 	1622-1999 Elo
+    Gold 	1338-1679 Elo
+    Silver 	1086-1389 Elo
+    Bronze 	872-1129 Elo
+    Tin 	200-909 Elo
+    """
+    match tier.split()[0]:
+        case "Tin":
+            return "🟢"
+        case "Bronze":
+            return "🟠"
+        case "Silver":
+            return "⚪️"
+        case "Gold":
+            return "🟡"
+        case "Platinum":
+            return "🔵"
+        case "Diamond":
+            return "🟣"
+        case "Valhallan":
+            return "🔴"
+        case _:
+            return "⚫"
+
+
 async def is_query_invalid(query, message: Message, translate: Translator) -> bool:
     len_query = len(query)
 

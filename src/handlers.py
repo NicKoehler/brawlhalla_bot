@@ -53,25 +53,7 @@ async def handle_general(
         return
 
     if not player:
-        if isinstance(update, Message):
-            await update.reply(translate.error_player_not_found(id=brawlhalla_id))
-        elif isinstance(update, CallbackQuery):
-            await update.answer(
-                translate.error_player_not_found(id=brawlhalla_id),
-                show_alert=True,
-            )
-        elif isinstance(update, InlineQuery):
-            await update.answer(
-                [
-                    InlineQueryResultArticle(
-                        title=translate.error_player_result(),
-                        input_message_content=InputTextMessageContent(
-                            translate.error_player_result()
-                        ),
-                    )
-                ],
-                is_personal=True,
-            )
+        await handle_player_not_found(brawlhalla_id, translate, update)
         return
 
     total_game_time = sum(
@@ -79,7 +61,7 @@ async def handle_general(
         timedelta(seconds=0),
     ).total_seconds()
 
-    total_game_time_list = make_played_time(translate, total_game_time)
+    total_game_time_list = utils.make_played_time(translate, total_game_time)
     most_used_legend_name = "❌"
 
     if player.legends:
@@ -147,35 +129,26 @@ async def handle_general(
         )
 
 
-def make_played_time(translate, total_game_time):
-    days = int(total_game_time // 86400)
-    hours = int((total_game_time % 86400) // 3600)
-    minutes = int((total_game_time % 3600) // 60)
-    seconds = int(total_game_time % 60)
-
-    translated_game_times = []
-
-    for s, v in (
-        (translate.time_days(days), days),
-        (translate.time_hours(hours), hours),
-        (translate.time_minutes(minutes), minutes),
-        (translate.time_seconds(seconds), seconds),
-    ):
-        if v == 0:
-            continue
-
-        translated_game_times.append(s)
-
-    total_game_time_list = []
-
-    for n, time in enumerate(translated_game_times):
-        (
-            total_game_time_list.append(
-                ("╰─► " if n == len(translated_game_times) - 1 else "├─► ") + time
-            )
+async def handle_player_not_found(brawlhalla_id, translate, update):
+    if isinstance(update, Message):
+        await update.reply(translate.error_player_not_found(id=brawlhalla_id))
+    elif isinstance(update, CallbackQuery):
+        await update.answer(
+            translate.error_player_not_found(id=brawlhalla_id),
+            show_alert=True,
         )
-
-    return total_game_time_list
+    elif isinstance(update, InlineQuery):
+        await update.answer(
+            [
+                InlineQueryResultArticle(
+                    title=translate.error_player_result(),
+                    input_message_content=InputTextMessageContent(
+                        translate.error_player_result()
+                    ),
+                )
+            ],
+            is_personal=True,
+        )
 
 
 async def handle_clan(
@@ -207,9 +180,7 @@ async def handle_clan(
             date=format_datetime(clan.clan_create_date, locale=translate.locale_str),
             num=len(clan.components),
         ),
-        reply_markup=Keyboard.clan_components(
-            clan, current_page, page_limit, translate
-        ),
+        reply_markup=Keyboard.clan_components(clan, current_page, page_limit),
     )
 
 
@@ -415,7 +386,7 @@ async def handle_player_legend_details(
 
     for legend in player.legends:
         if legend.legend_id == legend_obj.legend_id:
-            game_time_list = make_played_time(
+            game_time_list = utils.make_played_time(
                 translate, legend.matchtime.total_seconds()
             )
 
@@ -604,8 +575,18 @@ async def handle_search(
     await inline_query.answer(
         [
             InlineQueryResultArticle(
-                title=f"{result.name} ({result.rating})",
-                description=f"🏆 {result.wins:<8} 🤬 {result.games - result.wins:<8}",
+                title=(
+                    f"{utils.make_emoji_from_tier(result.tier)} • "
+                    f"{result.name} ({result.rating})"
+                ),
+                description=(
+                    f"🏆 • {result.wins}\n" f"🤬 • {result.games - result.wins}"
+                ),
+                thumb_url=(
+                    "https://raw.githubusercontent.com/"
+                    "NicKoehler/brawlhalla_bot/images/"
+                    f"src/assets/legends/{result.best_legend}.png"
+                ),
                 input_message_content=InputTextMessageContent(
                     translate.stats_base(
                         id=result.brawlhalla_id,

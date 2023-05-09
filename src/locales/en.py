@@ -68,8 +68,8 @@ ERROR_GENERIC = (
 RESULTS_TEAMS = "Teams:"
 RESULTS_LEGENDS = (
     "All legends:\n\n"
-    f"<i>Note: You can also write <code>/legend name</code> to see the statistics of that specific legend.</i>\n\n"
-    f"For example: <code>/legend bodvar</code>"
+    "<i>Note: You can also write <code>/legend name</code> to see the statistics of that specific legend.</i>\n\n"
+    "For example: <code>/legend bodvar</code>"
 )
 RESULTS_LEGENDS_WITH_WEAPON = "Legends with <b>{weapon}</b>"
 RESULTS_MISSING_WEAPONS_COMBINATION = (
@@ -123,7 +123,7 @@ TIME_MINUTES = "Minutes : {t}"
 TIME_SECONDS = "Seconds : {t}"
 
 # Stats
-STATS_BASE = "🆔 • ID:<b> {id} </b>\n🙋‍♂️ • Name: <b>{name}</b>"
+STATS_BASE = "🆔 • ID:<b> {id} </b>\n👤 • Name: <b>{name}</b>"
 STATS_GENERAL = """⚔ • <b>GENERAL STATS</b> • ⚔
 
 🎖 • Clan: <b>{clan}</b>
