@@ -495,6 +495,13 @@ async def handle_legend_details(
     translate: Translator,
     update: Message | CallbackQuery,
 ):
+    webpage_legend = (
+        legend.legend_name_key.replace("sir ", "")
+        .replace("lord ", "")
+        .replace(" ", "-")
+    )
+    wepage_url = f"https://www.brawlhalla.com/legends/{webpage_legend}/"
+    telegram_url = f"t.me/iv?url={wepage_url}&rhash=9b8fabc6e90d84"
     await utils.send_or_edit_message(
         update,
         translate.stats_legend(
@@ -507,8 +514,11 @@ async def handle_legend_details(
             dexterity=legend.dexterity,
             defense=legend.defense,
             speed=legend.speed,
+            url=telegram_url,
         ),
-        Keyboard.legends_weapons(translate),
+        Keyboard.legends_weapons(
+            translate,
+        ),
     )
 
 

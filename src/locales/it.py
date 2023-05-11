@@ -247,7 +247,7 @@ STATS_PLAYER_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 STATS_LEGEND = """🎮 • <b>STATISTICHE LEGEND</b> • 🎮
 
 🆔 • ID: <b>{legend_id}</b>
-🔖 • Nome: <b>{bio_name}</b>
+🔖 • Nome: <a href="{url}"><b>{bio_name}</b></a>
 🎖️ • Alias: <b>{bio_aka}</b>
 
 🗡️ • Arma 1: <b>{weapon_one}</b>

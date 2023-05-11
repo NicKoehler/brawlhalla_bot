@@ -240,7 +240,7 @@ STATS_PLAYER_LEGEND = """🥷 • <b>LEGEND</b> • 🥷
 STATS_LEGEND = """🎮 • <b>LEGEND STATS</b> • 🎮
 
 🆔 • ID: <b>{legend_id}</b>
-🔖 • Name: <b>{bio_name}</b>
+🔖 • Name: <a href="{url}"><b>{bio_name}</b></a>
 🎖️ • Alias: <b>{bio_aka}</b>
 
 🗡️ • Weapon 1: <b>{weapon_one}</b>

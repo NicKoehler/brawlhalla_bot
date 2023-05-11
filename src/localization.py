@@ -371,7 +371,7 @@ class Translator:
     def stats_base(self, id, name) -> str:
         """
         🆔 • ID:<b> {id} </b>
-        🙋‍♂️ • Name: <b>{name}</b>
+        👤 • Name: <b>{name}</b>
         """
         return self.locale.STATS_BASE.format(id=id, name=name)
 
@@ -489,6 +489,7 @@ class Translator:
     def stats_legend(
         self,
         legend_id,
+        url,
         bio_name,
         bio_aka,
         weapon_one,
@@ -502,7 +503,7 @@ class Translator:
         🎮 • <b>LEGEND STATS</b> • 🎮
 
         🆔 • ID: <b>{legend_id}</b>
-        🔖 • Name: <b>{bio_name}</b>
+        🔖 • Name: <a href="{url}"><b>{bio_name}</b></a>
         🎖️ • Alias: <b>{bio_aka}</b>
 
         🗡️ • Weapon 1: <b>{weapon_one}</b>
@@ -515,6 +516,7 @@ class Translator:
         """
         return self.locale.STATS_LEGEND.format(
             legend_id=legend_id,
+            url=url,
             bio_name=bio_name,
             bio_aka=bio_aka,
             weapon_one=weapon_one,
