@@ -1,0 +1,17 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// generator
+generator client {
+    provider             = "prisma-client-py"
+    recursive_type_depth = 5
+}
+
+model User {
+    id            Int    @id
+    brawlhalla_id Int?
+    language      String @default("en")
+    time_blocked  Float?
+}

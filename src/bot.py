@@ -3,6 +3,7 @@ import traceback
 from time import time
 from os import environ
 from html import escape
+from prisma import Prisma
 from functools import wraps
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -12,7 +13,6 @@ from brawlhalla_api import Brawlhalla
 from brawlhalla_api.errors import ServiceUnavailable
 
 from helpers.cache import Cache, Legends
-from helpers.user_settings import UserSettings
 from helpers.utils import is_query_invalid, get_localized_commands
 
 from pyrogram import Client, filters
@@ -48,14 +48,17 @@ API_KEY = environ.get("API_KEY")
 API_HASH = environ.get("API_HASH")
 BOT_TOKEN = environ.get("BOT_TOKEN")
 
-FLOOD_WAIT_SECONDS = 60
+FLOOD_WAIT_SECONDS = int(environ.get("FLOOD_WAIT_SECONDS"))
+CLEAR_TIME_SECONDS = int(environ.get("CLEAR_TIME_SECONDS"))
 
 bot = Client("brawlhalla", API_ID, API_HASH, bot_token=BOT_TOKEN)
+db = Prisma()
 brawl = Brawlhalla(API_KEY)
 cache = Cache(180)
 legends = Legends(brawl)
 localization = Localization()
-users_settings = UserSettings()
+
+users = {}
 
 
 def user_handling(f):
@@ -65,31 +68,49 @@ def user_handling(f):
         user_id = update.from_user.id
         is_message = isinstance(update, Message)
 
-        lang = users_settings.get_user(
-            user_id, "language", update.from_user.language_code
-        )
-        translate = localization.get_translator(lang)
+        if user_id not in users:
+            user = (await db.user.find_unique(where={"id": user_id})) or (
+                await db.user.create(
+                    data={
+                        "id": user_id,
+                        "language": update.from_user.language_code,
+                    }
+                )
+            )
+            users[user_id] = user
 
-        time_blocked = users_settings.get_user(user_id, "time_blocked")
+        user = users[user_id]
 
+        translate = localization.get_translator(user.language)
+
+        time_blocked = user.time_blocked
         if time_blocked:
             if time_now - time_blocked < FLOOD_WAIT_SECONDS:
                 return
-            users_settings.del_user(user_id, "time_blocked")
+            users[user_id] = await db.user.update(
+                where={"id": user_id}, data={"time_blocked": None}
+            )
 
-        time_last = users_settings.get_user(user_id, "time_last")
-        if is_message and time_last and time_now - time_last < 1:
-            users_settings.set_user(
-                user_id,
-                "time_blocked",
-                time_now,
+        try:
+            time_last = getattr(user, "time_last_message")
+        except AttributeError:
+            time_last = None
+
+        if (
+            is_message
+            and time_last
+            and time_last != time_now
+            and time_now - time_last < 1
+        ):
+            users[user_id] = await db.user.update(
+                where={"id": user_id}, data={"time_blocked": time_now}
             )
             await bot.send_message(
                 update.chat.id, translate.error_flood_wait(FLOOD_WAIT_SECONDS)
             )
             return
 
-        users_settings.set_user(user_id, "time_last", time_now)
+        users[user_id].__dict__["time_last_message"] = time_now
 
         try:
             return await f(
@@ -150,13 +171,15 @@ async def player_id(_: Client, message: Message, translate: Translator):
 @bot.on_message(filters.command("me"))
 @user_handling
 async def player_me(_: Client, message: Message, translate: Translator):
-    brawlhalla_id = users_settings.get_user(message.from_user.id, "me", None)
-    if brawlhalla_id is None:
+    user = await db.user.find_first(where={"id": message.from_user.id})
+
+    if user.brawlhalla_id is None:
         await message.reply(translate.error_missing_default_player())
         return
+
     await handle_general(
         brawl,
-        brawlhalla_id,
+        user.brawlhalla_id,
         cache,
         legends,
         translate,
@@ -461,8 +484,11 @@ async def legend_weapon_list_callback(
 async def set_default_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
+    user_id = callback.from_user.id
     brawlhalla_id = int(callback.matches[0].group(1))
-    users_settings.set_user(callback.from_user.id, "me", brawlhalla_id)
+    users[user_id] = await db.user.update(
+        {"brawlhalla_id": brawlhalla_id}, where={"id": user_id}
+    )
     await callback.answer(translate.status_default_player_set(), show_alert=True)
 
 
@@ -470,11 +496,13 @@ async def set_default_callback(
 @user_handling
 async def language_callback(_: Client, callback: CallbackQuery, translate: Translator):
     lang = callback.data
+    user_id = callback.from_user.id
+    user = users[user_id]
 
-    if lang == users_settings.get_user(callback.from_user.id, "language"):
+    if lang == user.language:
         await callback.answer(translate.status_language_unchanged(), show_alert=True)
     else:
-        users_settings.set_user(callback.from_user.id, "language", lang)
+        users[user_id] = await db.user.update({"language": lang}, where={"id": user_id})
         translate = localization.get_translator(lang)
         await callback.answer(translate.status_language_changed(), show_alert=True)
         await callback.message.delete()
@@ -524,14 +552,35 @@ async def set_commands(bot: Client):
         )
 
 
+async def clear_inactive_users():
+    """
+    clear users that are not active for more than CLEAR_TIME_SECONDS from ram
+    """
+
+    time_now = time()
+    to_delete = set()
+
+    for user_id, user in users.items():
+        if time_now - user.time_last_message > CLEAR_TIME_SECONDS:
+            to_delete.add(user_id)
+
+    for user_id in to_delete:
+        del users[user_id]
+
+
 async def main():
     schedule = Scheduler()
     schedule.cyclic(timedelta(hours=1), cache.clear)
+    schedule.cyclic(timedelta(hours=1), clear_inactive_users)
 
     await legends.refresh_legends()
+    await db.connect()
     await bot.start()
+
     await set_commands(bot)
     await idle()
+
+    await db.disconnect()
     await bot.stop()
 
 

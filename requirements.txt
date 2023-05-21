@@ -1,4 +1,5 @@
 babel==2.12.1
+prisma==0.8.2
 TgCrypto==1.2.5
 Pyrogram==2.0.102
 scheduler==0.8.4
