@@ -14,7 +14,11 @@ from brawlhalla_api.errors import ServiceUnavailable
 
 from helpers.live import get_lives
 from helpers.cache import Cache, Legends
-from helpers.utils import is_query_invalid, get_localized_commands, get_translated_times
+from helpers.utils import (
+    is_query_invalid,
+    get_localized_commands,
+    get_translated_times_from_seconds,
+)
 
 from pyrogram import Client, filters
 from pyrogram.methods.utilities.idle import idle
@@ -293,15 +297,22 @@ async def live_command(_: Client, message: Message, translate: Translator):
         )
         return
     live = lives[0]
-    translated_times = get_translated_times(translate, live["starts_in"])
-    start_string = ", ".join(value[0] for value in translated_times)
-    end_string = translate.time_hours((live["end"] - live["start"]).seconds // 3600)
+    translated_start_times = get_translated_times_from_seconds(
+        live["starts_in"],
+        translate,
+    )
+    translate_duration_times = get_translated_times_from_seconds(
+        live["duration"],
+        translate,
+    )
+    start_string = ", ".join(translated_start_times)
+    duration_string = ", ".join(translate_duration_times)
 
     await message.reply(
         translate.results_live(
             title=live["title"],
             start=start_string,
-            end=end_string,
+            end=duration_string,
         ),
         reply_markup=Keyboard.live(translate),
     )

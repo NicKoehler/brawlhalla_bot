@@ -94,7 +94,7 @@ RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
     "Combinaciones de armas faltantes con <b>{weapon}</b>:\n\n<b>{weapons}</b>"
 )
 RESULTS_LIVE = (
-    "Próxima transmisión en vivo: <b>{title}</b>\n\n"
+    "🎮 • <b>{title}</b> • 🎮\n\n"
     "Comienza en: <b>{start}</b>\n"
     "Duración: <b>{end}</b>"
 )

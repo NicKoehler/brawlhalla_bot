@@ -7,6 +7,7 @@ DATE_FORMAT = "%Y-%m-%d"
 def is_event_valid(event: dict):
     date_now = datetime.datetime.now(event["start"].tzinfo)
     event["starts_in"] = (event["start"] - date_now).total_seconds()
+    event["duration"] = (event["end"] - event["start"]).total_seconds()
     return event["start"] > date_now
 
 

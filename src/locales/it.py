@@ -99,9 +99,7 @@ RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
 )
 
 RESULTS_LIVE = (
-    "Prossima stream: <b>{title}</b>\n\n"
-    "Inizia tra: <b>{start}</b>\n"
-    "Durata: <b>{end}</b>"
+    "🎮 • <b>{title}</b> • 🎮\n\n" "Inizia tra: <b>{start}</b>\n" "Durata: <b>{end}</b>"
 )
 
 # Status messages

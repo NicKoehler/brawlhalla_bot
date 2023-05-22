@@ -92,9 +92,7 @@ RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
     "Missing weapons combinations with <b>{weapon}</b>:\n\n<b>{weapons}</b>"
 )
 RESULTS_LIVE = (
-    "Next live: <b>{title}</b>\n\n"
-    "Starts in: <b>{start}</b>\n"
-    "Duration: <b>{end}</b>"
+    "🎮 • <b>{title}</b> • 🎮\n\n" "Starts in: <b>{start}</b>\n" "Duration: <b>{end}</b>"
 )
 # Status messages
 STATUS_LANGUAGE_CHANGED = "Language changed successfully"
