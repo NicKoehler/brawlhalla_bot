@@ -10,8 +10,8 @@ generator client {
 }
 
 model User {
-    id            Int    @id
-    brawlhalla_id Int?
-    language      String @default("en")
+    id            BigInt  @id
+    brawlhalla_id BigInt?
+    language      String  @default("en")
     time_blocked  Float?
 }
