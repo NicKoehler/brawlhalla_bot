@@ -355,6 +355,12 @@ class Keyboard:
                         callback_data="it",
                     ),
                 ],
+                [
+                    InlineKeyboardButton(
+                        "🇪🇸 • ESPAÑOL • 🇪🇸",
+                        callback_data="es",
+                    ),
+                ],
             ]
         )
 

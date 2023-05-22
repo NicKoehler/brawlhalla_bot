@@ -492,7 +492,9 @@ async def set_default_callback(
     await callback.answer(translate.status_default_player_set(), show_alert=True)
 
 
-@bot.on_callback_query(filters.regex(r"^(en|it)$"))
+@bot.on_callback_query(
+    filters.regex(r"^(" + "|".join(SUPPORTED_LANGUAGES.keys()) + r")$")
+)
 @user_handling
 async def language_callback(_: Client, callback: CallbackQuery, translate: Translator):
     lang = callback.data
