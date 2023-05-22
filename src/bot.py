@@ -12,8 +12,9 @@ from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
 from brawlhalla_api.errors import ServiceUnavailable
 
+from helpers.live import get_lives
 from helpers.cache import Cache, Legends
-from helpers.utils import is_query_invalid, get_localized_commands
+from helpers.utils import is_query_invalid, get_localized_commands, get_translated_times
 
 from pyrogram import Client, filters
 from pyrogram.methods.utilities.idle import idle
@@ -278,6 +279,27 @@ async def missing_weapons(_: Client, message: Message, translate: Translator):
 async def language_command(_: Client, message: Message, translate: Translator):
     await message.reply_text(
         translate.description_language(), reply_markup=Keyboard.languages()
+    )
+
+
+@bot.on_message(filters.command("live"))
+@user_handling
+async def live_command(_: Client, message: Message, translate: Translator):
+    lives = await get_lives()
+    if not lives:
+        await message.reply(translate.error_no_lives())
+        return
+    live = lives[0]
+    translated_times = get_translated_times(translate, live["starts_in"])
+    start_string = ", ".join(value[0] for value in translated_times)
+    end_string = translate.time_hours((live["end"] - live["start"]).seconds // 3600)
+
+    await message.reply(
+        translate.results_live(
+            title=live["title"],
+            start=start_string,
+            end=end_string,
+        ),
     )
 
 
@@ -548,6 +570,7 @@ async def set_commands(bot: Client):
                 BotCommand("legend", translate.description_legend()),
                 BotCommand(translate.weapons(), translate.description_weapons()),
                 BotCommand(translate.missing(), translate.description_missing()),
+                BotCommand("live", translate.description_live()),
                 BotCommand(translate.language(), translate.description_language()),
             ],
             language_code=lang_code,

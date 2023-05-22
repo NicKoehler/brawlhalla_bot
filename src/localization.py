@@ -157,6 +157,12 @@ class Translator:
         """
         return self.locale.DESCRIPTION_LEGEND
 
+    def description_live(self) -> str:
+        """
+        Shows the time until the next Brawlhalla live on twitch
+        """
+        return self.locale.DESCRIPTION_LIVE
+
     def description_me(self) -> str:
         """
         Shows the statistics of the player set as default
@@ -250,6 +256,12 @@ class Translator:
         """
         return self.locale.ERROR_NO_CLAN_DATA
 
+    def error_no_lives(self) -> str:
+        """
+        No Brawlhalla live streams are scheduled on twitch
+        """
+        return self.locale.ERROR_NO_LIVES
+
     def error_no_ranked_data(self) -> str:
         """
         This player has not played any ranked games yet
@@ -319,6 +331,12 @@ class Translator:
         Legends with <b>{weapon}</b>
         """
         return self.locale.RESULTS_LEGENDS_WITH_WEAPON.format(weapon=weapon)
+
+    def results_live(self, title, start, end) -> str:
+        """
+        The next stream {title} will start in {start} and will last {end}
+        """
+        return self.locale.RESULTS_LIVE.format(title=title, start=start, end=end)
 
     def results_missing_weapons_combination(self, weapons) -> str:
         """

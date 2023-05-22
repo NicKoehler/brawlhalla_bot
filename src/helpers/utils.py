@@ -9,24 +9,28 @@ def make_progress_bar(level: int, xp_percentage: float) -> str:
     return f"\n{level} &gt; <code>▕{'█' * value}{'—' * (10 - value) }▏</code> &gt; {level + 1}"
 
 
-def make_played_time(translate: Translator, total_game_time: int) -> list[str]:
+def get_translated_times(translate: Translator, total_game_time: int) -> list[str]:
     days = int(total_game_time // 86400)
     hours = int((total_game_time % 86400) // 3600)
     minutes = int((total_game_time % 3600) // 60)
     seconds = int(total_game_time % 60)
 
-    translated_game_times = []
+    to_send = []
 
-    for s, v in (
-        (translate.time_days(days), days),
-        (translate.time_hours(hours), hours),
-        (translate.time_minutes(minutes), minutes),
-        (translate.time_seconds(seconds), seconds),
-    ):
-        if v == 0:
-            continue
+    if days > 0:
+        to_send.append((translate.time_days(days), days))
+    if hours > 0:
+        to_send.append((translate.time_hours(hours), hours))
+    if minutes > 0:
+        to_send.append((translate.time_minutes(minutes), minutes))
+    if seconds > 0:
+        to_send.append((translate.time_seconds(seconds), seconds))
 
-        translated_game_times.append(s)
+    return to_send
+
+
+def make_played_time(translate: Translator, total_game_time: int) -> list[str]:
+    translated_game_times = get_translated_times(translate, total_game_time)
 
     total_game_time_list = []
 

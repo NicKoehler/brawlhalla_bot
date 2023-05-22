@@ -13,6 +13,7 @@ DESCRIPTION_LEGEND = "Mostra le statistiche di una legend"
 DESCRIPTION_WEAPONS = "Cerca una legend attraverso le tipologie di armi"
 DESCRIPTION_ME = "Mostra le statistiche del giocatore impostato come predefinito"
 DESCRIPTION_MISSING = "Mostra le combinazioni di armi mancanti"
+DESCRIPTION_LIVE = "Mostra il tempo mancante alla prossima live di Brawlhalla su twitch"
 
 WELCOME = (
     "Benvenuto <b>{name}</b>.\n\n"
@@ -23,6 +24,7 @@ WELCOME = (
     f"🥷 • /legend - {DESCRIPTION_LEGEND}\n"
     f"🗡️ • /{WEAPONS} - {DESCRIPTION_WEAPONS}\n"
     f"❓ • /{MISSING} - {DESCRIPTION_MISSING}\n"
+    f"🎤 • /live - {DESCRIPTION_LIVE}\n"
     f"🌐 • /{LANGUAGE} - {DESCRIPTION_LANGUAGE}"
 )
 
@@ -70,6 +72,7 @@ ERROR_GENERIC = (
     "apri una issue dettagliata su come riprodurre l'errore che hai riscontrato.\n"
     "Prima di aprire una nuova issue assicurati che l'errore non sia già stato segnalato"
 )
+ERROR_NO_LIVES = "Non sono previste live di Brawlhalla su twitch"
 
 # Results
 RESULTS_TEAMS = "Squadre:"
@@ -93,6 +96,12 @@ RESULTS_WEAPONS = (
 )
 RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
     "Combinazioni di armi mancanti che utilizzano <b>{weapon}</b>:\n\n<b>{weapons}</b>"
+)
+
+RESULTS_LIVE = (
+    "Prossima stream: <b>{title}</b>\n\n"
+    "Inizia tra: <b>{start}</b>\n"
+    "Durata: <b>{end}</b>"
 )
 
 # Status messages

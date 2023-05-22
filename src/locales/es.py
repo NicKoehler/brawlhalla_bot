@@ -13,6 +13,7 @@ DESCRIPTION_LEGEND = "Muestra las estadísticas de una leyenda"
 DESCRIPTION_WEAPONS = "Buscar una leyenda a través de tipos de armas"
 DESCRIPTION_MISSING = "Muestra combinaciones de armas faltantes"
 DESCRIPTION_ME = "Muestra las estadísticas del jugador establecido como predeterminado"
+DESCRIPTION_LIVE = "Muestra el tiempo restante para la próxima transmisión en vivo de Brawlhalla en Twitch"
 
 WELCOME = (
     "Bienvenido <b>{name}</b>.\n\n"
@@ -23,6 +24,7 @@ WELCOME = (
     f"🥷 • /legend - {DESCRIPTION_LEGEND}\n"
     f"🗡️ • /{WEAPONS} - {DESCRIPTION_WEAPONS}\n"
     f"❓ • /{MISSING} - {DESCRIPTION_MISSING}\n"
+    f"🎤 • /live - {DESCRIPTION_LIVE}\n"
     f"🌐 • /{LANGUAGE} - {DESCRIPTION_LANGUAGE}"
 )
 
@@ -66,6 +68,7 @@ ERROR_GENERIC = (
     "abra un problema detallado sobre cómo reproducir el error que encontró.\n "
     "Antes de abrir un nuevo problema, asegúrese de que el error aún no haya sido informado."
 )
+ERROR_NO_LIVES = "No hay retransmisiones en directo de Brawlhalla en Twitch"
 
 # Resultados
 RESULTS_TEAMS = "Equipos:"
@@ -89,6 +92,11 @@ RESULTS_WEAPONS = (
 )
 RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
     "Combinaciones de armas faltantes con <b>{weapon}</b>:\n\n<b>{weapons}</b>"
+)
+RESULTS_LIVE = (
+    "Próxima transmisión en vivo: <b>{title}</b>\n\n"
+    "Comienza en: <b>{start}</b>\n"
+    "Duración: <b>{end}</b>"
 )
 
 # Mensajes de estado
@@ -120,10 +128,10 @@ BUTTON_SEARCH_US_E = "🇺🇸 • BUSCAR US-E • 🇺🇸"
 BUTTON_SEARCH_US_W = "🇺🇸 • BUSCAR US-W • 🇺🇸"
 
 # Tiempo
-TIME_DAYS = "Días : {t}"
-TIME_HOURS = "Horas : {t}"
-TIME_MINUTES = "Minutos : {t}"
-TIME_SECONDS = "Segundos : {t}"
+TIME_DAYS = "Días: {t}"
+TIME_HOURS = "Horas: {t}"
+TIME_MINUTES = "Minutos: {t}"
+TIME_SECONDS = "Segundos: {t}"
 
 # Estadísticas
 STATS_BASE = "🆔 • ID:<b> {id} </b>\n👤 • Nombre: <b>{name}</b>"
