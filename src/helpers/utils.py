@@ -37,7 +37,7 @@ def make_played_time(translate: Translator, total_game_time: int) -> list[str]:
     for n, time in enumerate(translated_game_times):
         (
             total_game_time_list.append(
-                ("╰─► " if n == len(translated_game_times) - 1 else "├─► ") + time
+                ("╰─► " if n == len(translated_game_times) - 1 else "├─► ") + time[0]
             )
         )
 
