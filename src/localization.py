@@ -49,6 +49,12 @@ class Translator:
         """
         return self.locale.BUTTON_LEGENDS
 
+    def button_live(self) -> str:
+        """
+        🎮 • WATCH THE LIVE • 🎮
+        """
+        return self.locale.BUTTON_LIVE
+
     def button_ranked_solo(self) -> str:
         """
         🏆 • RANKED 1V1 • 🏆
@@ -157,6 +163,12 @@ class Translator:
         """
         return self.locale.DESCRIPTION_LEGEND
 
+    def description_live(self) -> str:
+        """
+        Shows the time until the next Brawlhalla live on twitch
+        """
+        return self.locale.DESCRIPTION_LIVE
+
     def description_me(self) -> str:
         """
         Shows the statistics of the player set as default
@@ -250,6 +262,12 @@ class Translator:
         """
         return self.locale.ERROR_NO_CLAN_DATA
 
+    def error_no_lives(self) -> str:
+        """
+        No Brawlhalla live streams are scheduled on twitch
+        """
+        return self.locale.ERROR_NO_LIVES
+
     def error_no_ranked_data(self) -> str:
         """
         This player has not played any ranked games yet
@@ -319,6 +337,15 @@ class Translator:
         Legends with <b>{weapon}</b>
         """
         return self.locale.RESULTS_LEGENDS_WITH_WEAPON.format(weapon=weapon)
+
+    def results_live(self, title, start, end) -> str:
+        """
+        Next live: <b>{title}</b>
+
+        Starts in: <b>{start}</b>
+        Duration: <b>{end}</b>
+        """
+        return self.locale.RESULTS_LIVE.format(title=title, start=start, end=end)
 
     def results_missing_weapons_combination(self, weapons) -> str:
         """
@@ -704,25 +731,25 @@ class Translator:
 
     def time_days(self, t) -> str:
         """
-        Days : {t}
+        Days: {t}
         """
         return self.locale.TIME_DAYS.format(t=t)
 
     def time_hours(self, t) -> str:
         """
-        Hours : {t}
+        Hours: {t}
         """
         return self.locale.TIME_HOURS.format(t=t)
 
     def time_minutes(self, t) -> str:
         """
-        Minutes : {t}
+        Minutes: {t}
         """
         return self.locale.TIME_MINUTES.format(t=t)
 
     def time_seconds(self, t) -> str:
         """
-        Seconds : {t}
+        Seconds: {t}
         """
         return self.locale.TIME_SECONDS.format(t=t)
 
@@ -763,6 +790,8 @@ class Translator:
         👤 • /me - Shows the statistics of the player set as default
         🥷 • /legend - Shows the statistics of a legend
         🗡️ • /weapons - Search for a legend through weapon types
+        ❓ • /missing - Shows missing weapons combinations
+        🎮 • /live - Shows the time until the next Brawlhalla live on twitch
         🌐 • /language - Change the language of the bot
         """
         return self.locale.WELCOME.format(name=name)

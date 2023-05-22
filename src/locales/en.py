@@ -13,6 +13,7 @@ DESCRIPTION_LEGEND = "Shows the statistics of a legend"
 DESCRIPTION_WEAPONS = "Search for a legend through weapon types"
 DESCRIPTION_MISSING = "Shows missing weapons combinations"
 DESCRIPTION_ME = "Shows the statistics of the player set as default"
+DESCRIPTION_LIVE = "Shows the time until the next Brawlhalla live on twitch"
 
 WELCOME = (
     "Welcome <b>{name}</b>.\n\n"
@@ -22,6 +23,8 @@ WELCOME = (
     f"👤 • /me - {DESCRIPTION_ME}\n"
     f"🥷 • /legend - {DESCRIPTION_LEGEND}\n"
     f"🗡️ • /{WEAPONS} - {DESCRIPTION_WEAPONS}\n"
+    f"❓ • /{MISSING} - {DESCRIPTION_MISSING}\n"
+    f"🎮 • /live - {DESCRIPTION_LIVE}\n"
     f"🌐 • /{LANGUAGE} - {DESCRIPTION_LANGUAGE}"
 )
 
@@ -63,6 +66,7 @@ ERROR_GENERIC = (
     "open a detailed issue on how to reproduce the error you encountered.\n"
     "Before opening a new issue, make sure that the error has not already been reported"
 )
+ERROR_NO_LIVES = "No Brawlhalla live streams are scheduled on twitch"
 
 # Results
 RESULTS_TEAMS = "Teams:"
@@ -87,7 +91,9 @@ RESULTS_WEAPONS = (
 RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
     "Missing weapons combinations with <b>{weapon}</b>:\n\n<b>{weapons}</b>"
 )
-
+RESULTS_LIVE = (
+    "🎮 • <b>{title}</b> • 🎮\n\n" "Starts in: <b>{start}</b>\n" "Duration: <b>{end}</b>"
+)
 # Status messages
 STATUS_LANGUAGE_CHANGED = "Language changed successfully"
 STATUS_LANGUAGE_UNCHANGED = "Language unchanged"
@@ -105,6 +111,7 @@ BUTTON_CLAN = "🎖 • CLAN • 🎖"
 BUTTON_CLOSE = "❌ • CLOSE • ❌"
 BUTTON_WEAPONS = "🔫 • WEAPONS • 🔫"
 BUTTON_SHARE = "💬 • SHARE • 💬"
+BUTTON_LIVE = "🎮 • WATCH THE LIVE • 🎮"
 BUTTON_SEARCH_ALL = "🌍 • SEARCH ALL • 🌍"
 BUTTON_SEARCH_AUS = "🇦🇺 • SEARCH AUS • 🇦🇺"
 BUTTON_SEARCH_BRZ = "🇧🇷 • SEARCH BRZ • 🇧🇷"
@@ -117,10 +124,10 @@ BUTTON_SEARCH_US_E = "🇺🇸 • SEARCH US-E • 🇺🇸"
 BUTTON_SEARCH_US_W = "🇺🇸 • SEARCH US-W • 🇺🇸"
 
 # Time
-TIME_DAYS = "Days : {t}"
-TIME_HOURS = "Hours : {t}"
-TIME_MINUTES = "Minutes : {t}"
-TIME_SECONDS = "Seconds : {t}"
+TIME_DAYS = "Days: {t}"
+TIME_HOURS = "Hours: {t}"
+TIME_MINUTES = "Minutes: {t}"
+TIME_SECONDS = "Seconds: {t}"
 
 # Stats
 STATS_BASE = "🆔 • ID:<b> {id} </b>\n👤 • Name: <b>{name}</b>"

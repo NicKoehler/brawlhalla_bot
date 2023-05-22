@@ -61,7 +61,7 @@ async def handle_general(
         timedelta(seconds=0),
     ).total_seconds()
 
-    total_game_time_list = utils.make_played_time(translate, total_game_time)
+    total_game_time_list = utils.make_played_time(total_game_time, translate)
     most_used_legend_name = "❌"
 
     if player.legends:
@@ -387,7 +387,8 @@ async def handle_player_legend_details(
     for legend in player.legends:
         if legend.legend_id == legend_obj.legend_id:
             game_time_list = utils.make_played_time(
-                translate, legend.matchtime.total_seconds()
+                legend.matchtime.total_seconds(),
+                translate,
             )
 
             await callback.edit_message_text(
