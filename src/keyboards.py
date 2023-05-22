@@ -30,7 +30,20 @@ class Keyboard:
     def close_button(translate: Translator) -> list[list[InlineKeyboardButton]]:
         return [[InlineKeyboardButton(translate.button_close(), callback_data="close")]]
 
-    def search(translate: Translator) -> list[list[InlineKeyboardButton]]:
+    def live(translate: Translator, live: bool = True) -> InlineKeyboardMarkup:
+        keys = []
+        if live:
+            keys.append(
+                [
+                    InlineKeyboardButton(
+                        translate.button_live(), url="https://twitch.tv/brawlhalla"
+                    )
+                ]
+            )
+
+        return InlineKeyboardMarkup(keys + Keyboard.close_button(translate))
+
+    def search(translate: Translator) -> InlineKeyboardMarkup:
         regions = [
             (translate.button_search_all(), ""),
             (

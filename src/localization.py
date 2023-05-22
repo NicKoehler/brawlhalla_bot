@@ -49,6 +49,12 @@ class Translator:
         """
         return self.locale.BUTTON_LEGENDS
 
+    def button_live(self) -> str:
+        """
+        🎮 • WATCH THE LIVE • 🎮
+        """
+        return self.locale.BUTTON_LIVE
+
     def button_ranked_solo(self) -> str:
         """
         🏆 • RANKED 1V1 • 🏆
@@ -334,7 +340,10 @@ class Translator:
 
     def results_live(self, title, start, end) -> str:
         """
-        The next stream {title} will start in {start} and will last {end}
+        Next live: <b>{title}</b>
+
+        Starts in: <b>{start}</b>
+        Duration: <b>{end}</b>
         """
         return self.locale.RESULTS_LIVE.format(title=title, start=start, end=end)
 
@@ -722,25 +731,25 @@ class Translator:
 
     def time_days(self, t) -> str:
         """
-        Days : {t}
+        Days: {t}
         """
         return self.locale.TIME_DAYS.format(t=t)
 
     def time_hours(self, t) -> str:
         """
-        Hours : {t}
+        Hours: {t}
         """
         return self.locale.TIME_HOURS.format(t=t)
 
     def time_minutes(self, t) -> str:
         """
-        Minutes : {t}
+        Minutes: {t}
         """
         return self.locale.TIME_MINUTES.format(t=t)
 
     def time_seconds(self, t) -> str:
         """
-        Seconds : {t}
+        Seconds: {t}
         """
         return self.locale.TIME_SECONDS.format(t=t)
 
@@ -781,6 +790,8 @@ class Translator:
         👤 • /me - Shows the statistics of the player set as default
         🥷 • /legend - Shows the statistics of a legend
         🗡️ • /weapons - Search for a legend through weapon types
+        ❓ • /missing - Shows missing weapons combinations
+        🎮 • /live - Shows the time until the next Brawlhalla live on twitch
         🌐 • /language - Change the language of the bot
         """
         return self.locale.WELCOME.format(name=name)

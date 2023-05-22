@@ -24,7 +24,7 @@ WELCOME = (
     f"🥷 • /legend - {DESCRIPTION_LEGEND}\n"
     f"🗡️ • /{WEAPONS} - {DESCRIPTION_WEAPONS}\n"
     f"❓ • /{MISSING} - {DESCRIPTION_MISSING}\n"
-    f"🎤 • /live - {DESCRIPTION_LIVE}\n"
+    f"🎮 • /live - {DESCRIPTION_LIVE}\n"
     f"🌐 • /{LANGUAGE} - {DESCRIPTION_LANGUAGE}"
 )
 
@@ -113,6 +113,7 @@ BUTTON_CLAN = "🎖 • CLAN • 🎖"
 BUTTON_CLOSE = "❌ • CLOSE • ❌"
 BUTTON_WEAPONS = "🔫 • WEAPONS • 🔫"
 BUTTON_SHARE = "💬 • SHARE • 💬"
+BUTTON_LIVE = "🎮 • WATCH THE LIVE • 🎮"
 BUTTON_SEARCH_ALL = "🌍 • SEARCH ALL • 🌍"
 BUTTON_SEARCH_AUS = "🇦🇺 • SEARCH AUS • 🇦🇺"
 BUTTON_SEARCH_BRZ = "🇧🇷 • SEARCH BRZ • 🇧🇷"

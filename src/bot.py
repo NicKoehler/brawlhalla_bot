@@ -287,7 +287,10 @@ async def language_command(_: Client, message: Message, translate: Translator):
 async def live_command(_: Client, message: Message, translate: Translator):
     lives = await get_lives()
     if not lives:
-        await message.reply(translate.error_no_lives())
+        await message.reply(
+            translate.error_no_lives(),
+            reply_markup=Keyboard.live(translate, False),
+        )
         return
     live = lives[0]
     translated_times = get_translated_times(translate, live["starts_in"])
@@ -300,6 +303,7 @@ async def live_command(_: Client, message: Message, translate: Translator):
             start=start_string,
             end=end_string,
         ),
+        reply_markup=Keyboard.live(translate),
     )
 
 
