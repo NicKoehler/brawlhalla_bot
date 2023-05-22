@@ -58,14 +58,21 @@ The new one will not have the exactly the same features as the old one, the main
     API_KEY=XXXXXXXXXXXXXXXXX
     API_HASH=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     BOT_TOKEN=XXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
+    DATABASE_URL=postgres://XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    FLOOD_WAIT_SECONDS=60
+    CLEAR_TIME_SECONDS=3600
     ```
 
-> You can find the **API_ID** and **API_HASH** logging on https://my.telegram.org.
+    > You can find the **API_ID** and **API_HASH** logging on https://my.telegram.org.
 
-> Speak with [@BotFather](https://t.me/BotFather) to generate your **BOT_TOKEN**.
+    > Speak with [@BotFather](https://t.me/BotFather) to generate your **BOT_TOKEN**.
 
-> To use the Brawlhalla API, you need to provide an **API_KEY**. Send an email to api@brawlhalla.com to request one.
+    > To use the Brawlhalla API, you need to provide an **API_KEY**. Send an email to api@brawlhalla.com to request one.
+
+4.  Push prisma db:
+    ```sh
+    prisma db push
+    ```
 
 ## Usage
 
