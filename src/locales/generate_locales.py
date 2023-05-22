@@ -1,6 +1,10 @@
 import en
 
-SUPPORTED_LANGUAGES = {"it": "it_IT", "en": "en_US"}
+SUPPORTED_LANGUAGES = {
+    "it": "it_IT",
+    "en": "en_US",
+    "es": "es_ES",
+}
 
 
 def parse_strings(text: str):
