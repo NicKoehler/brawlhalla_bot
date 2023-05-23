@@ -101,9 +101,9 @@ RESULT_LIVE_NOTIFICATION = "🎮 • <b>{title}</b> • 🎮\n\nIt's about to st
 STATUS_LANGUAGE_CHANGED = "Language changed successfully"
 STATUS_LANGUAGE_UNCHANGED = "Language unchanged"
 STATUS_DEFAULT_PLAYER_SET = "Player set as default"
-STATUS_NOTIFICATIONS_ON = "Notifications enabled, you will receive a notification shortly before the live starts"
+STATUS_NOTIFICATIONS_ON = "<b>🔔 • Notifications enabled • 🔔</b>\n\nYou will receive a notification shortly before the live starts!"
 STATUS_NOTIFICATIONS_OFF = (
-    "Notifications disabled, you will no longer receive notifications"
+    "<b>🔕 • Notifications disabled • 🔕</b>\n\nYou will no longer receive notifications!"
 )
 
 # Buttons

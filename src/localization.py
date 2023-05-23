@@ -745,13 +745,17 @@ class Translator:
 
     def status_notifications_off(self) -> str:
         """
-        Notifications disabled, you will no longer receive notifications
+        <b>🔕 • Notifications disabled • 🔕</b>
+
+        You will no longer receive notifications!
         """
         return self.locale.STATUS_NOTIFICATIONS_OFF
 
     def status_notifications_on(self) -> str:
         """
-        Notifications enabled, you will receive a notification shortly before the live starts
+        <b>🔔 • Notifications enabled • 🔔</b>
+
+        You will receive a notification shortly before the live starts!
         """
         return self.locale.STATUS_NOTIFICATIONS_ON
 
