@@ -6,18 +6,19 @@ from html import escape
 from prisma import Prisma
 from functools import wraps
 from dotenv import load_dotenv
-from datetime import timedelta
 from itertools import combinations
 from keyboards import Keyboard, View
+from scheduler.asyncio import Scheduler
+from datetime import datetime, timedelta
+
 from brawlhalla_api import Brawlhalla
 from brawlhalla_api.errors import ServiceUnavailable
 
-from helpers.live import get_lives
+from helpers.live import get_lives, schedule_lives, send_event
 from helpers.cache import Cache, Legends
 from helpers.utils import (
     is_query_invalid,
     get_localized_commands,
-    get_translated_times_from_seconds,
 )
 
 from pyrogram import Client, filters
@@ -44,8 +45,6 @@ from handlers import (
     handle_player_legend_details,
 )
 
-from scheduler.asyncio import Scheduler
-
 load_dotenv()
 
 API_ID = environ.get("API_ID")
@@ -56,12 +55,13 @@ BOT_TOKEN = environ.get("BOT_TOKEN")
 FLOOD_WAIT_SECONDS = int(environ.get("FLOOD_WAIT_SECONDS"))
 CLEAR_TIME_SECONDS = int(environ.get("CLEAR_TIME_SECONDS"))
 
-bot = Client("brawlhalla", API_ID, API_HASH, bot_token=BOT_TOKEN)
 db = Prisma()
-brawl = Brawlhalla(API_KEY)
+schedule = None
 cache = Cache(180)
+brawl = Brawlhalla(API_KEY)
 legends = Legends(brawl)
 localization = Localization()
+bot = Client("brawlhalla", API_ID, API_HASH, bot_token=BOT_TOKEN)
 
 users = {}
 
@@ -296,26 +296,7 @@ async def live_command(_: Client, message: Message, translate: Translator):
             reply_markup=Keyboard.live(translate, False),
         )
         return
-    live = lives[0]
-    translated_start_times = get_translated_times_from_seconds(
-        live["starts_in"],
-        translate,
-    )
-    translate_duration_times = get_translated_times_from_seconds(
-        live["duration"],
-        translate,
-    )
-    start_string = ", ".join(translated_start_times)
-    duration_string = ", ".join(translate_duration_times)
-
-    await message.reply(
-        translate.results_live(
-            title=live["title"],
-            start=start_string,
-            end=duration_string,
-        ),
-        reply_markup=Keyboard.live(translate),
-    )
+    await send_event(message, lives[0], translate)
 
 
 @bot.on_callback_query(filters.regex(r"^(\d+)_team_(\d+)$"))
@@ -610,8 +591,30 @@ async def clear_inactive_users():
 
 async def main():
     schedule = Scheduler()
+
+    schedule.once(
+        datetime.now(),
+        schedule_lives,
+        args=(
+            bot,
+            db,
+            schedule,
+            localization,
+        ),
+    )
+
     schedule.cyclic(timedelta(hours=1), cache.clear)
     schedule.cyclic(timedelta(hours=1), clear_inactive_users)
+    schedule.cyclic(
+        timedelta(minutes=1),
+        schedule_lives,
+        args=(
+            bot,
+            db,
+            schedule,
+            localization,
+        ),
+    )
 
     await legends.refresh_legends()
     await db.connect()

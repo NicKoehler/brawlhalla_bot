@@ -340,7 +340,7 @@ class Translator:
 
     def results_live(self, title, start, end) -> str:
         """
-        Next live: <b>{title}</b>
+        🎮 • <b>{title}</b> • 🎮
 
         Starts in: <b>{start}</b>
         Duration: <b>{end}</b>
