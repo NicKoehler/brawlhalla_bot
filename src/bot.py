@@ -74,7 +74,7 @@ def user_handling(f):
         is_message = isinstance(update, Message)
 
         if user_id not in users:
-            user = (await db.user.find_unique(where={"id": user_id})) or (
+            users[user_id] = (await db.user.find_unique(where={"id": user_id})) or (
                 await db.user.create(
                     data={
                         "id": user_id,
@@ -82,7 +82,6 @@ def user_handling(f):
                     }
                 )
             )
-            users[user_id] = user
 
         user = users[user_id]
 
