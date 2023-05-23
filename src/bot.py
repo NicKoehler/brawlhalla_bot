@@ -592,29 +592,23 @@ async def clear_inactive_users():
 async def main():
     schedule = Scheduler()
 
-    schedule.once(
-        datetime.now(),
-        schedule_lives,
-        args=(
-            bot,
-            db,
-            schedule,
-            localization,
-        ),
-    )
-
     schedule.cyclic(timedelta(hours=1), cache.clear)
     schedule.cyclic(timedelta(hours=1), clear_inactive_users)
-    schedule.cyclic(
-        timedelta(minutes=1),
-        schedule_lives,
-        args=(
-            bot,
-            db,
-            schedule,
-            localization,
-        ),
-    )
+
+    for t, s in [
+        (datetime.now(), schedule.once),
+        (timedelta(hours=1), schedule.cyclic),
+    ]:
+        s(
+            t,
+            schedule_lives,
+            args=(
+                bot,
+                db,
+                schedule,
+                localization,
+            ),
+        )
 
     await legends.refresh_legends()
     await db.connect()

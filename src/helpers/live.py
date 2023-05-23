@@ -87,7 +87,7 @@ async def schedule_lives(
         )
 
     # clean up deleted jobs if they were previously scheduled and then removed
-    for job in schedule.jobs:
+    for job in jobs:
         if job.alias not in event_aliases:
             schedule.delete_job(job)
 
