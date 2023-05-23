@@ -31,7 +31,14 @@ class Keyboard:
         return [[InlineKeyboardButton(translate.button_close(), callback_data="close")]]
 
     def live(translate: Translator, live: bool = True) -> InlineKeyboardMarkup:
-        keys = []
+        keys = [
+            [
+                InlineKeyboardButton(
+                    translate.button_live_notifications(),
+                    callback_data="notifications",
+                )
+            ]
+        ]
         if live:
             keys.append(
                 [

@@ -533,6 +533,28 @@ async def close_callback(_: Client, callback: CallbackQuery):
     await callback.message.delete()
 
 
+@bot.on_callback_query(filters.regex(r"^notifications$"))
+@user_handling
+async def notifications_callback(
+    _: Client, callback: CallbackQuery, translate: Translator
+):
+    user_id = callback.from_user.id
+    new_status = not users[user_id].notify_live
+    users[user_id] = await db.user.update(
+        {"notify_live": new_status}, where={"id": user_id}
+    )
+    if new_status:
+        await callback.answer(
+            translate.status_notifications_on(),
+            show_alert=True,
+        )
+    else:
+        await callback.answer(
+            translate.status_notifications_off(),
+            show_alert=True,
+        )
+
+
 @bot.on_inline_query(filters.regex(r"^.id\s+(\d+)$"))
 @user_handling
 async def inline_query_id_handler(

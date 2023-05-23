@@ -55,6 +55,12 @@ class Translator:
         """
         return self.locale.BUTTON_LIVE
 
+    def button_live_notifications(self) -> str:
+        """
+        🔔 • ENABLE/DISABLE NOTIFICATIONS • 🔔
+        """
+        return self.locale.BUTTON_LIVE_NOTIFICATIONS
+
     def button_ranked_solo(self) -> str:
         """
         🏆 • RANKED 1V1 • 🏆
@@ -728,6 +734,18 @@ class Translator:
         Language unchanged
         """
         return self.locale.STATUS_LANGUAGE_UNCHANGED
+
+    def status_notifications_off(self) -> str:
+        """
+        Notifications disabled, you will no longer receive notifications
+        """
+        return self.locale.STATUS_NOTIFICATIONS_OFF
+
+    def status_notifications_on(self) -> str:
+        """
+        Notifications enabled, you will receive a notification shortly before the live starts
+        """
+        return self.locale.STATUS_NOTIFICATIONS_ON
 
     def time_days(self, t) -> str:
         """

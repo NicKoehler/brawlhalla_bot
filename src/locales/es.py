@@ -103,6 +103,10 @@ RESULTS_LIVE = (
 STATUS_LANGUAGE_CHANGED = "Idioma cambiado con éxito"
 STATUS_LANGUAGE_UNCHANGED = "Idioma sin cambios"
 STATUS_DEFAULT_PLAYER_SET = "Jugador establecido como predeterminado"
+STATUS_NOTIFICATIONS_ON = "Notificaciones habilitadas, recibirás una notificación poco antes de que comience el en vivo"
+STATUS_NOTIFICATIONS_OFF = (
+    "Notificaciones deshabilitadas, ya no recibirás notificaciones"
+)
 
 # Botones
 BUTTON_GENERAL = "⚔️ • ESTADÍSTICAS GENERALES • ⚔️"
@@ -117,6 +121,7 @@ BUTTON_CLOSE = "❌ • CERRAR • ❌"
 BUTTON_WEAPONS = "🔫 • ARMAS • 🔫"
 BUTTON_SHARE = "💬 • COMPARTIR • 💬"
 BUTTON_LIVE = "🎮 • MIRA LA TRANSMISIÓN EN VIVO • 🎮"
+BUTTON_LIVE_NOTIFICATIONS = "🔔 • ACTIVAR/DESACTIVAR NOTIFICACIONES • 🔔"
 BUTTON_SEARCH_ALL = "🌍 • BUSCAR TODO • 🌍"
 BUTTON_SEARCH_AUS = "🇦🇺 • BUSCAR AUS • 🇦🇺"
 BUTTON_SEARCH_BRZ = "🇧🇷 • BUSCAR BRZ • 🇧🇷"
