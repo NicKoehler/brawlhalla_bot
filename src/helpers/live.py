@@ -79,7 +79,7 @@ async def schedule_lives(
             args=(
                 bot,
                 db,
-                event.copy(),
+                event["title"],
                 localization,
             ),
             tags={"live"},
@@ -93,10 +93,10 @@ async def schedule_lives(
 
 
 async def send_event(
-    client: Client | Message,
+    message: Message,
     event: dict,
     translate: Translator,
-    user_id: int | None = None,
+    bot: Client,
 ):
     translated_start_times = get_translated_times_from_seconds(
         event["starts_in"],
@@ -108,35 +108,27 @@ async def send_event(
     )
     start_string = ", ".join(translated_start_times)
     duration_string = ", ".join(translate_duration_times)
-    if isinstance(client, Message):
-        await client.reply(
-            translate.results_live(
-                title=event["title"],
-                start=start_string,
-                end=duration_string,
-            ),
-            reply_markup=Keyboard.live(translate),
-        )
-    elif isinstance(client, Client):
-        await client.send_message(
-            user_id,
-            translate.results_live(
-                title=event["title"],
-                start=start_string,
-                end=duration_string,
-            ),
-            reply_markup=Keyboard.live(translate),
-        )
+    await message.reply(
+        translate.results_live(
+            title=event["title"],
+            start=start_string,
+            end=duration_string,
+        ),
+        reply_markup=await Keyboard.live(bot, translate),
+    )
 
 
 async def notify_lives(
-    bot: Client, db: Prisma, event: dict, localization: Localization
+    bot: Client, db: Prisma, event_title: str, localization: Localization
 ):
     users = await db.user.find_many(where={"notify_live": True})
     for user in users:
         try:
-            await send_event(
-                bot, event, localization.get_translator(user.language), user.id
+            translator = localization.get_translator(user.language)
+            await bot.send_message(
+                user.id,
+                translator.result_live_notification(event_title),
+                reply_markup=await Keyboard.live(bot, translator),
             )
         except UserBlocked:
             await db.user.update(where={"id": user.id}, data={"notify_live": False})

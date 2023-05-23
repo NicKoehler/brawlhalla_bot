@@ -395,6 +395,14 @@ class Translator:
         """
         return self.locale.RESULTS_WEAPONS
 
+    def result_live_notification(self, title) -> str:
+        """
+        🎮 • <b>{title}</b> • 🎮
+
+        It's about to start
+        """
+        return self.locale.RESULT_LIVE_NOTIFICATION.format(title=title)
+
     def search(self) -> str:
         """
         search

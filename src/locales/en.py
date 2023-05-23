@@ -94,6 +94,9 @@ RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
 RESULTS_LIVE = (
     "🎮 • <b>{title}</b> • 🎮\n\n" "Starts in: <b>{start}</b>\n" "Duration: <b>{end}</b>"
 )
+RESULT_LIVE_NOTIFICATION = "🎮 • <b>{title}</b> • 🎮\n\nIt's about to start"
+
+
 # Status messages
 STATUS_LANGUAGE_CHANGED = "Language changed successfully"
 STATUS_LANGUAGE_UNCHANGED = "Language unchanged"

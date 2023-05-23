@@ -98,6 +98,7 @@ RESULTS_LIVE = (
     "Comienza en: <b>{start}</b>\n"
     "Duración: <b>{end}</b>"
 )
+RESULT_LIVE_NOTIFICATION = "🎮 • <b>{title}</b> • 🎮\n\nEstá a punto de comenzar"
 
 # Mensajes de estado
 STATUS_LANGUAGE_CHANGED = "Idioma cambiado con éxito"

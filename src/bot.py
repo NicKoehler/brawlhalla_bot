@@ -134,14 +134,30 @@ def user_handling(f):
     return wrapped
 
 
-@bot.on_message(filters.command("start"))
+@bot.on_message(filters.regex(r"^\/start\s?(.+)?$"))
 @user_handling
 async def start(_: Client, message: Message, translate: Translator):
-    await message.reply(
-        translate.welcome(
-            name=escape(message.from_user.first_name),
-        ),
+    if message.matches[0].groups()[0] is None:
+        await message.reply(
+            translate.welcome(
+                name=escape(message.from_user.first_name),
+            ),
+        )
+        return
+
+    user_id = message.from_user.id
+    new_status = not users[user_id].notify_live
+    users[user_id] = await db.user.update(
+        {"notify_live": new_status}, where={"id": user_id}
     )
+    if new_status:
+        await message.reply(
+            translate.status_notifications_on(),
+        )
+    else:
+        await message.reply(
+            translate.status_notifications_off(),
+        )
 
 
 @bot.on_message(filters.command(get_localized_commands("search", localization)))
@@ -295,7 +311,7 @@ async def live_command(_: Client, message: Message, translate: Translator):
             reply_markup=Keyboard.live(translate, False),
         )
         return
-    await send_event(message, lives[0], translate)
+    await send_event(message, lives[0], translate, bot)
 
 
 @bot.on_callback_query(filters.regex(r"^(\d+)_team_(\d+)$"))
@@ -530,28 +546,6 @@ async def language_callback(_: Client, callback: CallbackQuery, translate: Trans
 @bot.on_callback_query(filters.regex(r"^close$"))
 async def close_callback(_: Client, callback: CallbackQuery):
     await callback.message.delete()
-
-
-@bot.on_callback_query(filters.regex(r"^notifications$"))
-@user_handling
-async def notifications_callback(
-    _: Client, callback: CallbackQuery, translate: Translator
-):
-    user_id = callback.from_user.id
-    new_status = not users[user_id].notify_live
-    users[user_id] = await db.user.update(
-        {"notify_live": new_status}, where={"id": user_id}
-    )
-    if new_status:
-        await callback.answer(
-            translate.status_notifications_on(),
-            show_alert=True,
-        )
-    else:
-        await callback.answer(
-            translate.status_notifications_off(),
-            show_alert=True,
-        )
 
 
 @bot.on_inline_query(filters.regex(r"^.id\s+(\d+)$"))

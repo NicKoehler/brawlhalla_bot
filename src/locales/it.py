@@ -101,12 +101,15 @@ RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
 RESULTS_LIVE = (
     "🎮 • <b>{title}</b> • 🎮\n\n" "Inizia tra: <b>{start}</b>\n" "Durata: <b>{end}</b>"
 )
+RESULT_LIVE_NOTIFICATION = "🎮 • <b>{title}</b> • 🎮\n\nSta per iniziare"
 
 # Status messages
 STATUS_LANGUAGE_CHANGED = "La lingua è stata cambiata correttamente"
 STATUS_LANGUAGE_UNCHANGED = "La lingua non è stata cambiata"
 STATUS_DEFAULT_PLAYER_SET = "Giocatore impostato come predefinito"
-STATUS_NOTIFICATIONS_ON = "Notifiche abilitate, riceverai una notifica poco prima dell'inizio della live"
+STATUS_NOTIFICATIONS_ON = (
+    "Notifiche abilitate, riceverai una notifica poco prima dell'inizio della live"
+)
 STATUS_NOTIFICATIONS_OFF = "Notifiche disabilitate, non riceverai più notifiche"
 
 # Buttons
