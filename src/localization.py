@@ -837,7 +837,7 @@ class Localization:
 
     def get_translator(self, lang: str) -> Translator:
         if lang not in self._strings:
-            raise ValueError(f"Unsupported language: {lang}")
+            return self._strings["en"]
         return self._strings[lang]
 
     def __iter__(self) -> Iterator[Translator]:
