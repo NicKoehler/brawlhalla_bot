@@ -1,5 +1,6 @@
 from math import ceil
 from enum import Enum
+from pyrogram import Client
 from helpers.cache import Legends
 from localization import Translator
 from babel.dates import format_timedelta
@@ -30,8 +31,18 @@ class Keyboard:
     def close_button(translate: Translator) -> list[list[InlineKeyboardButton]]:
         return [[InlineKeyboardButton(translate.button_close(), callback_data="close")]]
 
-    def live(translate: Translator, live: bool = True) -> InlineKeyboardMarkup:
-        keys = []
+    async def live(
+        bot: Client, translate: Translator, live: bool = True
+    ) -> InlineKeyboardMarkup:
+        bot_username = (await bot.get_me()).username
+        keys = [
+            [
+                InlineKeyboardButton(
+                    translate.button_live_notifications(),
+                    url=f"https://t.me/{bot_username}?start=notifications",
+                )
+            ]
+        ]
         if live:
             keys.append(
                 [

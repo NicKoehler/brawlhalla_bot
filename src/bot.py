@@ -6,18 +6,19 @@ from html import escape
 from prisma import Prisma
 from functools import wraps
 from dotenv import load_dotenv
-from datetime import timedelta
 from itertools import combinations
 from keyboards import Keyboard, View
+from scheduler.asyncio import Scheduler
+from datetime import datetime, timedelta
+
 from brawlhalla_api import Brawlhalla
 from brawlhalla_api.errors import ServiceUnavailable
 
-from helpers.live import get_lives
+from helpers.live import get_lives, schedule_lives, send_event
 from helpers.cache import Cache, Legends
 from helpers.utils import (
     is_query_invalid,
     get_localized_commands,
-    get_translated_times_from_seconds,
 )
 
 from pyrogram import Client, filters
@@ -44,8 +45,6 @@ from handlers import (
     handle_player_legend_details,
 )
 
-from scheduler.asyncio import Scheduler
-
 load_dotenv()
 
 API_ID = environ.get("API_ID")
@@ -56,12 +55,12 @@ BOT_TOKEN = environ.get("BOT_TOKEN")
 FLOOD_WAIT_SECONDS = int(environ.get("FLOOD_WAIT_SECONDS"))
 CLEAR_TIME_SECONDS = int(environ.get("CLEAR_TIME_SECONDS"))
 
-bot = Client("brawlhalla", API_ID, API_HASH, bot_token=BOT_TOKEN)
 db = Prisma()
-brawl = Brawlhalla(API_KEY)
 cache = Cache(180)
+brawl = Brawlhalla(API_KEY)
 legends = Legends(brawl)
 localization = Localization()
+bot = Client("brawlhalla", API_ID, API_HASH, bot_token=BOT_TOKEN)
 
 users = {}
 
@@ -74,7 +73,7 @@ def user_handling(f):
         is_message = isinstance(update, Message)
 
         if user_id not in users:
-            user = (await db.user.find_unique(where={"id": user_id})) or (
+            users[user_id] = (await db.user.find_unique(where={"id": user_id})) or (
                 await db.user.create(
                     data={
                         "id": user_id,
@@ -82,7 +81,6 @@ def user_handling(f):
                     }
                 )
             )
-            users[user_id] = user
 
         user = users[user_id]
 
@@ -135,14 +133,30 @@ def user_handling(f):
     return wrapped
 
 
-@bot.on_message(filters.command("start"))
+@bot.on_message(filters.regex(r"^\/start\s?(.+)?$"))
 @user_handling
 async def start(_: Client, message: Message, translate: Translator):
-    await message.reply(
-        translate.welcome(
-            name=escape(message.from_user.first_name),
-        ),
+    if message.matches[0].groups()[0] is None:
+        await message.reply(
+            translate.welcome(
+                name=escape(message.from_user.first_name),
+            ),
+        )
+        return
+
+    user_id = message.from_user.id
+    new_status = not users[user_id].notify_live
+    users[user_id] = await db.user.update(
+        {"notify_live": new_status}, where={"id": user_id}
     )
+    if new_status:
+        await message.reply(
+            translate.status_notifications_on(),
+        )
+    else:
+        await message.reply(
+            translate.status_notifications_off(),
+        )
 
 
 @bot.on_message(filters.command(get_localized_commands("search", localization)))
@@ -296,26 +310,7 @@ async def live_command(_: Client, message: Message, translate: Translator):
             reply_markup=Keyboard.live(translate, False),
         )
         return
-    live = lives[0]
-    translated_start_times = get_translated_times_from_seconds(
-        live["starts_in"],
-        translate,
-    )
-    translate_duration_times = get_translated_times_from_seconds(
-        live["duration"],
-        translate,
-    )
-    start_string = ", ".join(translated_start_times)
-    duration_string = ", ".join(translate_duration_times)
-
-    await message.reply(
-        translate.results_live(
-            title=live["title"],
-            start=start_string,
-            end=duration_string,
-        ),
-        reply_markup=Keyboard.live(translate),
-    )
+    await send_event(message, lives[0], translate, bot)
 
 
 @bot.on_callback_query(filters.regex(r"^(\d+)_team_(\d+)$"))
@@ -610,8 +605,24 @@ async def clear_inactive_users():
 
 async def main():
     schedule = Scheduler()
+
     schedule.cyclic(timedelta(hours=1), cache.clear)
     schedule.cyclic(timedelta(hours=1), clear_inactive_users)
+
+    for t, s in [
+        (datetime.now(), schedule.once),
+        (timedelta(hours=1), schedule.cyclic),
+    ]:
+        s(
+            t,
+            schedule_lives,
+            args=(
+                bot,
+                db,
+                schedule,
+                localization,
+            ),
+        )
 
     await legends.refresh_legends()
     await db.connect()

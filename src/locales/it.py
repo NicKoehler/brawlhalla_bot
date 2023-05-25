@@ -101,11 +101,16 @@ RESULTS_MISSING_WEAPONS_COMBINATION_WITH_WEAPON = (
 RESULTS_LIVE = (
     "🎮 • <b>{title}</b> • 🎮\n\n" "Inizia tra: <b>{start}</b>\n" "Durata: <b>{end}</b>"
 )
+RESULT_LIVE_NOTIFICATION = "🎮 • <b>{title}</b> • 🎮\n\nSta per iniziare"
 
 # Status messages
 STATUS_LANGUAGE_CHANGED = "La lingua è stata cambiata correttamente"
 STATUS_LANGUAGE_UNCHANGED = "La lingua non è stata cambiata"
 STATUS_DEFAULT_PLAYER_SET = "Giocatore impostato come predefinito"
+STATUS_NOTIFICATIONS_ON = "<b>🔔 • Notifiche abilitate • 🔔</b>\n\nRiceverai una notifica poco prima dell'inizio della live!"
+STATUS_NOTIFICATIONS_OFF = (
+    "<b>🔕 • Notifiche disabilitate • 🔕</b>\n\nNon riceverai più notifiche!"
+)
 
 # Buttons
 BUTTON_GENERAL = "⚔️ • STATS GENERALI • ⚔️"
@@ -120,6 +125,7 @@ BUTTON_CLOSE = "❌ • CHIUDI • ❌"
 BUTTON_WEAPONS = "🔫 • ARMI • 🔫"
 BUTTON_SHARE = "💬 • CONDIVIDI • 💬"
 BUTTON_LIVE = "🎮 • GUARDA LA LIVE • 🎮"
+BUTTON_LIVE_NOTIFICATIONS = "🔔 • ATTIVA/DISATTIVA NOTIFICHE • 🔔"
 BUTTON_SEARCH_ALL = "🌍 • RICERCA GLOBALE • 🌍"
 BUTTON_SEARCH_AUS = "🇦🇺 • RICERCA IN AUS • 🇦🇺"
 BUTTON_SEARCH_BRZ = "🇧🇷 • RICERCA IN BRZ • 🇧🇷"

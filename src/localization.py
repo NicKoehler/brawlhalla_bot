@@ -55,6 +55,12 @@ class Translator:
         """
         return self.locale.BUTTON_LIVE
 
+    def button_live_notifications(self) -> str:
+        """
+        🔔 • ENABLE/DISABLE NOTIFICATIONS • 🔔
+        """
+        return self.locale.BUTTON_LIVE_NOTIFICATIONS
+
     def button_ranked_solo(self) -> str:
         """
         🏆 • RANKED 1V1 • 🏆
@@ -340,7 +346,7 @@ class Translator:
 
     def results_live(self, title, start, end) -> str:
         """
-        Next live: <b>{title}</b>
+        🎮 • <b>{title}</b> • 🎮
 
         Starts in: <b>{start}</b>
         Duration: <b>{end}</b>
@@ -388,6 +394,14 @@ class Translator:
         For example: <code>/weapons sword hammer</code>
         """
         return self.locale.RESULTS_WEAPONS
+
+    def result_live_notification(self, title) -> str:
+        """
+        🎮 • <b>{title}</b> • 🎮
+
+        It's about to start
+        """
+        return self.locale.RESULT_LIVE_NOTIFICATION.format(title=title)
 
     def search(self) -> str:
         """
@@ -728,6 +742,22 @@ class Translator:
         Language unchanged
         """
         return self.locale.STATUS_LANGUAGE_UNCHANGED
+
+    def status_notifications_off(self) -> str:
+        """
+        <b>🔕 • Notifications disabled • 🔕</b>
+
+        You will no longer receive notifications!
+        """
+        return self.locale.STATUS_NOTIFICATIONS_OFF
+
+    def status_notifications_on(self) -> str:
+        """
+        <b>🔔 • Notifications enabled • 🔔</b>
+
+        You will receive a notification shortly before the live starts!
+        """
+        return self.locale.STATUS_NOTIFICATIONS_ON
 
     def time_days(self, t) -> str:
         """
