@@ -1,24 +1,13 @@
 # Brawlhalla Telegram Bot
 
-Work in progress / experimental open source rewriting of the original [Brawl Tool](https://t.me/brawltool_bot).
+Open source rewriting of the original [Brawl Tool](https://t.me/brawltool_bot).
 
 # Table of contents
 
-- [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
 - [Contributions](#contributions)
-
-## Introduction
-
-This bot is a rewrite of the original [Brawl Tool](https://t.me/brawltool_bot).
-
-The old bot is the currently working one for now as I'm still working on the rewriting.
-
-The old one is closed source simply because it's terrible code that I wrote when I was starting to learn python.
-
-The new one will not have the exactly the same features as the old one, the main goal is to have a more stable and maintable bot where the community can help me improve it.
 
 ## Installation
 
