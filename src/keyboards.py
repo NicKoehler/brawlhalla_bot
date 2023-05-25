@@ -28,6 +28,18 @@ class View(Enum):
 
 
 class Keyboard:
+    def start(translate: Translator) -> InlineKeyboardMarkup:
+        return InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        translate.button_start(),
+                        url="https://github.com/NicKoehler/brawlhalla_bot",
+                    )
+                ]
+            ]
+        )
+
     def close_button(translate: Translator) -> list[list[InlineKeyboardButton]]:
         return [[InlineKeyboardButton(translate.button_close(), callback_data="close")]]
 

@@ -141,6 +141,7 @@ async def start(_: Client, message: Message, translate: Translator):
             translate.welcome(
                 name=escape(message.from_user.first_name),
             ),
+            reply_markup=Keyboard.start(translate),
         )
         return
 

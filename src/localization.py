@@ -139,6 +139,12 @@ class Translator:
         """
         return self.locale.BUTTON_SHARE
 
+    def button_start(self) -> str:
+        """
+        🌟 • STAR ME ON GITHUB • 🌟
+        """
+        return self.locale.BUTTON_START
+
     def button_teammate(self) -> str:
         """
         🙋‍♂️ • TEAM MATE • 🙋‍♂️
