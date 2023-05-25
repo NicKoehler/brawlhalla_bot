@@ -133,31 +133,33 @@ def user_handling(f):
     return wrapped
 
 
-@bot.on_message(filters.regex(r"^\/start\s?(.+)?$"))
+@bot.on_message(filters.command("start"))
 @user_handling
 async def start(_: Client, message: Message, translate: Translator):
-    if message.matches[0].groups()[0] is None:
-        await message.reply(
-            translate.welcome(
-                name=escape(message.from_user.first_name),
-            ),
-            reply_markup=Keyboard.start(translate),
+    args = message.text.split()[1:]
+
+    if args and args[0] == "notifications":
+        user_id = message.from_user.id
+        new_status = not users[user_id].notify_live
+        users[user_id] = await db.user.update(
+            {"notify_live": new_status}, where={"id": user_id}
         )
+        if new_status:
+            await message.reply(
+                translate.status_notifications_on(),
+            )
+        else:
+            await message.reply(
+                translate.status_notifications_off(),
+            )
         return
 
-    user_id = message.from_user.id
-    new_status = not users[user_id].notify_live
-    users[user_id] = await db.user.update(
-        {"notify_live": new_status}, where={"id": user_id}
+    await message.reply(
+        translate.welcome(
+            name=escape(message.from_user.first_name),
+        ),
+        reply_markup=Keyboard.start(translate),
     )
-    if new_status:
-        await message.reply(
-            translate.status_notifications_on(),
-        )
-    else:
-        await message.reply(
-            translate.status_notifications_off(),
-        )
 
 
 @bot.on_message(filters.command(get_localized_commands("search", localization)))
