@@ -56,7 +56,6 @@ FLOOD_WAIT_SECONDS = int(environ.get("FLOOD_WAIT_SECONDS"))
 CLEAR_TIME_SECONDS = int(environ.get("CLEAR_TIME_SECONDS"))
 
 db = Prisma()
-schedule = None
 cache = Cache(180)
 brawl = Brawlhalla(API_KEY)
 legends = Legends(brawl)
