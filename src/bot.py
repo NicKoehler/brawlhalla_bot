@@ -29,6 +29,7 @@ from pyrogram.types import (
     BotCommand,
     InlineQuery,
 )
+from pyrogram.errors import MessageNotModified
 
 from localization import Localization, Translator, SUPPORTED_LANGUAGES
 from handlers import (
@@ -68,54 +69,54 @@ users = {}
 def user_handling(f):
     @wraps(f)
     async def wrapped(bot: Client, update, *args, **kwargs):
-        time_now = time()
-        user_id = update.from_user.id
-        is_message = isinstance(update, Message)
+        try:
+            time_now = time()
+            user_id = update.from_user.id
+            is_message = isinstance(update, Message)
 
-        if user_id not in users:
-            users[user_id] = (await db.user.find_unique(where={"id": user_id})) or (
-                await db.user.create(
-                    data={
-                        "id": user_id,
-                        "language": update.from_user.language_code,
-                    }
+            if user_id not in users:
+                users[user_id] = (await db.user.find_unique(where={"id": user_id})) or (
+                    await db.user.create(
+                        data={
+                            "id": user_id,
+                            "language": update.from_user.language_code,
+                        }
+                    )
                 )
-            )
 
-        user = users[user_id]
+            user = users[user_id]
 
-        translate = localization.get_translator(user.language)
+            translate = localization.get_translator(user.language)
 
-        time_blocked = user.time_blocked
-        if time_blocked:
-            if time_now - time_blocked < FLOOD_WAIT_SECONDS:
+            time_blocked = user.time_blocked
+            if time_blocked:
+                if time_now - time_blocked < FLOOD_WAIT_SECONDS:
+                    return
+                users[user_id] = await db.user.update(
+                    where={"id": user_id}, data={"time_blocked": None}
+                )
+
+            try:
+                time_last = getattr(user, "time_last_message")
+            except AttributeError:
+                time_last = None
+
+            if (
+                is_message
+                and time_last
+                and time_last != time_now
+                and time_now - time_last < 1
+            ):
+                users[user_id] = await db.user.update(
+                    where={"id": user_id}, data={"time_blocked": time_now}
+                )
+                await bot.send_message(
+                    update.chat.id, translate.error_flood_wait(FLOOD_WAIT_SECONDS)
+                )
                 return
-            users[user_id] = await db.user.update(
-                where={"id": user_id}, data={"time_blocked": None}
-            )
 
-        try:
-            time_last = getattr(user, "time_last_message")
-        except AttributeError:
-            time_last = None
+            users[user_id].__dict__["time_last_message"] = time_now
 
-        if (
-            is_message
-            and time_last
-            and time_last != time_now
-            and time_now - time_last < 1
-        ):
-            users[user_id] = await db.user.update(
-                where={"id": user_id}, data={"time_blocked": time_now}
-            )
-            await bot.send_message(
-                update.chat.id, translate.error_flood_wait(FLOOD_WAIT_SECONDS)
-            )
-            return
-
-        users[user_id].__dict__["time_last_message"] = time_now
-
-        try:
             return await f(
                 bot,
                 update,
@@ -123,6 +124,9 @@ def user_handling(f):
                 *args,
                 **kwargs,
             )
+        except MessageNotModified:
+            pass
+
         except Exception:
             return await bot.send_message(
                 update.from_user.id,
