@@ -1,3 +1,5 @@
+<center><img src="https://raw.githubusercontent.com/nickoehler/brawlhalla_bot/master/logo.svg" alt="drawing" width="400"/></center>
+
 # Brawlhalla Telegram Bot
 
 Open source rewriting of the original [Brawl Tool](https://t.me/brawltool_bot).
