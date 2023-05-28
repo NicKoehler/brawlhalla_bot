@@ -1,4 +1,4 @@
-<center><img src="https://raw.githubusercontent.com/nickoehler/brawlhalla_bot/master/logo.svg" alt="drawing" width="400"/></center>
+<center><img src="https://raw.githubusercontent.com/NicKoehler/brawlhalla_bot/main/logo.svg" alt="logo" width="400"/></center>
 
 # Brawlhalla Telegram Bot
 
