@@ -37,7 +37,7 @@ async def get_lives():
         data = [
             {
                 "title": event["title"],
-                "date_tag": event["start_dt"],
+                "date_tag": event["start_dt"] + " - " + str(event["update_dt"]),
                 "start": datetime.datetime.fromisoformat(event["start_dt"]),
                 "end": datetime.datetime.fromisoformat(event["end_dt"]),
             }
@@ -107,7 +107,7 @@ async def send_event(
         translate,
     )
     start_string = ", ".join(translated_start_times)
-    duration_string = ", ".join(translate_duration_times)
+    duration_string = ", ".join(translate_duration_times) or "🤷‍♂️"
     await message.reply(
         translate.results_live(
             title=event["title"],
