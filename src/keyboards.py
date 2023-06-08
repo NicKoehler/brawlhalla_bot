@@ -1,7 +1,7 @@
 from math import ceil
 from enum import Enum
 from pyrogram import Client
-from helpers.cache import Legends
+from helpers.legends_cache import LegendsCache
 from localization import Translator
 from babel.dates import format_timedelta
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
@@ -230,7 +230,7 @@ class Keyboard:
         current: int,
         limit: int,
         translator: Translator,
-        legends: list[PlayerStatsLegend] | Legends,
+        legends: list[PlayerStatsLegend] | LegendsCache,
         weapon: str = None,
         player: PlayerStats = None,
         rows: int = 2,

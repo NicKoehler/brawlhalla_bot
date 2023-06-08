@@ -15,7 +15,8 @@ from brawlhalla_api import Brawlhalla
 from brawlhalla_api.errors import ServiceUnavailable
 
 from helpers.live import get_lives, schedule_lives, send_event
-from helpers.cache import Cache, Legends
+from helpers.cache import Cache
+from helpers.legends_cache import LegendsCache
 from helpers.utils import (
     is_query_invalid,
     get_localized_commands,
@@ -59,7 +60,7 @@ CLEAR_TIME_SECONDS = int(environ.get("CLEAR_TIME_SECONDS"))
 db = Prisma()
 cache = Cache(180)
 brawl = Brawlhalla(API_KEY)
-legends = Legends(brawl)
+legends_cache = LegendsCache(brawl)
 localization = Localization()
 bot = Client("brawlhalla", API_ID, API_HASH, bot_token=BOT_TOKEN)
 
@@ -188,7 +189,7 @@ async def player_id(_: Client, message: Message, translate: Translator):
         brawl,
         brawlhalla_id,
         cache,
-        legends,
+        legends_cache,
         translate,
         message,
     )
@@ -207,7 +208,7 @@ async def player_me(_: Client, message: Message, translate: Translator):
         brawl,
         user.brawlhalla_id,
         cache,
-        legends,
+        legends_cache,
         translate,
         message,
     )
@@ -217,12 +218,12 @@ async def player_me(_: Client, message: Message, translate: Translator):
 @user_handling
 async def legend(_: Client, message: Message, translate: Translator):
     if len(message.command) < 2:
-        await handle_legend_stats(legends, translate, message)
+        await handle_legend_stats(legends_cache, translate, message)
         return
     query = escape(" ".join(message.command[1:]).lower())
     if await is_query_invalid(query, message, translate):
         return
-    for legend in legends.all:
+    for legend in legends_cache.all:
         if legend.legend_name_key == query:
             await handle_legend_details(legend, translate, message)
             return
@@ -236,17 +237,17 @@ async def weapon(_: Client, message: Message, translate: Translator):
     len_commands = len(message.command)
 
     if len_commands < 2:
-        await handle_weapons(legends, message, translate)
+        await handle_weapons(legends_cache, message, translate)
         return
 
     if len_commands == 2:
         weapon = escape(message.command[1].lower())
         if await is_query_invalid(weapon, message, translate):
             return
-        if weapon not in legends.weapons:
+        if weapon not in legends_cache.weapons:
             await message.reply(translate.error_weapon_not_found(weapon))
             return
-        await handle_weapons(legends, message, translate, weapon)
+        await handle_weapons(legends_cache, message, translate, weapon)
         return
 
     weapons = [
@@ -256,7 +257,7 @@ async def weapon(_: Client, message: Message, translate: Translator):
 
     weapons_set = set(weapons)
 
-    for legend in legends.all:
+    for legend in legends_cache.all:
         legend_weapons = set([legend.weapon_one, legend.weapon_two])
         if weapons_set.issubset(legend_weapons):
             await handle_legend_details(legend, translate, message)
@@ -273,9 +274,9 @@ async def missing_weapons(_: Client, message: Message, translate: Translator):
         if await is_query_invalid(weapon, message, translate):
             return
 
-    weapons = set(f"{legend.weapon_one}_{legend.weapon_two}" for legend in legends.all)
+    weapons = set(f"{legend.weapon_one}_{legend.weapon_two}" for legend in legends_cache.all)
     missing = []
-    for combination in combinations(legends.weapons, 2):
+    for combination in combinations(legends_cache.weapons, 2):
         w1, w2 = combination
         if f"{w1}_{w2}" in weapons or f"{w2}_{w1}" in weapons:
             continue
@@ -341,7 +342,7 @@ async def player_general_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
     brawlhalla_id = int(callback.matches[0].group(1))
-    await handle_general(brawl, brawlhalla_id, cache, legends, translate, callback)
+    await handle_general(brawl, brawlhalla_id, cache, legends_cache, translate, callback)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_SOLO}_(\\d+)$"))
@@ -413,7 +414,7 @@ async def search_legend_personal_page(
         brawlhalla_id,
         callback,
         cache,
-        legends,
+        legends_cache,
         translate,
         current_page=int(current_page or "0"),
     )
@@ -424,7 +425,7 @@ async def search_legend_personal_page(
 async def player_legend_list_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
-    await handle_legend_stats(legends, translate, callback)
+    await handle_legend_stats(legends_cache, translate, callback)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.LEGEND}_stats_(\\d+)$"))
@@ -433,7 +434,7 @@ async def player_legend_details_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
     legend_id = callback.matches[0].group(1)
-    await handle_legend_details(await legends.get(legend_id), translate, callback)
+    await handle_legend_details(await legends_cache.get(legend_id), translate, callback)
 
 
 @bot.on_callback_query(filters.regex(f"^(\\d+)_{View.LEGEND}_?([az]+)?$"))
@@ -441,7 +442,7 @@ async def player_legend_details_callback(
 async def search_legend_page(_: Client, callback: CallbackQuery, translate: Translator):
     current_page, weapon = callback.matches[0].groups()
     await handle_legend_stats(
-        legends,
+        legends_cache,
         translate,
         callback,
         weapon=weapon,
@@ -461,7 +462,7 @@ async def player_legend_stats_callback(
         brawlhalla_id,
         callback,
         cache,
-        legends,
+        legends_cache,
         translate,
         current_page=int(current_page),
     )
@@ -477,7 +478,7 @@ async def player_legend_detail_callback(
     await handle_player_legend_details(
         brawl,
         brawlhalla_id,
-        await legends.get(legend_id),
+        await legends_cache.get(legend_id),
         callback,
         cache,
         translate,
@@ -501,13 +502,13 @@ async def player_ranked_team_detail_callback(
     )
 
 
-@bot.on_callback_query(lambda _, x: x.data[7:] in legends.weapons)
+@bot.on_callback_query(lambda _, x: x.data[7:] in legends_cache.weapons)
 @user_handling
 async def legend_weapon_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
     weapon = callback.data[7:]
-    await handle_weapons(legends, callback, translate, weapon)
+    await handle_weapons(legends_cache, callback, translate, weapon)
 
 
 @bot.on_callback_query(filters.regex(f"^{View.WEAPON}$"))
@@ -515,7 +516,7 @@ async def legend_weapon_callback(
 async def legend_weapon_list_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
-    await handle_weapons(legends, callback, translate)
+    await handle_weapons(legends_cache, callback, translate)
 
 
 @bot.on_callback_query(filters.regex(r"^set_(\d+)$"))
@@ -562,7 +563,7 @@ async def inline_query_id_handler(
     translate: Translator,
 ):
     brawlhalla_id = inline_query.matches[0].group(1)
-    await handle_general(brawl, brawlhalla_id, cache, legends, translate, inline_query)
+    await handle_general(brawl, brawlhalla_id, cache, legends_cache, translate, inline_query)
 
 
 @bot.on_inline_query()
@@ -572,7 +573,7 @@ async def inline_query_handler(
     inline_query: InlineQuery,
     translate: Translator,
 ):
-    await handle_search(inline_query, brawl, translate, cache)
+    await handle_search(inline_query, brawl, translate, cache, legends_cache)
 
 
 async def set_commands(bot: Client):
@@ -631,7 +632,7 @@ async def main():
             ),
         )
 
-    await legends.refresh_legends()
+    await legends_cache.refresh_legends()
     await db.connect()
     await bot.start()
 

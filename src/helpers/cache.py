@@ -1,9 +1,6 @@
 import logging
 
 from time import time
-from brawlhalla_api import Brawlhalla
-from brawlhalla_api.types import Legend
-from brawlhalla_api.errors import ServiceUnavailable
 
 logger = logging.getLogger("Cache")
 
@@ -78,68 +75,3 @@ class Cache:
 
     def __len__(self) -> int:
         return len(self._cache)
-
-
-class Legends:
-    def __init__(self, brawl: Brawlhalla) -> None:
-        self._brawl = brawl
-        self._cache = Cache()
-
-    async def refresh_legends(self):
-        try:
-            legends = await self._brawl.get_legends()
-        except ServiceUnavailable:
-            if self._cache.get("legends"):
-                return
-            legends = []
-
-        for legend in legends:
-            legend.weapon_one = legend.weapon_one.lower()
-            legend.weapon_two = legend.weapon_two.lower()
-        self.refresh_weapons(legends)
-        self._cache.add("legends", {legend.legend_id: legend for legend in legends})
-
-    async def get(self, legend_id: int | str) -> Legend:
-        if isinstance(legend_id, str):
-            legend_id = int(legend_id)
-        legend = self._cache.get("legends").get(legend_id)
-        if legend is None:
-            await self.refresh_legends()
-            legend = self._cache.get("legends").get(legend_id)
-
-        return legend
-
-    def refresh_weapons(self, legends: list[Legend]) -> None:
-        weapons = set(
-            item
-            for sublist in [
-                [legend.weapon_one, legend.weapon_two] for legend in legends
-            ]
-            for item in sublist
-        )
-
-        self._cache.add("weapons", weapons)
-
-    def filter_weapon(self, weapon: str) -> list[Legend]:
-        return [
-            legend
-            for legend in self._cache.get("legends").values()
-            if legend.weapon_one == weapon or legend.weapon_two == weapon
-        ]
-
-    @property
-    def all(self) -> list[Legend]:
-        return list(self._cache.get("legends").values())
-
-    @property
-    def weapons(self) -> list[str]:
-        return self._cache.get("weapons")
-
-    def __contains__(self, key: int) -> bool:
-        return key in self._cache
-
-    def __getitem__(self, key: int) -> Legend:
-        return self.get(key)
-
-    def __len__(self) -> int:
-        return len(self._cache.get("legends"))
