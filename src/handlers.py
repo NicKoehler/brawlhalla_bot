@@ -1,12 +1,14 @@
 import helpers.utils as utils
 
+from helpers.cache import Cache
+from helpers.legends_cache import LegendsCache
+
 from html import escape
 from datetime import timedelta
 from re import compile, RegexFlag
 from localization import Translator
 from keyboards import Keyboard, View
 from brawlhalla_api import Brawlhalla
-from helpers.cache import Cache, Legends
 from brawlhalla_api.types import Legend, Region
 from brawlhalla_api.errors import ServiceUnavailable
 from babel.dates import format_datetime, format_timedelta
@@ -28,7 +30,7 @@ async def handle_general(
     brawl: Brawlhalla,
     brawlhalla_id: int,
     cache: Cache,
-    legends: Legends,
+    legends_cache: LegendsCache,
     translate: Translator,
     update: Message | CallbackQuery | InlineQuery,
 ) -> None:
@@ -66,7 +68,7 @@ async def handle_general(
 
     if player.legends:
         most_used_id = player.legends[0].legend_id
-        most_used_legend_name = (await legends.get(most_used_id)).bio_name
+        most_used_legend_name = (await legends_cache.get(most_used_id)).bio_name
 
     text = (
         translate.stats_base(
@@ -326,7 +328,7 @@ async def handle_legend_personal_stats(
     brawlhalla_id: int,
     callback: CallbackQuery,
     cache: Cache,
-    legends: Legends,
+    legends_cache: LegendsCache,
     translate: Translator,
     page_limit: int = 10,
     current_page: int = 0,
@@ -355,7 +357,7 @@ async def handle_legend_personal_stats(
             current_page,
             page_limit,
             translate,
-            legends=legends,
+            legends_cache,
             player=player,
         ),
     )
@@ -448,7 +450,7 @@ async def handle_player_legend_details(
 
 
 async def handle_legend_stats(
-    legends: Legends,
+    legends_cache: LegendsCache,
     translate: Translator,
     update: Message | CallbackQuery,
     weapon: str = None,
@@ -456,7 +458,7 @@ async def handle_legend_stats(
     limit=20,
 ):
     if weapon:
-        legends = legends.filter_weapon(weapon)
+        legends_cache = legends_cache.filter_weapon(weapon)
 
     await utils.send_or_edit_message(
         update,
@@ -467,7 +469,7 @@ async def handle_legend_stats(
             current_page,
             limit,
             translate,
-            legends=legends,
+            legends=legends_cache,
             weapon=weapon,
             rows=3,
         ),
@@ -475,19 +477,19 @@ async def handle_legend_stats(
 
 
 async def handle_weapons(
-    legends: Legends,
+    legends_cache: LegendsCache,
     update: Message | CallbackQuery,
     translate: Translator,
     weapon: str = None,
 ):
     if weapon:
-        await handle_legend_stats(legends, translate, update, weapon)
+        await handle_legend_stats(legends_cache, translate, update, weapon)
         return
 
     await utils.send_or_edit_message(
         update,
         translate.results_weapons(),
-        Keyboard.weapons(legends.weapons, translate),
+        Keyboard.weapons(legends_cache.weapons, translate),
     )
 
 
@@ -528,6 +530,7 @@ async def handle_search(
     brawl: Brawlhalla,
     translate: Translator,
     cache: Cache,
+    legends_cache: LegendsCache,
 ):
     region = Region.ALL
     complete_query = escape(" ".join(inline_query.query.split()).lower())
@@ -593,11 +596,7 @@ async def handle_search(
                 description=(
                     f"🏆 • {result.wins}\n" f"🤬 • {result.games - result.wins}"
                 ),
-                thumb_url=(
-                    "https://raw.githubusercontent.com/"
-                    "NicKoehler/brawlhalla_bot/images/"
-                    f"src/assets/legends/{result.best_legend}.png"
-                ),
+                thumb_url=await legends_cache.get_image_by_id(result.best_legend),
                 input_message_content=InputTextMessageContent(
                     translate.stats_base(
                         id=result.brawlhalla_id,
