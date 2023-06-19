@@ -10,8 +10,9 @@ URL = "https://brawlhalla.fandom.com/wiki/Legends"
 
 
 class LegendsCache:
-    def __init__(self, 
-    brawl: Brawlhalla,
+    def __init__(
+        self,
+        brawl: Brawlhalla,
     ) -> None:  # noqa: F821
         self._brawl = brawl
         self._cache = Cache()
@@ -45,7 +46,6 @@ class LegendsCache:
 
         return legend
 
-    
     async def get_image_by_id(self, legend_id: int | str) -> str:
         if legend_id not in self._images:
             await self.refresh_legends()
@@ -78,8 +78,10 @@ class LegendsCache:
             for element in elements:
                 link = element.xpath(".//a")[0].attrib
                 img = element.xpath(".//img")[0].attrib
-                self._images[link["title"]] = img["data-src"] if "data-src" in img else img["src"]
- 
+                self._images[link["title"]] = (
+                    img["data-src"] if "data-src" in img else img["src"]
+                )
+
     @property
     def all(self) -> list[Legend]:
         return list(self._cache.get("legends").values())

@@ -84,6 +84,7 @@ def user_handling(f):
                         }
                     )
                 )
+                users[user_id].__dict__["time_last_message"] = time_now
 
             user = users[user_id]
 
@@ -97,16 +98,12 @@ def user_handling(f):
                     where={"id": user_id}, data={"time_blocked": None}
                 )
 
-            try:
-                time_last = getattr(user, "time_last_message")
-            except AttributeError:
-                time_last = None
+            time_last_message = user.__dict__["time_last_message"]
 
             if (
                 is_message
-                and time_last
-                and time_last != time_now
-                and time_now - time_last < 1
+                and time_last_message != time_now
+                and time_now - time_last_message < 1
             ):
                 users[user_id] = await db.user.update(
                     where={"id": user_id}, data={"time_blocked": time_now}
@@ -274,7 +271,9 @@ async def missing_weapons(_: Client, message: Message, translate: Translator):
         if await is_query_invalid(weapon, message, translate):
             return
 
-    weapons = set(f"{legend.weapon_one}_{legend.weapon_two}" for legend in legends_cache.all)
+    weapons = set(
+        f"{legend.weapon_one}_{legend.weapon_two}" for legend in legends_cache.all
+    )
     missing = []
     for combination in combinations(legends_cache.weapons, 2):
         w1, w2 = combination
@@ -342,7 +341,9 @@ async def player_general_callback(
     _: Client, callback: CallbackQuery, translate: Translator
 ):
     brawlhalla_id = int(callback.matches[0].group(1))
-    await handle_general(brawl, brawlhalla_id, cache, legends_cache, translate, callback)
+    await handle_general(
+        brawl, brawlhalla_id, cache, legends_cache, translate, callback
+    )
 
 
 @bot.on_callback_query(filters.regex(f"^{View.RANKED_SOLO}_(\\d+)$"))
@@ -563,7 +564,9 @@ async def inline_query_id_handler(
     translate: Translator,
 ):
     brawlhalla_id = inline_query.matches[0].group(1)
-    await handle_general(brawl, brawlhalla_id, cache, legends_cache, translate, inline_query)
+    await handle_general(
+        brawl, brawlhalla_id, cache, legends_cache, translate, inline_query
+    )
 
 
 @bot.on_inline_query()
@@ -604,7 +607,7 @@ async def clear_inactive_users():
     to_delete = set()
 
     for user_id, user in users.items():
-        if time_now - user.time_last_message > CLEAR_TIME_SECONDS:
+        if time_now - user.__dict__["time_last_message"] > CLEAR_TIME_SECONDS:
             to_delete.add(user_id)
 
     for user_id in to_delete:
