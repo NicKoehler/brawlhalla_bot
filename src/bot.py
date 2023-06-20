@@ -607,7 +607,10 @@ async def clear_inactive_users():
     to_delete = set()
 
     for user_id, user in users.items():
-        if time_now - user.__dict__["time_last_message"] > CLEAR_TIME_SECONDS:
+        if (
+            "time_last_message" in user.__dict__
+            and time_now - user.__dict__["time_last_message"] > CLEAR_TIME_SECONDS
+        ):
             to_delete.add(user_id)
 
     for user_id in to_delete:
