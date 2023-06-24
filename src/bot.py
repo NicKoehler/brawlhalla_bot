@@ -98,7 +98,7 @@ def user_handling(f):
                     where={"id": user_id}, data={"time_blocked": None}
                 )
 
-            time_last_message = user.__dict__["time_last_message"]
+            time_last_message = user.__dict__.get("time_last_message", time_now)
 
             if (
                 is_message
