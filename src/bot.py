@@ -30,7 +30,7 @@ from pyrogram.types import (
     BotCommand,
     InlineQuery,
 )
-from pyrogram.errors import MessageNotModified, PeerIdInvalid
+from pyrogram.errors import MessageNotModified, PeerIdInvalid, MessageIdInvalid
 
 from localization import Localization, Translator, SUPPORTED_LANGUAGES
 from handlers import (
@@ -132,9 +132,8 @@ def user_handling(f):
                     translate.error_generic(error=traceback.format_exc()),
                     reply_markup=Keyboard.issues(translate),
                 )
-            except PeerIdInvalid:
+            except (PeerIdInvalid, MessageIdInvalid):
                 print(traceback.format_exc())
-
 
     return wrapped
 
