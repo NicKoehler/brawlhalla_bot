@@ -1,8 +1,8 @@
 lxml==4.9.2
 babel==2.12.1
-prisma==0.8.2
+prisma==0.9.1
 TgCrypto==1.2.5
-Pyrogram==2.0.102
+Pyrogram==2.0.106
 scheduler==0.8.4
 python-dotenv==1.0.0
 git+https://github.com/NicKoehler/brawlhalla_api

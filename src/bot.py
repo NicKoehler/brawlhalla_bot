@@ -122,7 +122,7 @@ def user_handling(f):
                 *args,
                 **kwargs,
             )
-        except MessageNotModified:
+        except (MessageNotModified, PeerIdInvalid, MessageIdInvalid):
             pass
 
         except Exception:
