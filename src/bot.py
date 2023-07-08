@@ -80,7 +80,7 @@ def user_handling(f):
                     await db.user.create(
                         data={
                             "id": user_id,
-                            "language": update.from_user.language_code,
+                            "language": update.from_user.language_code or "en",
                         }
                     )
                 )
