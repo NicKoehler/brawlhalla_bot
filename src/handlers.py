@@ -199,6 +199,7 @@ async def handle_ranked_solo(
         callback,
         cache,
         translate,
+        ensure_ranked_games=True,
     )
 
     if player is None:

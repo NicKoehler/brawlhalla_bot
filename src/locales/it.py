@@ -46,7 +46,7 @@ ERROR_TEAM_RESULT = "Nessuna squadra trovata"
 ERROR_PLAYER_RESULT = "Nessun giocatore trovato"
 ERROR_PLAYER_NOT_FOUND = "Giocatore con ID <b>{id}</b> non trovato"
 ERROR_NO_CLAN_DATA = "Questo giocatore non è più in un clan"
-ERROR_NO_RANKED_DATA = "Questo giocatore non ha ancora giocato partite classificate"
+ERROR_NO_RANKED_DATA = "Questo giocatore non ha ancora giocato partite classificate singole"
 ERROR_NO_TEAM_DATA = (
     "Questo giocatore non ha ancora giocato partite classificate a squadre"
 )

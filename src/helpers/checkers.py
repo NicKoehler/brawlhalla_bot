@@ -30,6 +30,7 @@ async def ranked_checks(
     callback: CallbackQuery,
     cache: Cache,
     translate: Translator,
+    ensure_ranked_games: bool = False,
 ):
     player = cache.get(f"{View.RANKED_SOLO}_{brawlhalla_id}")
 
@@ -42,7 +43,7 @@ async def ranked_checks(
         player.teams.sort(key=lambda x: x.rating, reverse=True)
         cache.add(f"{View.RANKED_SOLO}_{brawlhalla_id}", player)
 
-    if player is None or player.games == 0:
+    if player is None or player.games == 0 and ensure_ranked_games:
         await callback.answer(translate.error_no_ranked_data(), show_alert=True)
         return
 

@@ -44,8 +44,8 @@ ERROR_TEAM_RESULT = "No team found"
 ERROR_PLAYER_RESULT = "No player found"
 ERROR_PLAYER_NOT_FOUND = "Player with ID <b>{id}</b> not found"
 ERROR_NO_CLAN_DATA = "This player is not in a clan anymore"
-ERROR_NO_RANKED_DATA = "This player has not played any ranked games yet"
-ERROR_NO_TEAM_DATA = "This player has not played any ranked team games yet"
+ERROR_NO_RANKED_DATA = "This player has not played any 1v1 ranked games yet"
+ERROR_NO_TEAM_DATA = "This player has not played any team ranked games yet"
 ERROR_MISSING_DEFAULT_PLAYER = (
     "You need to set a player as default to execute this command."
 )

@@ -46,7 +46,7 @@ ERROR_TEAM_RESULT = "No se encontró ningún equipo"
 ERROR_PLAYER_RESULT = "No se encontró ningún jugador"
 ERROR_PLAYER_NOT_FOUND = "Jugador con ID <b>{id}</b> no encontrado"
 ERROR_NO_CLAN_DATA = "Este jugador ya no está en un clan"
-ERROR_NO_RANKED_DATA = "Este jugador aún no ha jugado ningún juego clasificado"
+ERROR_NO_RANKED_DATA = "Este jugador aún no ha jugado ningún juego clasificado individuales"
 ERROR_NO_TEAM_DATA = "Este jugador aún no ha jugado ningún juego de equipo clasificado"
 ERROR_MISSING_DEFAULT_PLAYER = (
     "Necesita establecer un jugador como predeterminado para ejecutar este comando."
