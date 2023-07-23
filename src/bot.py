@@ -123,7 +123,7 @@ def user_handling(f):
                 **kwargs,
             )
         except (MessageNotModified, PeerIdInvalid, MessageIdInvalid):
-            pass
+            return
 
         except Exception:
             try:
@@ -133,7 +133,7 @@ def user_handling(f):
                     reply_markup=Keyboard.issues(translate),
                 )
             except (PeerIdInvalid, MessageIdInvalid):
-                print(traceback.format_exc())
+                return
 
     return wrapped
 
