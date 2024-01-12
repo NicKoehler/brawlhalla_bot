@@ -1,6 +1,5 @@
-[build]
-nixpacksVersion = "1.15.0"
-builder = "NIXPACKS"
+[phases.setup]
+aptPkgs = ["...", "nodejs"]
 
 [start]
 cmd = 'python src/bot.py'
