@@ -1,2 +1,3 @@
 [start]
 cmd = 'python src/bot.py'
+providers = ["python", "npm"]
