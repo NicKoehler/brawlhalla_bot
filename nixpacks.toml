@@ -1,5 +1,6 @@
 [phases.setup]
-aptPkgs = ["...", "nodejs"]
+  nixLibs = ['...', 'zlib']
+  aptPkgs = ["...", "nodejs"]
 
 [start]
-cmd = 'python src/bot.py'
+  cmd = 'python src/bot.py'
