@@ -1,5 +1,6 @@
-[phases.build]
-providers = ["python", "node"]
+[build]
+nixpacksVersion = "1.15.0"
+builder = "NIXPACKS"
 
 [start]
 cmd = 'python src/bot.py'
